@@ -8,6 +8,7 @@ TechVerse is an application (still in the works) that is designed to be a platfo
 - Mariam Senzia
 - Humphrey Otieno
 - Allen Shamrock
+- Ian Kosgei
 
 # MVP
 ## Multiple user-type authentication - Admin, Students & Staff
