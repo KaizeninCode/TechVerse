@@ -1,20 +1,17 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Boolean, DateTime
-from sqlalchemy.ext.declarative import declarative_base
+from .dbconfig import db
 
-Base = declarative_base()
-
-class User(Base):
+class User(db.Model):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True)
-    username = Column(String(255), nullable=False, unique=True)
-    email = Column(String(255), unique=True, nullable=False)
-    password_hash = Column(String(255), nullable=False)
-    role = Column(String(255), nullable=False)
-    active_status = Column(Boolean, default=True)
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(255), nullable=False, unique=True)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password_hash = db.Column(db.String(255), nullable=False)
+    role = db.Column(db.String(255), nullable=False)
+    active_status = db.Column(db.Boolean, default=True)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, nullable=False)
     
     contents = relationship("Content", back_populates="user")
     comments = relationship("Comment", back_populates="user")

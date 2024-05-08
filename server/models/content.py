@@ -1,21 +1,18 @@
 from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
+from .dbconfig import db
 
-Base = declarative_base()
-
-class Content(Base):
+class Content(db.Model):
     __tablename__ = 'contents'
     
-    id = Column(Integer, primary_key=True)
-    title = Column(String(255), nullable=False)
-    description = Column(String(255), nullable=False)
-    type = Column(String(255), nullable=False)
-    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    published_status = Column(Boolean, default=False)
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.String(255), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    published_status = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, nullable=False)
+    updated_at = db.Column(db.DateTime, nullable=False)
     
     user = relationship("User", back_populates="contents")
     comments = relationship("Comment", back_populates="content")

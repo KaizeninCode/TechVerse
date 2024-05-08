@@ -1,12 +1,9 @@
-from sqlalchemy.orm import relationship
-from sqlalchemy import Column, Integer, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
+from .dbconfig import db
 
-Base = declarative_base()
-class Subscription(Base):
+class Subscription(db.Model):
     __tablename__ = 'subscriptions'
     
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    category_id = Column(Integer, ForeignKey('categories.id'), nullable=False)
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     
