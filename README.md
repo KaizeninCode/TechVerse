@@ -12,7 +12,7 @@ TechVerse is an application (still in the works) that is designed to be a platfo
 
 # MVP
 ## Multiple user-type authentication - Admin, Students & Staff
-An adminshould be able to:
+An admin should be able to:
 - Add a user
 - Flag or remove posted content that violates the rules and guidelines.
 - Approve content that can be published publicly on the platform.
@@ -27,6 +27,7 @@ Staff members should be able to :
 - Post content
 - Edit content details
 - Review a content- Like/dislike, comment
+  
 Students should be able to:
 - Create a profile
 - Subscribe to categories that interest me
