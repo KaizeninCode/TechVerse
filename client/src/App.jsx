@@ -1,11 +1,12 @@
-
+import {Routes,Route } from 'react-router-dom'
+import Post from './pages/Post'
 const App = () => {
 
   return (
     <>
-      <h1 className="text-3xl font-montserrat font-bold text-center mt-12">
-        TECHVERSE
-      </h1>
+      <Routes>
+        <Route path='/post' element={<Post/>}/>
+      </Routes>
     </>
   )
 }
