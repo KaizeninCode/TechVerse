@@ -3,7 +3,7 @@ import TopNav from './topNav'
 
 function EditProfile() {
   return (
-    <div>
+    <div className='justify-center align-middle flex shadow-md'>
     <TopNav/>
     </div>
   )

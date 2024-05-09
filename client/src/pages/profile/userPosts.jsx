@@ -3,7 +3,7 @@ import TopNav from './topNav'
 
 function UserPosts() {
   return (
-    <div>
+    <div >
     <TopNav/>
     </div>
   )
