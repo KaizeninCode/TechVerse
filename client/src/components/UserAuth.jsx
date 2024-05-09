@@ -232,7 +232,7 @@ const UserAuth = () => {
                     <Text fontSize="sm">
                       {activeForm === "signup"
                         ? "Already have an account? Sign in instead"
-                        : "Don't have an account? Sign up "}
+                        : "Don't have an account? sign up "}
                     </Text>
                     <Button
                       alignSelf={"center"}
