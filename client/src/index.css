@@ -4,3 +4,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+@layer utilities {
+    .section {
+        @apply overflow-y-scroll w-full h-screen no-scrollbar
+    }
+}

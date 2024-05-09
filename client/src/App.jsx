@@ -1,12 +1,16 @@
+import Explore from "./pages/Explore"
+import Home from "./pages/Home"
+import {Routes, Route} from 'react-router-dom'
 
 const App = () => {
 
   return (
-    <>
-      <h1 className="text-3xl font-montserrat font-bold text-center mt-12">
-        TECHVERSE
-      </h1>
-    </>
+    <main>
+      <Routes>
+       <Route path='/' element={<Home/>}/> 
+       <Route path='/explore' element={<Explore/>}/> 
+      </Routes>
+    </main>
   )
 }
 
