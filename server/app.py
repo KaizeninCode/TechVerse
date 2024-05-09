@@ -1,5 +1,5 @@
 
-from flask import Flask, request , session, jsonify
+from flask import Flask, request , jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
@@ -26,28 +26,31 @@ migrate = Migrate(app, db)
 db.init_app(app)
 
 #CRUD FOR USER
-class User(Resource):
+class UserResource(Resource):
     def get(self):
         users = User.query.all()
-        return jsonify([{'id': user.id, 'username': user.username, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
+        return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
     def post(self):
-        data = request.json()
-        new_user = User()
-        new_user.username = data.get('username')
-        new_user.role = data.get('role')
-        new_user.active_status = data.get('active_status', True)  
-        new_user.created_at = datetime.strptime(data['created_at'], '%d/%m/%Y')
-        new_user.updated_at = datetime.strptime(data['updated_at'], '%d/%m/%Y')
+        data = request.get_json()
+        username=data.get('username')
+        email=data.get('email')
+        password_hash=data.get('password_hash')
+        role=data.get('role')
+        active_status=data.get('active_status' == 'True')
+        created_at=datetime.strptime(data.get('created_at'), '%d/%m/%Y')
+        updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
     
-        # data = request.json
-        # new_user = User(
-        #     username=data['username'],
-        #     role=data['role'],
-        #     active_status=data['active_status'],
-        #     created_at=data['created_at'],
-        #     updated_at=data['updated_at']
-        # )
+        new_user = User(
+            username=username,
+            email=email, 
+            password_hash=password_hash,
+            role=role,
+            active_status=active_status,
+            created_at=created_at,
+            updated_at=updated_at
+        )
+
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User created successfully'}), 201
@@ -57,10 +60,11 @@ class User(Resource):
         if user:
             data = request.json
             user.username = data.get('username', user.username)
+            user.email = data.get('email', user.email)
             user.role = data.get('role', user.role)
-            user.active_status = data.get('active_status', user.active_status)
-            user.created_at = data.get('created_at', user.created_at)
-            user.updated_at = data.get('updated_at', user.updated_at)
+            user.active_status = data.get('active_status' == True, user.active_status)
+            user.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
+            user.updated_at = datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
             db.session.commit()
             return jsonify({'message': 'User updated successfully'})
         else:
@@ -76,7 +80,7 @@ class User(Resource):
             return jsonify({'message': 'User not found'}), 404
         
 #CRUD FOR COMMENTS
-class Comment(Resource):
+class CommentResource(Resource):
     def get(self):
         comments = Comment.query.all()
         return jsonify([{'id': comment.id, 'content_id': comment.content_id, 'text': comment.text, 'parent_comment_id': comment.parent_comment_id, 'created_at': comment.created_at} for comment in comments])
@@ -88,7 +92,7 @@ class Comment(Resource):
             user_id=data['user_id'],
             text=data['text'],
             parent_comment_id=data['parent_comment_id'],
-            created_at=data['created_at']
+            created_at=datetime.strptime(data['created_at'], '%d/%m/%Y' )
         )
         db.session.add(new_comment)
         db.session.commit()
@@ -113,13 +117,13 @@ class Comment(Resource):
         if comment:
             db.session.delete(comment)
             db.session.commit()
-            return jsonify({'message': 'Comment deleted successfully'})
+            return jsonify({'message': 'Comment deleted successfully'}), 200
         else:
             return jsonify({'message': 'Comment not found'}), 404
 
 # Add resources to routes
-api.add_resource(User, '/users', '/users/<int:id>')
-api.add_resource(Comment, '/comments', '/comments/<int:id>')
+api.add_resource(UserResource, '/users', '/users/<int:id>')
+api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
 @app.route('/')
 def index():
@@ -130,11 +134,11 @@ class Contents(Resource):
         contents_list = [content.to_dict() for content in Content.query.all()]
         return jsonify(contents_list)
     
-    @jwt_required()  # Protect the endpoint with JWT authentication
+    # @jwt_required()  # Protect the endpoint with JWT authentication
     def post(self):
-        current_user = get_jwt_identity()
-        if current_user["role"] not in ["staff", "student"]:
-            return jsonify({"error": "Only staff and students allowed to post"}), 403
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["staff", "student"]:
+        #     return jsonify({"error": "Only staff and students allowed to post"}), 403
 
         data = request.get_json()
         # Assuming 'title' and 'description' are required fields for creating content
