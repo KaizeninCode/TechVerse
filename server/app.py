@@ -13,6 +13,15 @@ from models.user import User
 
 app = Flask(__name__)
 api = Api(app)
+app = Flask(__name__)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+migrate = Migrate(app, db)
+
+db.init_app(app)
 
 @app.route('/')
 def index():
