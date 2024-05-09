@@ -11,7 +11,10 @@ from models.content import Content
 from models.subscription import Subscription
 from models.user import User
 
+from datetime import datetime
+
 app = Flask(__name__)
+
 api = Api(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -29,14 +32,22 @@ class User(Resource):
         return jsonify([{'id': user.id, 'username': user.username, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
     def post(self):
-        data = request.json
-        new_user = User(
-            username=data['username'],
-            role=data['role'],
-            active_status=data['active_status'],
-            created_at=data['created_at'],
-            updated_at=data['updated_at']
-        )
+        data = request.json()
+        new_user = User()
+        new_user.username = data.get('username')
+        new_user.role = data.get('role')
+        new_user.active_status = data.get('active_status', True)  
+        new_user.created_at = datetime.strptime(data['created_at'], '%d/%m/%Y')
+        new_user.updated_at = datetime.strptime(data['updated_at'], '%d/%m/%Y')
+    
+        # data = request.json
+        # new_user = User(
+        #     username=data['username'],
+        #     role=data['role'],
+        #     active_status=data['active_status'],
+        #     created_at=data['created_at'],
+        #     updated_at=data['updated_at']
+        # )
         db.session.add(new_user)
         db.session.commit()
         return jsonify({'message': 'User created successfully'}), 201
