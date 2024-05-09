@@ -134,31 +134,45 @@ class Contents(Resource):
         contents_list = [content.to_dict() for content in Content.query.all()]
         return jsonify(contents_list)
     
-    # @jwt_required()  # Protect the endpoint with JWT authentication
+    # @jwt_required()
     def post(self):
         # current_user = get_jwt_identity()
         # if current_user["role"] not in ["staff", "student"]:
         #     return jsonify({"error": "Only staff and students allowed to post"}), 403
 
         data = request.get_json()
-        # Assuming 'title' and 'description' are required fields for creating content
         title = data.get('title')
         description = data.get('description')
-        if not all([title, description]):
-            return jsonify({"error": "Title and description are required fields"}), 400
+        content_type = data.get('type')
+        category_id = data.get('category_id')
+
+        if not all([title, description, content_type, category_id]):
+            return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
+
+        # Get the user_id from the current_user
+        user_id = current_user.get('id')
 
         # Create new content
-        new_content = Content(title=title, description=description)
+        new_content = Content(
+            title=title,
+            description=description,
+            type=content_type,
+            category_id=category_id,
+            user_id=user_id,
+            published_status=False,
+            created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
+            updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+        )
         db.session.add(new_content)
         db.session.commit()
 
         return jsonify({"message": "Content created successfully", "content_id": new_content.id}), 201
     
-    @jwt_required()  # Protect the endpoint with JWT authentication
+    # @jwt_required() 
     def delete(self, content_id):
-        current_user = get_jwt_identity()
-        if current_user["role"] not in ["staff", "student"]:
-            return jsonify({"error": "Only staff and students can delete content"}), 403
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["staff", "student"]:
+        #     return jsonify({"error": "Only staff and students can delete content"}), 403
 
         content = Content.query.get(content_id)
         if not content:
@@ -192,6 +206,64 @@ class ContentByTitle(Resource):
             return jsonify({"message": "Content not found"}), 404
         
 api.add_resource(ContentByTitle, "/contents/search")
+
+class Categories(Resource):
+    def get(self):
+        categories_list = [category.to_dict() for category in Category.query.all()]
+        return jsonify(categories_list)
+    
+    # @jwt_required()
+    def post(self):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["admin", "staff"]:
+        #     return jsonify({"error": "Only admin and staff can create categories"}), 403
+        
+        data = request.get_json()
+        name = data.get('name')
+        if not name:
+            return jsonify({"error": "Name is required."}), 400
+        
+        new_category = Category(name=name)
+        db.session.add(new_category)
+        db.session.commit()
+        
+        return jsonify({"message": "Category created successfully", "category_id": new_category.id}), 201
+    
+    # @jwt_required()
+    def put(self, category_id):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["admin", "staff"]:
+        #     return jsonify({"error": "Only admin and staff can update categories"}), 403
+        
+        category = Category.query.get(category_id)
+        if not category:
+            return jsonify({"error": "Category not found"}), 404
+        
+        data = request.get_json()
+        name = data.get("name")
+        if not name:
+            return jsonify({"error": "Name is required to update category."}), 400
+        
+        category.name = name
+        db.session.commit()
+        
+        return jsonify({"message": "Category updated successfully"}), 200
+    
+    # @jwt_required()
+    def delete(self, category_id):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["admin", "staff"]:
+        #     return jsonify({"error": "Only admin and staff can delete categories"}), 403
+        
+        category = Category.query.get(category_id)
+        if not category:
+            return jsonify({"error": "Category not found"}), 404
+        
+        db.session.delete(category)
+        db.session.commit()
+        
+        return jsonify({"message": "Category deleted successfully"}), 200
+        
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
