@@ -18,3 +18,4 @@ class Content(db.Model):
     comments = relationship("Comment", back_populates="content")
     category = relationship("Category", back_populates="contents")
     
+    
