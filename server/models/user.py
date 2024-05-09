@@ -17,3 +17,5 @@ class User(db.Model):
     comments = relationship("Comment", back_populates="user")
     subscriptions = relationship("Category", secondary="subscriptions", back_populates="subscribers")
     
+    def __repr__(self):
+        return f"<User {self.id}, {self.username}>"
