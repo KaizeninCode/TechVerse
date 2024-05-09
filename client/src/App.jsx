@@ -1,14 +1,19 @@
+import Explore from "./pages/Explore"
+import Home from "./pages/Home"
+import {Routes, Route} from 'react-router-dom'
 import UserAuth from "./components/UserAuth"
 
 const App = () => {
 
   return (
-    <>
-      <h1 className="text-3xl font-montserrat font-bold text-center mt-12">
-        TECHVERSE
-      </h1>
-      <UserAuth/>
-    </>
+    <main>
+      <Routes>
+       <Route path='/' element={<Home/>}/> 
+       <Route path='/explore' element={<Explore/>}/> 
+       <UserAuth/>
+      </Routes>
+    </main>
+    
   )
 }
 
