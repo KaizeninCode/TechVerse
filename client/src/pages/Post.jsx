@@ -69,7 +69,7 @@ const Post = () => {
 
   return (
     <>
-      <button onClick={onOpen}>Open Modal</button>
+      <button className='rounded-xl border-2 border-gray-950 m-4 px-6 py-3' onClick={onOpen}>Create a Post</button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered size={'2xl'} motionPreset='slideInBottom'>
         <ModalOverlay />
         <ModalContent>
