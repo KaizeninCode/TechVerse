@@ -1,11 +1,12 @@
 import React from 'react'
+import TopNav from './topNav'
 
-function userPosts() {
+function UserPosts() {
   return (
     <div>
-      
+    <TopNav/>
     </div>
   )
 }
 
-export default userPosts
+export default UserPosts

@@ -4,3 +4,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+a.active-link {
+    border-bottom: 2px red;
+  
+  }
+
+
+  
