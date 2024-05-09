@@ -2,6 +2,11 @@ from flask import Flask
 from flask_migrate import Migrate
 
 from models.dbconfig import db
+from models.category import Category
+from models.comment import Comment
+from models.content import Content
+from models.subscription import Subscription
+from models.user import User
 
 app = Flask(__name__)
 
