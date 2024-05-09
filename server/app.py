@@ -1,8 +1,15 @@
 from flask import Flask, request , session, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
-from models import db, User, Comment
 from flask_restful import Api, Resource
+
+from models.dbconfig import db
+from models.category import Category
+from models.comment import Comment
+from models.content import Content
+from models.subscription import Subscription
+from models.user import User
+
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
@@ -102,3 +109,4 @@ api.add_resource(Comment, '/comments', '/comments/<int:id>')
 
 if __name__ == '__main__':
     app.run(debug=True)
+
