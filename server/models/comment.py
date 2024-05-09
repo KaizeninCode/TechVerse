@@ -16,3 +16,5 @@ class Comment(db.Model):
     replies = relationship("Comment", back_populates="parent_comment", remote_side=[parent_comment_id])
     parent_comment = relationship("Comment", back_populates="replies", remote_side=[id])
     
+    def __repr__(self):
+        return f"<Comment {self.id}, {self.text}>"
