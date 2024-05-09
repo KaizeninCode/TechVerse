@@ -232,11 +232,7 @@ const UserAuth = () => {
                     <Text fontSize="sm">
                       {activeForm === "signup"
                         ? "Already have an account? Sign in instead"
-<<<<<<< HEAD
-                        : "Don't have an account? sign up "}
-=======
                         : "Don't have an account? Sign up "}
->>>>>>> 5d95981 ({Feat}:Implemented form validation using formik & yup)
                     </Text>
                     <Button
                       alignSelf={"center"}
