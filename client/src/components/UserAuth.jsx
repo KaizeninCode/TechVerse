@@ -69,6 +69,7 @@ const UserAuth = () => {
       height={"80px"}
       width={"100%"}
       bg={"#33658a"}
+      zIndex={1}
     >
       <ButtonGroup float={"right"} marginRight={"40px"} marginTop={"5"}>
         <Button
