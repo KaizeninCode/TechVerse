@@ -5,6 +5,7 @@ function UserPosts() {
   return (
     <div >
     <TopNav/>
+    <h1 className='text-center'>Post cards</h1>
     </div>
   )
 }
