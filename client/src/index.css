@@ -5,10 +5,12 @@
 @tailwind components;
 @tailwind utilities;
 
-a.active-link {
-    border-bottom: 2px red;
-  
-  }
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
 
-
-  
+@layer utilities {
+    .section {
+        @apply overflow-y-scroll w-full h-screen no-scrollbar
+    }
+}

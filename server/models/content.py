@@ -18,4 +18,6 @@ class Content(db.Model):
     comments = relationship("Comment", back_populates="content")
     category = relationship("Category", back_populates="contents")
     
+    def __repr__(self):
+        return f"<Content {self.id}, {self.title}>"
     

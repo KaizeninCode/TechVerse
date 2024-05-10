@@ -1,6 +1,9 @@
-from flask import Flask
-from flask_migrate import Migrate
 
+from flask import Flask, request , jsonify
+from flask_sqlalchemy import SQLAlchemy
+from flask_migrate import Migrate
+from flask_restful import Api, Resource
+from flask_jwt_extended import jwt_required, get_jwt_identity
 from models.dbconfig import db
 from models.category import Category
 from models.comment import Comment
@@ -8,7 +11,11 @@ from models.content import Content
 from models.subscription import Subscription
 from models.user import User
 
+from datetime import datetime
+
 app = Flask(__name__)
+
+api = Api(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
@@ -18,6 +25,245 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 
+#CRUD FOR USER
+class UserResource(Resource):
+    def get(self):
+        users = User.query.all()
+        return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
+
+    def post(self):
+        data = request.get_json()
+        username=data.get('username')
+        email=data.get('email')
+        password_hash=data.get('password_hash')
+        role=data.get('role')
+        active_status=data.get('active_status' == 'True')
+        created_at=datetime.strptime(data.get('created_at'), '%d/%m/%Y')
+        updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+    
+        new_user = User(
+            username=username,
+            email=email, 
+            password_hash=password_hash,
+            role=role,
+            active_status=active_status,
+            created_at=created_at,
+            updated_at=updated_at
+        )
+
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({'message': 'User created successfully'}), 201
+
+    def put(self, id):
+        user = User.query.get(id)
+        if user:
+            data = request.json
+            user.username = data.get('username', user.username)
+            user.email = data.get('email', user.email)
+            user.role = data.get('role', user.role)
+            user.active_status = data.get('active_status' == True, user.active_status)
+            user.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
+            user.updated_at = datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+            db.session.commit()
+            return jsonify({'message': 'User updated successfully'})
+        else:
+            return jsonify({'message': 'User not found'}), 404
+
+    def delete(self, id):
+        user = User.query.get(id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify({'message': 'User deleted successfully'})
+        else:
+            return jsonify({'message': 'User not found'}), 404
+        
+#CRUD FOR COMMENTS
+class CommentResource(Resource):
+    def get(self):
+        comments = Comment.query.all()
+        return jsonify([{'id': comment.id, 'content_id': comment.content_id, 'text': comment.text, 'parent_comment_id': comment.parent_comment_id, 'created_at': comment.created_at} for comment in comments])
+
+    def post(self):
+        data = request.json
+        new_comment = Comment(
+            content_id=data['content_id'],
+            user_id=data['user_id'],
+            text=data['text'],
+            parent_comment_id=data['parent_comment_id'],
+            created_at=datetime.strptime(data['created_at'], '%d/%m/%Y' )
+        )
+        db.session.add(new_comment)
+        db.session.commit()
+        return jsonify({'message': 'Comment created successfully'}), 201
+
+    def put(self, id):
+        comment = Comment.query.get(id)
+        if comment:
+            data = request.json
+            comment.content_id = data.get('content_id', comment.content_id)
+            comment.user_id = data.get('user_id', comment.user_id)
+            comment.text = data.get('text', comment.text)
+            comment.parent_comment_id = data.get('parent_comment_id', comment.parent_comment_id)
+            comment.created_at = data.get('created_at', comment.created_at)
+            db.session.commit()
+            return jsonify({'message': 'Comment updated successfully'})
+        else:
+            return jsonify({'message': 'Comment not found'}), 404
+
+    def delete(self, id):
+        comment = Comment.query.get(id)
+        if comment:
+            db.session.delete(comment)
+            db.session.commit()
+            return jsonify({'message': 'Comment deleted successfully'}), 200
+        else:
+            return jsonify({'message': 'Comment not found'}), 404
+
+# Add resources to routes
+api.add_resource(UserResource, '/users', '/users/<int:id>')
+api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
+
+@app.route('/')
+def index():
+    return f"<h1>TechVerse API</h1>"
+
+class Contents(Resource):
+    def get(self):
+        contents_list = [content.to_dict() for content in Content.query.all()]
+        return jsonify(contents_list)
+    
+    # @jwt_required()
+    def post(self):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["staff", "student"]:
+        #     return jsonify({"error": "Only staff and students allowed to post"}), 403
+
+        data = request.get_json()
+        title = data.get('title')
+        description = data.get('description')
+        content_type = data.get('type')
+        category_id = data.get('category_id')
+
+        if not all([title, description, content_type, category_id]):
+            return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
+
+        # Get the user_id from the current_user
+        user_id = current_user.get('id')
+
+        # Create new content
+        new_content = Content(
+            title=title,
+            description=description,
+            type=content_type,
+            category_id=category_id,
+            user_id=user_id,
+            published_status=False,
+            created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
+            updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+        )
+        db.session.add(new_content)
+        db.session.commit()
+
+        return jsonify({"message": "Content created successfully", "content_id": new_content.id}), 201
+    
+    # @jwt_required() 
+    def delete(self, content_id):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["staff", "student"]:
+        #     return jsonify({"error": "Only staff and students can delete content"}), 403
+
+        content = Content.query.get(content_id)
+        if not content:
+            return jsonify({"error": "Content not found"}), 404
+
+        db.session.delete(content)
+        db.session.commit()
+
+        return jsonify({"message": "Content deleted successfully"}), 200
+        
+    
+api.add_resource(Contents, "/contents")
+
+class ContentById(Resource):
+    def get(self, id):
+        content = Content.query.get(id)
+        if content:
+            return jsonify(content.to_dict())
+        else:
+            return jsonify({"message": "Content not found"}), 404
+        
+api.add_resource(ContentById, "/contents/<int:id>")
+
+class ContentByTitle(Resource):
+    def get(self):
+        title = request.args.get('title')
+        content = Content.query.filter(Content.title.ilike(f'%{title}')).all()
+        if content:
+            return jsonify([c.to_dict() for c in content])
+        else:
+            return jsonify({"message": "Content not found"}), 404
+        
+api.add_resource(ContentByTitle, "/contents/search")
+
+class Categories(Resource):
+    def get(self):
+        categories_list = [category.to_dict() for category in Category.query.all()]
+        return jsonify(categories_list)
+    
+    # @jwt_required()
+    def post(self):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["admin", "staff"]:
+        #     return jsonify({"error": "Only admin and staff can create categories"}), 403
+        
+        data = request.get_json()
+        name = data.get('name')
+        if not name:
+            return jsonify({"error": "Name is required."}), 400
+        
+        new_category = Category(name=name)
+        db.session.add(new_category)
+        db.session.commit()
+        
+        return jsonify({"message": "Category created successfully", "category_id": new_category.id}), 201
+    
+    # @jwt_required()
+    def put(self, category_id):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["admin", "staff"]:
+        #     return jsonify({"error": "Only admin and staff can update categories"}), 403
+        
+        category = Category.query.get(category_id)
+        if not category:
+            return jsonify({"error": "Category not found"}), 404
+        
+        data = request.get_json()
+        name = data.get("name")
+        if not name:
+            return jsonify({"error": "Name is required to update category."}), 400
+        
+        category.name = name
+        db.session.commit()
+        
+        return jsonify({"message": "Category updated successfully"}), 200
+    
+    # @jwt_required()
+    def delete(self, category_id):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["admin", "staff"]:
+        #     return jsonify({"error": "Only admin and staff can delete categories"}), 403
+        
+        category = Category.query.get(category_id)
+        if not category:
+            return jsonify({"error": "Category not found"}), 404
+        
+        db.session.delete(category)
+        db.session.commit()
+        
+        return jsonify({"message": "Category deleted successfully"}), 200
+        
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

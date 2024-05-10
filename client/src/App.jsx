@@ -5,19 +5,22 @@ import EditProfile from './pages/profile/EditProfile'
 import UserPosts from './pages/profile/userPosts'
 import Subscriptions from './pages/profile/Subscriptions'
 import UserAuth from './components/UserAuth'
+import Explore from "./pages/Explore"
+import Home from "./pages/Home"
+import {Routes, Route} from 'react-router-dom'
+import UserAuth from "./components/UserAuth"
+
 const App = () => {
 
   return (
-    <>
-      <Post/>
-      <UserAuth/>
+    <main>
       <Routes>
-        <Route path='/profile' element={<Profile/>} />
-        <Route path='/edit' element={<EditProfile/>} />
-        <Route path='/myposts' element={<UserPosts/>} />
-        <Route path='/subscriptions' element={<Subscriptions/>} />
+       <Route path='/' element={<Home/>}/> 
+       <Route path='/explore' element={<Explore/>}/> 
+       <UserAuth/>
       </Routes>
-    </>
+    </main>
+    
   )
 }
 
