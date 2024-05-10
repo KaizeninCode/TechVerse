@@ -34,7 +34,7 @@ const RightNav = () => {
         },
     ]
     return (
-        <div className='flex items-center flex-col justify-between'>
+        <div className='w-[20%] max-lg:hidden flex flex-col justify-center overflow-y-scroll bg-gray-200 h-screen'>
             <Box>
                 <Heading fontSize={20} fontFamily={'Raleway'} color={'#33658a'} className='text-center py-10 underline underline-offset-8'>Suggested</Heading>
                 {sampleProfiles.map(profile => (
