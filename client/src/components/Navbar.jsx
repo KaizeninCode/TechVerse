@@ -4,6 +4,7 @@ import { TfiHome } from "react-icons/tfi";
 import { RiCompassLine } from "react-icons/ri";
 import { CiSquarePlus } from "react-icons/ci";
 import { IoMdPerson } from "react-icons/io";
+import Post from '../pages/Post';
 
 export const navlinks = [
     {
@@ -48,12 +49,13 @@ const Navbar = () => {
       <VStack divider={<StackDivider borderColor={'gray.300'}/>} className='mt-10'>
         {navlinks.map(link => (
             <Box as='a' href={link.url} key={link.url}  className='flex flex-grow items-center justify-center'>
-                <Link as='a' href={link.url} key={link.url} color='#33658a' textDecoration='none' className='text-[#33658a] text-lg font-montserrat my-3 flex items-center justify-start'>
+                <Link as='a' href={link.link} key={link.url} color='#33658a' textDecoration='none' className='text-[#33658a] text-lg font-montserrat my-3 flex items-center justify-start'>
                     {link.icon}&nbsp;{link.name}
                 </Link>
             </Box>
         ))}
       </VStack>
+      <Post/>
     </Box>
   )
 }
