@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Textarea } from '@chakra-ui/react';
 import { FaImages } from "react-icons/fa";
-
+import { IoAdd } from "react-icons/io5";
 import {
   Modal,
   ModalOverlay,
@@ -69,7 +69,9 @@ const Post = () => {
 
   return (
     <>
-      <button className='rounded-xl border-2 border-gray-950 m-4 px-6 py-3' onClick={onOpen}>Create a Post</button>
+      <button className='rounded-xl border-2 border-gray-950 m-4 px-6 py-3 flex' onClick={onOpen}>
+      <IoAdd className='text-xl'/>
+      Create a Post</button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered size={'2xl'} motionPreset='slideInBottom'>
         <ModalOverlay />
         <ModalContent>
