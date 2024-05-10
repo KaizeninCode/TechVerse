@@ -1,6 +1,7 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import Post from '../Post'
+import EditProfile from './EditProfile'
 function TopNav() {
   return (
     <div>
@@ -16,7 +17,7 @@ function TopNav() {
       <NavLink to='/subscriptions' className=''>Subscriptions</NavLink>
     </li>
     <li className='px-3'>
-      <NavLink to='/edit' className=''>Edit Profile</NavLink>
+<EditProfile/>  
     </li>
     <li className='px-3'>
       
