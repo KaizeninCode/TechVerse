@@ -51,7 +51,7 @@ const PostContainer = () => {
         },
     ]
   return (
-    <SimpleGrid className='w-[60%] overflow-y-scroll gap-4 mx-5 my-3' id='posts'>
+    <SimpleGrid className='w-[60%] overflow-y-scroll gap-4  mx-5 my-3' id='posts'>
       {dummyContent.map(item => (
         <Card key={item.name}>
             <CardHeader>
