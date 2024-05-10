@@ -1,11 +1,13 @@
 import React from 'react'
 import TopNav from './topNav'
+import PostContainer from '../../components/PostContainer'
 
 function Subscriptions() {
   return (
-    <div className='justify-center align-middle w-full  flex-col shadow-md'>
+    <div className='shadow-md w-full align-middle justify-center flex-col'>
       <TopNav/>
-      <h1 className='text-center'>My subscriptions</h1>
+      
+      <PostContainer/> 
     </div>
   )
 }
