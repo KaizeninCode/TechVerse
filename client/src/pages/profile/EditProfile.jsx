@@ -6,7 +6,7 @@ function EditProfile() {
   const { isOpen, onOpen, onClose } = useDisclosure();
   return (
     <div className='justify-center align-middle flex shadow-md'>
-    <button onClick={onOpen} className="px-6 py-3 rounded-md">Edit Profile</button>
+    <button onClick={onOpen} className="px-6 py-3 rounded-md border-2">Edit Profile</button>
     <Drawer isOpen={isOpen} onClose={onClose} size={'lg'}>
     <DrawerOverlay/>
     <DrawerContent>
