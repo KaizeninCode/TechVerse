@@ -5,7 +5,8 @@ import { RiCompassLine } from "react-icons/ri";
 import { CiSquarePlus } from "react-icons/ci";
 import { IoMdPerson } from "react-icons/io";
 import { NavLink } from 'react-router-dom';
-
+import Post from '../pages/Post';
+import UserAuth from './UserAuth';
 export const navlinks = [
     {
         name: 'Home',
@@ -17,11 +18,11 @@ export const navlinks = [
         link: '/explore',
         icon: <RiCompassLine />
     },
-    {
-        name: 'Post',
-        link: '/post',
-        icon: <CiSquarePlus />
-    },
+    // {
+    //     name: 'Post',
+    //     link: '/post',
+    //     icon: <CiSquarePlus />
+    // },
     {
         name: 'Profile',
         link: '/profile',
@@ -39,7 +40,7 @@ const linkStyles = {
 }
 const Navbar = () => {
   return (
-    <Box as='nav' className='w-[20%] max-lg:hidden flex flex-col justify-center bg-gray-200 h-screen'>
+    <Box as='nav' className='w-[20%] max-lg:hidden flex flex-col justify-center overflow-y-scroll bg-gray-200 h-fit'>
       <Box className='flex flex-col items-center w-[100px] m-auto pt-3'>
         <Image src="/logo-transparent.png" alt="TechVerse logo" w={'100px'} h={'100px'}/>
         <Heading textColor={'#33658a'} fontFamily={'Montserrat'} fontWeight={'semibold'}>
@@ -56,6 +57,7 @@ const Navbar = () => {
         ))}
       </VStack>
       <Post/>
+      <UserAuth/>
     </Box>
   )
 }
