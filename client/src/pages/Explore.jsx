@@ -8,10 +8,10 @@ const Explore = () => {
   return (
     <section className='section'>
       <div className="w-full h-screen flex justify-between overflow-y-scroll">
-          <Navbar/>
+          
           <Header/>
           <PostContainer/>
-          <RightNav/>
+         
         </div>
     </section>
   )
