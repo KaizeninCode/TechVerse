@@ -2,6 +2,7 @@ import { Box, Heading, IconButton, Image, Menu, MenuButton, MenuItem, MenuList, 
 import { RxHamburgerMenu } from "react-icons/rx";
 import React from 'react'
 import { navlinks } from './Navbar';
+import { NavLink } from 'react-router-dom';
 
 const Header = () => {
   return (
@@ -23,9 +24,9 @@ const Header = () => {
             <MenuList>
                 <VStack divider={<StackDivider borderColor={'gray.200'} align={'start'}/>}>
                     {navlinks.map(link => (
-                        <MenuItem  as='a' key={link.url} href={link.url} className='text-[#33658a] text-sm font-montserrat my-1 flex items-center justify-start'>
+                        <NavLink key={link.link} to={link.link} className='text-[#33658a] text-sm font-montserrat my-1 flex items-center justify-start'>
                             {link.icon} &nbsp; &nbsp;{link.name}
-                        </MenuItem>
+                        </NavLink>
                     ))}
                 </VStack>
             </MenuList>

@@ -8,28 +8,21 @@ import Subscriptions from './pages/profile/Subscriptions'
 import Explore from "./pages/Explore"
 import Home from "./pages/Home"
 import {Routes, Route} from 'react-router-dom'
-import UserAuth from "./components/UserAuth"
-import Navbar from './components/Navbar'
+
 
 const App = () => {
 
   return (
-    <main className='flex'>
-
-    {/* <UserAuth/> */}
-    <Navbar/>
+    <main className="bg-gray-100" id="main">
       <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/explore" element={<Explore />} />
        <Route path='/' element={<Home/>}/> 
        <Route path='/explore' element={<Explore/>}/> 
-       <Route path='/profile' element={<Profile/>}/>
-      <Route path='/edit' element={<EditProfile/>}/>
-      <Route path='/myposts' element={<UserPosts/>}/>
-      <Route path='/subscriptions' element={<Subscriptions/>}/>
-      
       </Routes>
+      <UserAuth />
     </main>
-    
-  )
+  );
 }
 
 export default App
