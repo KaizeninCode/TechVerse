@@ -63,22 +63,52 @@ const UserAuth = () => {
   };
 
   return (
-    <Box>
-      <ButtonGroup>
-        <Button onClick={() => handleFormChange("signup")}>Sign Up</Button>
-        <Button onClick={() => handleFormChange("signin")}>Sign In</Button>
+    <Box
+      position={"fixed"}
+      bottom={"0"}
+      height={"80px"}
+      width={"100%"}
+      bg={"#33658a"}
+    >
+      <ButtonGroup float={"right"} marginRight={"40px"} marginTop={"5"}>
+        <Button
+          color={"#ffff"}
+          fontFamily={"Montserrat"}
+          borderRadius={"30px"}
+          // width={"100px"}
+          bg={"#33658a"}
+          border={"1px "}
+          borderColor={"#ffff"}
+          onClick={() => handleFormChange("signin")}
+        >
+          Sign In
+        </Button>
+        <Button
+          borderRadius={"30px"}
+          // width={"100px"}
+          onClick={() => handleFormChange("signup")}
+          fontFamily={"Montserrat"}
+        >
+          Sign Up
+        </Button>
       </ButtonGroup>
+      <Text color={'#ffff'} fontFamily={"montserrat"} fontSize={'20px'} fontWeight={'600'} textAlign={'center'} marginTop={'5'}>
+        Don't miss out on the current trends in the tech ecosystem
+      </Text>
       <Modal isOpen={isOpen} onClose={onClose} alignItems={"center"}>
         <ModalOverlay />
         <ModalContent
-          bg={"#0A66C2"}
+          bg={"#ffff"}
           color={"#101010"}
           minH={{ base: "auto", md: "400px" }}
           display={"flex"}
           justify={"center"}
+          fontFamily={"montserrat"}
         >
           <ModalHeader textAlign={"center"} color={"#"}>
-            {activeForm === "signup" ? "Sign up" : "Sign in"}
+            {activeForm === "signup"
+              ? "Join TechVerse today"
+              : "Sign in to TechVerse"}
           </ModalHeader>
           <ModalCloseButton />
           <ModalBody>
@@ -229,21 +259,45 @@ const UserAuth = () => {
                         )}
                       </Field>
                     )}
-                    <Text fontSize="sm">
-                      {activeForm === "signup"
-                        ? "Already have an account? Sign in instead"
-                        : "Don't have an account? Sign up "}
-                    </Text>
+
+                    <Box fontSize="sm">
+                      {activeForm === "signup" ? (
+                        <Text>
+                          Already have an account?{" "}
+                          <span
+                            onClick={() => handleFormChange("signin")}
+                            cursor={"pointer"}
+                            textDecoration={"underline"}
+                          >
+                            Sign in
+                          </span>{" "}
+                          instead
+                        </Text>
+                      ) : (
+                        <Text>
+                          Don't have an account?{" "}
+                          <span
+                            onClick={() => handleFormChange("signup")}
+                            cursor={"pointer"}
+                            textDecoration={"underline"}
+                          >
+                            Sign up
+                          </span>
+                        </Text>
+                      )}
+                    </Box>
                     <Button
                       alignSelf={"center"}
                       w={"150px"}
-                      bg={"#33658A"}
+                      bg={"#33658a"}
+                      color={"#ffff"}
                       type="submit"
                       variant={"ghost"}
-                      _hover={{ background: "#393D3F" }}
+                      _hover={{ background: "#33658a" }}
                       isLoading={isSubmitting}
+                      boxShadow={"dark-lg"}
                     >
-                      {activeForm === "signup" ? "Signup" : "Signin"}
+                      {activeForm === "signup" ? "Sign up" : "Sign in"}
                     </Button>
                   </Stack>
                 </Form>
