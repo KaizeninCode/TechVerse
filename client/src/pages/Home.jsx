@@ -1,5 +1,4 @@
 import Header from "../components/Header"
-import MobilePostContainer from "../components/MobilePostContainer"
 import Navbar from "../components/Navbar"
 import PostContainer from "../components/PostContainer"
 import RightNav from "../components/RightNav"
@@ -11,7 +10,6 @@ const Home = () => {
           <Navbar/>
           <Header/>
           <PostContainer/>
-          {/* <MobilePostContainer/> */}
           <RightNav/> 
         </div>
     </section>
