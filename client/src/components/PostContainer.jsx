@@ -1,14 +1,14 @@
 import React, { useState } from 'react'
 import PostCard from './PostCard'
-import { Box, Button, Card, CardBody, CardFooter, CardHeader, Flex, HStack, Heading, Image, SimpleGrid, Stack, Text } from '@chakra-ui/react'
+import { Box, Button, Card, CardBody, CardFooter, CardHeader, Flex, HStack, Heading, Image, SimpleGrid, Stack, Text,useColorMode } from '@chakra-ui/react'
 import { CiHeart } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
 import { IoMdHeart } from "react-icons/io";
 
-const PostContainer = () => {
+const PostContainer = ({theme}) => {
     const[likeLeftIcon, setLikeLeftIcon] = useState(<CiHeart/>)
-
+    const colorMode=useColorMode()
     const handleLikeClick = () => {
         likeLeftIcon === <CiHeart/> ? setLikeLeftIcon(<IoMdHeart />) : null
         likeLeftIcon === <IoMdHeart/> ? setLikeLeftIcon(<CiHeart />) : null
@@ -53,7 +53,7 @@ const PostContainer = () => {
   return (
     <SimpleGrid className='w-[60%] overflow-y-scroll gap-4  mx-5 my-3' id='posts'>
       {dummyContent.map(item => (
-        <Card key={item.name}>
+        <Card key={item.name} >
             <CardHeader>
                 <Flex justify={'space-between'} alignItems={'center'}>
                         <Image src={item.image} w={16} h={16} mr={5}/>
