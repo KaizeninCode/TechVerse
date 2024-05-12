@@ -1,8 +1,5 @@
 import { Box, Button, Card, Flex, HStack, Heading, Image, SimpleGrid, StackDivider, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
-import { LiaDoorOpenSolid } from "react-icons/lia";
-import { NavLink } from 'react-router-dom'
-import { navlinks } from './Navbar'
 
 const RightNav = () => {
 
@@ -34,7 +31,7 @@ const RightNav = () => {
         },
     ]
     return (
-        <div className='flex items-center flex-col justify-between'>
+        <div className='flex items-center flex-col justify-between max-lg:hidden'>
             <Box>
                 <Heading fontSize={20} fontFamily={'Raleway'} color={'#33658a'} className='text-center py-10 underline underline-offset-8'>Suggested</Heading>
                 {sampleProfiles.map(profile => (
@@ -48,9 +45,9 @@ const RightNav = () => {
                         </HStack>
                     </Box>
                 ))}
-                <Button color={'#33658a'} fontFamily={'Montserrat'} leftIcon={<LiaDoorOpenSolid />} className='mt-14 ml-8'>
+                {/* <Button color={'#33658a'} fontFamily={'Montserrat'} leftIcon={<LiaDoorOpenSolid />} className='mt-14 ml-8'>
                     Log Out
-                </Button>
+                </Button> */}
             </Box>
         </div>
       )

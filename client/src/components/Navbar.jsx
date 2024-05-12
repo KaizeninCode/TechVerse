@@ -5,6 +5,7 @@ import { RiCompassLine } from "react-icons/ri";
 import { CiSquarePlus } from "react-icons/ci";
 import { IoMdPerson } from "react-icons/io";
 import { NavLink } from 'react-router-dom';
+import { LiaDoorOpenSolid } from 'react-icons/lia';
 
 export const navlinks = [
     {
@@ -26,6 +27,11 @@ export const navlinks = [
         name: 'Profile',
         link: '/profile',
         icon: <IoMdPerson />
+    },
+    {
+        name: 'Log Out',
+        link: '/logout',
+        icon: <LiaDoorOpenSolid />
     },
 ]
 
