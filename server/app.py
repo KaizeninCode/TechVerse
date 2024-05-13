@@ -1,9 +1,9 @@
-
-from flask import Flask, request , jsonify
+from flask import Flask, request , jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_bcrypt import Bcrypt
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from models.dbconfig import db
 from models.category import Category
 from models.comment import Comment
@@ -21,7 +21,15 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+app.config['JWT_SECRET_KEY'] = "e27c00e982d1d07709adb9eb"
+
+app.secret_key = "hgfedcba"
+
 migrate = Migrate(app, db)
+
+bcrypt = Bcrypt(app)
+
+jwt = JWTManager(app)
 
 db.init_app(app)
 
@@ -37,14 +45,20 @@ class UserResource(Resource):
         email=data.get('email')
         password_hash=data.get('password_hash')
         role=data.get('role')
-        active_status=data.get('active_status' == 'True')
+        active_status=data.get('active_status')
         created_at=datetime.strptime(data.get('created_at'), '%d/%m/%Y')
         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+
+        user_exists = User.query.filter_by(email = email).first()
+        if user_exists:
+            return jsonify({'error': 'User already exists'})
+
+        hashed_password = bcrypt.generate_password_hash(password_hash)
     
         new_user = User(
             username=username,
             email=email, 
-            password_hash=password_hash,
+            password_hash=hashed_password,
             role=role,
             active_status=active_status,
             created_at=created_at,
@@ -53,7 +67,8 @@ class UserResource(Resource):
 
         db.session.add(new_user)
         db.session.commit()
-        return jsonify({'message': 'User created successfully'}), 201
+
+        return jsonify({'message': 'User created successfully'})
 
     def put(self, id):
         user = User.query.get(id)
@@ -64,8 +79,9 @@ class UserResource(Resource):
             user.role = data.get('role', user.role)
             user.active_status = data.get('active_status' == True, user.active_status)
             user.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
-            user.updated_at = datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+            user.updated_at = datetime.strptime(data.get('updated_at', user.updated_at), '%d/%m/%Y')
             db.session.commit()
+
             return jsonify({'message': 'User updated successfully'})
         else:
             return jsonify({'message': 'User not found'}), 404
@@ -78,6 +94,34 @@ class UserResource(Resource):
             return jsonify({'message': 'User deleted successfully'})
         else:
             return jsonify({'message': 'User not found'}), 404
+        
+# login user
+class UserLoginResource(Resource):
+    def post(self):
+        data = request.get_json()
+        email = data.get('email')
+        password = data.get('password')
+
+        user = User.query.filter_by(email = email).first()
+
+        if user and (bcrypt.check_password_hash(user.password_hash, password)):
+            access_token = create_access_token(identity=user.email)
+            refresh_token = create_refresh_token(identity=user.email)
+
+            return jsonify(
+                {
+                    "message": "Logged In",
+                    "tokens": {
+                        "access" : access_token,
+                        "refresh": refresh_token
+                    }
+                }
+            )
+
+        return make_response(jsonify({"error": "Invalid username or password"}), 400)
+    
+api.add_resource(UserLoginResource, '/login')
+
         
 #CRUD FOR COMMENTS
 class CommentResource(Resource):
@@ -92,11 +136,11 @@ class CommentResource(Resource):
             user_id=data['user_id'],
             text=data['text'],
             parent_comment_id=data['parent_comment_id'],
-            created_at=datetime.strptime(data['created_at'], '%d/%m/%Y' )
+            created_at=datetime.strptime(data['created_at'], '%d/%m/%Y')
         )
         db.session.add(new_comment)
         db.session.commit()
-        return jsonify({'message': 'Comment created successfully'}), 201
+        return jsonify({'message': 'Comment created successfully'})
 
     def put(self, id):
         comment = Comment.query.get(id)
@@ -106,7 +150,8 @@ class CommentResource(Resource):
             comment.user_id = data.get('user_id', comment.user_id)
             comment.text = data.get('text', comment.text)
             comment.parent_comment_id = data.get('parent_comment_id', comment.parent_comment_id)
-            comment.created_at = data.get('created_at', comment.created_at)
+            comment.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
+
             db.session.commit()
             return jsonify({'message': 'Comment updated successfully'})
         else:
@@ -114,10 +159,10 @@ class CommentResource(Resource):
 
     def delete(self, id):
         comment = Comment.query.get(id)
-        if comment:
+        if comment:      
             db.session.delete(comment)
             db.session.commit()
-            return jsonify({'message': 'Comment deleted successfully'}), 200
+            return jsonify({'message': 'Comment deleted successfully'})
         else:
             return jsonify({'message': 'Comment not found'}), 404
 
@@ -129,10 +174,11 @@ api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 def index():
     return f"<h1>TechVerse API</h1>"
 
-class Contents(Resource):
+class ContentResource(Resource):
     def get(self):
-        contents_list = [content.to_dict() for content in Content.query.all()]
-        return jsonify(contents_list)
+        contents = Content.query.all()
+        return jsonify([{'id': content.id, 'title': content.title, 'description': content.description, 'type': content.type, 'category_id': content.category_id,'published_status': content.published_status,'user_id': content.user_id,'created_at': content.created_at,'updated_at': content.updated_at,} for content in contents])
+
     
     # @jwt_required()
     def post(self):
@@ -145,8 +191,8 @@ class Contents(Resource):
         description = data.get('description')
         content_type = data.get('type')
         category_id = data.get('category_id')
-        published_status = data.get("published_status") is not None
-        user_id = data.get('id')
+        published_status = data.get("published_status") 
+        user_id = data.get('user_id')
 
 
         if not all([title, description, content_type, category_id]):
@@ -171,25 +217,29 @@ class Contents(Resource):
         db.session.add(new_content)
         db.session.commit()
 
-        return jsonify({"message": "Content created successfully", "content_id": new_content.id}), 201
+        return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
     # @jwt_required() 
-    def delete(self, content_id):
+    def delete(self, id):
         # current_user = get_jwt_identity()
         # if current_user["role"] not in ["staff", "student"]:
         #     return jsonify({"error": "Only staff and students can delete content"}), 403
 
-        content = Content.query.get(content_id)
+        content = Content.query.get(id)
         if not content:
             return jsonify({"error": "Content not found"}), 404
+        
+        # Delete associated comments first
+        for comment in content.comments:
+            db.session.delete(comment)
 
         db.session.delete(content)
         db.session.commit()
 
-        return jsonify({"message": "Content deleted successfully"}), 200
+        return jsonify({"message": "Content deleted successfully"})  
         
     
-api.add_resource(Contents, "/contents")
+api.add_resource(ContentResource, "/contents", "/contents/<int:id>")
 
 class ContentById(Resource):
     def get(self, id):
@@ -212,7 +262,7 @@ class ContentByTitle(Resource):
         
 api.add_resource(ContentByTitle, "/contents/search")
 
-class Categories(Resource):
+class CategoryResource(Resource):
     def get(self):
         categories = Category.query.all()
         return jsonify([{'id': category.id, 'name': category.name} for category in categories])
@@ -232,7 +282,7 @@ class Categories(Resource):
         db.session.add(new_category)
         db.session.commit()
         
-        return jsonify({"message": "Category created successfully", "category_id": new_category.id}), 201
+        return jsonify({"message": "Category created successfully", "category_id": new_category.id})
     
     # @jwt_required()
     def put(self, id):
@@ -252,7 +302,7 @@ class Categories(Resource):
         category.name = name
         db.session.commit()
         
-        return jsonify({"message": "Category updated successfully"}), 200
+        return jsonify({"message": "Category updated successfully"})
     
     # @jwt_required()
     def delete(self, id):
@@ -267,9 +317,9 @@ class Categories(Resource):
         db.session.delete(category)
         db.session.commit()
         
-        return jsonify({"message": "Category deleted successfully"}), 200
+        return jsonify({"message": "Category deleted successfully"})
     
-api.add_resource(Categories, "/categories", "/categories/<int:id>")
+api.add_resource(CategoryResource, "/categories", "/categories/<int:id>")
         
 
 #CRUD FOR SUBSCRIPTION
@@ -290,7 +340,7 @@ class SubscriptionResource(Resource):
 
         db.session.add(new_subscription)
         db.session.commit()
-        return jsonify({'message': 'Subscription created successfully'}), 201
+        return jsonify({'message': 'Subscription created successfully'})
 
     def put(self, id):
         subscription = Subscription.query.get(id)
@@ -305,13 +355,14 @@ class SubscriptionResource(Resource):
             return jsonify({'message': 'Subscrption not found'}), 404
 
     def delete(self, id):
-        user = User.query.get(id)
-        if user:
-            db.session.delete(user)
+        subscription = Subscription.query.get(id)
+        if subscription:
+            db.session.delete(subscription)
             db.session.commit()
             return jsonify({'message': 'Subscription deleted successfully'})
         else:
-            return jsonify({'message': 'Subscription not found'}), 404
+            return make_response(jsonify({'message': 'Subscription not found'}), 404)
+            # return jsonify({'message': 'Subscription not found'}), 404
         
 # Add resources to routes
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
