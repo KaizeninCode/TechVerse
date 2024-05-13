@@ -35,8 +35,8 @@ const RightNav = () => {
             <Box>
                 <Heading fontSize={20} fontFamily={'Raleway'} color={'#33658a'} className='text-center py-10 underline underline-offset-8'>Suggested</Heading>
                 {sampleProfiles.map(profile => (
-                    <Box className='border-[#33658a] rounded-lg mb-8 px-4 flex items-center ' id='suggested'>
-                        <HStack key={profile.username} display={'flex'} className='w-full'>
+                    <Box className='border-[#33658a] rounded-lg mb-8 px-4 flex items-center ' id='suggested' key={profile.username}>
+                        <HStack  display={'flex'} className='w-full'>
                             <Image src={profile.image} w={10} h={10}/>
                             <Box>
                                 <Heading as={'h4'} fontSize={16} color={'#33658a'} fontFamily={'Montserrat'}>{profile.name}</Heading>

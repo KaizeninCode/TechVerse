@@ -54,7 +54,7 @@ const Navbar = () => {
       </Box>
       <VStack divider={<StackDivider borderColor={'#33658a'}/>} className='mt-10'>
         {navlinks.map(link => (
-            <Box key={link.url}  className='flex items-center justify-center'>
+            <Box key={link.url}  className='flex items-center justify-between border-black w-[150px]'>
                 <NavLink to={link.link} textDecoration='none' className='text-[#33658a] text-lg font-montserrat my-3 flex items-center justify-start'>
                     {link.icon}&nbsp;{link.name}
                 </NavLink>
