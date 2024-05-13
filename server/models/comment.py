@@ -13,7 +13,7 @@ class Comment(db.Model):
     
     content = relationship("Content", back_populates="comments")
     user = relationship("User", back_populates="comments")
-    replies = relationship("Comment", back_populates="parent_comment", remote_side=[parent_comment_id])
+    replies = relationship("Comment", back_populates="parent_comment", remote_side=[parent_comment_id], cascade="all, delete-orphan")
     parent_comment = relationship("Comment", back_populates="replies", remote_side=[id])
     
     def __repr__(self):
