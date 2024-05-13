@@ -43,6 +43,6 @@ const toggleTheme=UpdateTheme()
       
     </main>
   );
-}
+};
 
-export default App
+export default App;

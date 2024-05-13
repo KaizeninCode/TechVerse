@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import { signinValidationSchema, signupValidationSchema } from "../Schemas";
 import {
   Box,
+  FormLabel,
+  Select,
   Button,
   ButtonGroup,
   FormControl,
@@ -64,19 +66,25 @@ const UserAuth = () => {
 
   return (
     <Box
-      position={"fixed"}
-      bottom={"0"}
+      position={"sticky"}
+      bottom={0}
       height={"80px"}
       width={"100%"}
       bg={"#33658a"}
       zIndex={1}
     >
-      <ButtonGroup float={"right"} marginRight={"40px"} marginTop={"5"}>
+      <ButtonGroup
+        w={{ base: "100%", md: "auto" }}
+        float={"right"}
+        marginRight={{ base: "0", md: "40px" }}
+        px={3}
+        marginTop={"5"}
+      >
         <Button
+          w={{ base: "100%", md: "auto" }}
           color={"#ffff"}
           fontFamily={"Montserrat"}
           borderRadius={"30px"}
-          // width={"100px"}
           bg={"#33658a"}
           border={"1px "}
           borderColor={"#ffff"}
@@ -85,15 +93,18 @@ const UserAuth = () => {
           Sign In
         </Button>
         <Button
+          w={{ base: "100%", md: "auto" }}
           borderRadius={"30px"}
-          // width={"100px"}
           onClick={() => handleFormChange("signup")}
           fontFamily={"Montserrat"}
         >
           Sign Up
         </Button>
       </ButtonGroup>
-      <Text color={'#ffff'} fontFamily={"montserrat"} fontSize={'20px'} fontWeight={'600'} textAlign={'center'} marginTop={'5'}>
+      <Text
+        display={{ base: "none", md: "flex" }}
+        className="font-montserrat text-white text-lg font-semibold content-center text-center justify-center flex py-6"
+      >
         Don't miss out on the current trends in the tech ecosystem
       </Text>
       <Modal isOpen={isOpen} onClose={onClose} alignItems={"center"}>
@@ -129,136 +140,224 @@ const UserAuth = () => {
               {({ isSubmitting }) => (
                 <Form>
                   <Stack direction={"column"} spacing={8}>
-                    {activeForm === "signup" && (
-                      <Field name="username">
-                        {({ field, form }) => (
-                          <FormControl
-                            isInvalid={
-                              form.errors.username && form.touched.username
-                            }
+                    {activeForm === "signup" ? (
+                      <>
+                        <Field name="username">
+                          {({ field, form }) => (
+                            <FormControl
+                              isInvalid={
+                                form.errors.username && form.touched.username
+                              }
+                            >
+                              <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                  <AtSignIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input
+                                  errorBorderColor="crimson"
+                                  focusBorderColor={"#393D3F"}
+                                  placeholder="Username"
+                                  {...field}
+                                />
+                              </InputGroup>
+                              <FormErrorMessage color="crimson">
+                                {form.errors.username &&
+                                  form.touched.username &&
+                                  form.errors.username}
+                              </FormErrorMessage>
+                            </FormControl>
+                          )}
+                        </Field>
+
+                        <Field name="email">
+                          {({ field, form }) => (
+                            <FormControl
+                              isInvalid={
+                                form.errors.email && form.touched.email
+                              }
+                            >
+                              <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                  <EmailIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input
+                                  errorBorderColor="crimson"
+                                  focusBorderColor={"#393D3F"}
+                                  placeholder="Email"
+                                  {...field}
+                                />
+                              </InputGroup>
+                              <FormErrorMessage color="crimson">
+                                {form.errors.email &&
+                                  form.touched.email &&
+                                  form.errors.email}
+                              </FormErrorMessage>
+                            </FormControl>
+                          )}
+                        </Field>
+                        <Field name="password">
+                          {({ field, form }) => (
+                            <FormControl
+                              isInvalid={
+                                form.errors.password && form.touched.password
+                              }
+                            >
+                              <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                  <LockIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input
+                                  errorBorderColor="crimson"
+                                  focusBorderColor={"#393D3F"}
+                                  placeholder="Password"
+                                  {...field}
+                                  type={showPassword ? "text" : "password"}
+                                />
+                                <InputRightElement width="4.5rem">
+                                  <Box
+                                    h="1.75rem"
+                                    size="sm"
+                                    onClick={handleTogglePassword}
+                                  >
+                                    {showPassword ? (
+                                      <ViewOffIcon />
+                                    ) : (
+                                      <ViewIcon />
+                                    )}
+                                  </Box>
+                                </InputRightElement>
+                              </InputGroup>
+                              <FormErrorMessage color="crimson">
+                                {form.errors.password &&
+                                  form.touched.password &&
+                                  form.errors.password}
+                              </FormErrorMessage>
+                            </FormControl>
+                          )}
+                        </Field>
+
+                        <Field name="confirmPassword">
+                          {({ field, form }) => (
+                            <FormControl
+                              isInvalid={
+                                form.errors.confirmPassword &&
+                                form.touched.confirmPassword
+                              }
+                            >
+                              <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                  <LockIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input
+                                  errorBorderColor="crimson"
+                                  focusBorderColor={"#393D3F"}
+                                  placeholder="Confirm Password"
+                                  {...field}
+                                  type={showPassword ? "text" : "password"}
+                                />
+                                <InputRightElement width="4.5rem">
+                                  <Box
+                                    h="1.75rem"
+                                    size="sm"
+                                    onClick={handleTogglePassword}
+                                  >
+                                    {showPassword ? (
+                                      <ViewOffIcon />
+                                    ) : (
+                                      <ViewIcon />
+                                    )}
+                                  </Box>
+                                </InputRightElement>
+                              </InputGroup>
+                              <FormErrorMessage color="crimson">
+                                {form.errors.confirmPassword &&
+                                  form.touched.confirmPassword &&
+                                  form.errors.confirmPassword}
+                              </FormErrorMessage>
+                            </FormControl>
+                          )}
+                        </Field>
+                        <FormControl>
+                          <FormLabel>Choose a user</FormLabel>
+                          <Select
+                            className="rounded-xl"
+                            placeholder="Select user category"
                           >
-                            <InputGroup>
-                              <InputLeftElement pointerEvents="none">
-                                <AtSignIcon color="gray.400" />
-                              </InputLeftElement>
-                              <Input
-                                errorBorderColor="crimson"
-                                focusBorderColor={"#393D3F"}
-                                placeholder="Username"
-                                {...field}
-                              />
-                            </InputGroup>
-                            <FormErrorMessage color="crimson">
-                              {form.errors.username &&
-                                form.touched.username &&
-                                form.errors.username}
-                            </FormErrorMessage>
-                          </FormControl>
-                        )}
-                      </Field>
-                    )}
-                    <Field name="email">
-                      {({ field, form }) => (
-                        <FormControl
-                          isInvalid={form.errors.email && form.touched.email}
-                        >
-                          <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                              <EmailIcon color="gray.400" />
-                            </InputLeftElement>
-                            <Input
-                              errorBorderColor="crimson"
-                              focusBorderColor={"#393D3F"}
-                              placeholder="Email"
-                              {...field}
-                            />
-                          </InputGroup>
-                          <FormErrorMessage color="crimson">
-                            {form.errors.email &&
-                              form.touched.email &&
-                              form.errors.email}
-                          </FormErrorMessage>
+                            <option>Admin</option>
+                            <option>Staff</option>
+                            <option>Student</option>
+                          </Select>
                         </FormControl>
-                      )}
-                    </Field>
-                    <Field name="password">
-                      {({ field, form }) => (
-                        <FormControl
-                          isInvalid={
-                            form.errors.password && form.touched.password
-                          }
-                        >
-                          <InputGroup>
-                            <InputLeftElement pointerEvents="none">
-                              <LockIcon color="gray.400" />
-                            </InputLeftElement>
-                            <Input
-                              errorBorderColor="crimson"
-                              focusBorderColor={"#393D3F"}
-                              placeholder="Password"
-                              {...field}
-                              type={showPassword ? "text" : "password"}
-                            />
-                            <InputRightElement width="4.5rem">
-                              <Box
-                                h="1.75rem"
-                                size="sm"
-                                onClick={handleTogglePassword}
-                              >
-                                {showPassword ? <ViewOffIcon /> : <ViewIcon />}
-                              </Box>
-                            </InputRightElement>
-                          </InputGroup>
-                          <FormErrorMessage color="crimson">
-                            {form.errors.password &&
-                              form.touched.password &&
-                              form.errors.password}
-                          </FormErrorMessage>
-                        </FormControl>
-                      )}
-                    </Field>
-                    {activeForm === "signup" && (
-                      <Field name="confirmPassword">
-                        {({ field, form }) => (
-                          <FormControl
-                            isInvalid={
-                              form.errors.confirmPassword &&
-                              form.touched.confirmPassword
-                            }
-                          >
-                            <InputGroup>
-                              <InputLeftElement pointerEvents="none">
-                                <LockIcon color="gray.400" />
-                              </InputLeftElement>
-                              <Input
-                                errorBorderColor="crimson"
-                                focusBorderColor={"#393D3F"}
-                                placeholder="Confirm Password"
-                                {...field}
-                                type={showPassword ? "text" : "password"}
-                              />
-                              <InputRightElement width="4.5rem">
-                                <Box
-                                  h="1.75rem"
-                                  size="sm"
-                                  onClick={handleTogglePassword}
-                                >
-                                  {showPassword ? (
-                                    <ViewOffIcon />
-                                  ) : (
-                                    <ViewIcon />
-                                  )}
-                                </Box>
-                              </InputRightElement>
-                            </InputGroup>
-                            <FormErrorMessage color="crimson">
-                              {form.errors.confirmPassword &&
-                                form.touched.confirmPassword &&
-                                form.errors.confirmPassword}
-                            </FormErrorMessage>
-                          </FormControl>
-                        )}
-                      </Field>
+                      </>
+                    ) : (
+                      <>
+                        <Field name="email">
+                          {({ field, form }) => (
+                            <FormControl
+                              isInvalid={
+                                form.errors.email && form.touched.email
+                              }
+                            >
+                              <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                  <EmailIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input
+                                  errorBorderColor="crimson"
+                                  focusBorderColor={"#393D3F"}
+                                  placeholder="Email"
+                                  {...field}
+                                />
+                              </InputGroup>
+                              <FormErrorMessage color="crimson">
+                                {form.errors.email &&
+                                  form.touched.email &&
+                                  form.errors.email}
+                              </FormErrorMessage>
+                            </FormControl>
+                          )}
+                        </Field>
+                        <Field name="password">
+                          {({ field, form }) => (
+                            <FormControl
+                              isInvalid={
+                                form.errors.password && form.touched.password
+                              }
+                            >
+                              <InputGroup>
+                                <InputLeftElement pointerEvents="none">
+                                  <LockIcon color="gray.400" />
+                                </InputLeftElement>
+                                <Input
+                                  errorBorderColor="crimson"
+                                  focusBorderColor={"#393D3F"}
+                                  placeholder="Password"
+                                  {...field}
+                                  type={showPassword ? "text" : "password"}
+                                />
+                                <InputRightElement width="4.5rem">
+                                  <Box
+                                    h="1.75rem"
+                                    size="sm"
+                                    onClick={handleTogglePassword}
+                                  >
+                                    {showPassword ? (
+                                      <ViewOffIcon />
+                                    ) : (
+                                      <ViewIcon />
+                                    )}
+                                  </Box>
+                                </InputRightElement>
+                              </InputGroup>
+                              <FormErrorMessage color="crimson">
+                                {form.errors.password &&
+                                  form.touched.password &&
+                                  form.errors.password}
+                              </FormErrorMessage>
+                            </FormControl>
+                          )}
+                        </Field>
+                      </>
                     )}
 
                     <Box fontSize="sm">
