@@ -6,7 +6,7 @@ import UserPosts from './userPosts'
 import Subscriptions from './Subscriptions'
 const Profile = () => {
   return (
-    <div className='justify-center align-middle flex-col  shadow-md'>
+    <div className='justify-center align-middle flex   shadow-md'>
     
     <UserPosts/>
    

@@ -71,6 +71,7 @@ const UserAuth = () => {
       height={"80px"}
       width={"100%"}
       bg={"#33658a"}
+      zIndex={1}
     >
       <ButtonGroup
         w={{ base: "100%", md: "auto" }}
