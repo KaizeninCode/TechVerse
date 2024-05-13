@@ -1,4 +1,3 @@
-
 from flask import Flask, request , jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -145,21 +144,26 @@ class Contents(Resource):
         description = data.get('description')
         content_type = data.get('type')
         category_id = data.get('category_id')
+        published_status = data.get("published_status") is not None
+        user_id = data.get('id')
+
 
         if not all([title, description, content_type, category_id]):
             return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
 
         # Get the user_id from the current_user
-        user_id = current_user.get('id')
+        # user_id = current_user.get('id')
+        # user_id = data.get('id')
 
         # Create new content
         new_content = Content(
             title=title,
+            user_id=user_id,
             description=description,
             type=content_type,
             category_id=category_id,
-            user_id=user_id,
-            published_status=False,
+            # user_id=user_id,
+            published_status=published_status,
             created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
             updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
         )
@@ -209,8 +213,8 @@ api.add_resource(ContentByTitle, "/contents/search")
 
 class Categories(Resource):
     def get(self):
-        categories_list = [category.to_dict() for category in Category.query.all()]
-        return jsonify(categories_list)
+        categories = Category.query.all()
+        return jsonify([{'id': category.id, 'name': category.name} for category in categories])
     
     # @jwt_required()
     def post(self):
@@ -230,12 +234,12 @@ class Categories(Resource):
         return jsonify({"message": "Category created successfully", "category_id": new_category.id}), 201
     
     # @jwt_required()
-    def put(self, category_id):
+    def put(self, id):
         # current_user = get_jwt_identity()
         # if current_user["role"] not in ["admin", "staff"]:
         #     return jsonify({"error": "Only admin and staff can update categories"}), 403
         
-        category = Category.query.get(category_id)
+        category = Category.query.get(id)
         if not category:
             return jsonify({"error": "Category not found"}), 404
         
@@ -250,12 +254,12 @@ class Categories(Resource):
         return jsonify({"message": "Category updated successfully"}), 200
     
     # @jwt_required()
-    def delete(self, category_id):
+    def delete(self, id):
         # current_user = get_jwt_identity()
         # if current_user["role"] not in ["admin", "staff"]:
         #     return jsonify({"error": "Only admin and staff can delete categories"}), 403
         
-        category = Category.query.get(category_id)
+        category = Category.query.get(id)
         if not category:
             return jsonify({"error": "Category not found"}), 404
         
@@ -263,7 +267,53 @@ class Categories(Resource):
         db.session.commit()
         
         return jsonify({"message": "Category deleted successfully"}), 200
+    
+api.add_resource(Categories, "/categories", "/categories/<int:id>")
         
+
+#CRUD FOR SUBSCRIPTION
+class SubscriptionResource(Resource):
+    def get(self):
+        subscriptions = Subscription.query.all()
+        return jsonify([{'id': sub.id, 'user_id': sub.user_id, 'category_id': sub.category_id} for sub in subscriptions])
+
+    def post(self):
+        data = request.get_json()
+        user_id=data.get('user_id')
+        category_id=data.get('category_id')
+    
+        new_subscription = Subscription(
+            user_id=user_id,
+            category_id=category_id, 
+        )
+
+        db.session.add(new_subscription)
+        db.session.commit()
+        return jsonify({'message': 'Subscription created successfully'}), 201
+
+    def put(self, id):
+        subscription = Subscription.query.get(id)
+        if subscription:
+            data = request.json
+            subscription.user_id = data.get('user_id', subscription.user_id)
+            subscription.category_id = data.get('category_id', subscription.category_id)
+
+            db.session.commit()
+            return jsonify({'message': 'Subscription updated successfully'})
+        else:
+            return jsonify({'message': 'Subscrption not found'}), 404
+
+    def delete(self, id):
+        user = User.query.get(id)
+        if user:
+            db.session.delete(user)
+            db.session.commit()
+            return jsonify({'message': 'Subscription deleted successfully'})
+        else:
+            return jsonify({'message': 'Subscription not found'}), 404
+        
+# Add resources to routes
+api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
