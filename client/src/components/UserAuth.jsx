@@ -72,9 +72,15 @@ const UserAuth = () => {
       width={"100%"}
       bg={"#33658a"}
     >
-      <ButtonGroup float={"right"} marginRight={"40px"} marginTop={"5"}>
+      <ButtonGroup
+        w={{ base: "100%", md: "auto" }}
+        float={"right"}
+        marginRight={{ base: "0", md: "40px" }}
+        px={3}
+        marginTop={"5"}
+      >
         <Button
-          w={{ base: "50%", md: "auto" }}
+          w={{ base: "100%", md: "auto" }}
           color={"#ffff"}
           fontFamily={"Montserrat"}
           borderRadius={"30px"}
@@ -86,7 +92,7 @@ const UserAuth = () => {
           Sign In
         </Button>
         <Button
-          w={{ base: "50%", md: "auto" }}
+          w={{ base: "100%", md: "auto" }}
           borderRadius={"30px"}
           onClick={() => handleFormChange("signup")}
           fontFamily={"Montserrat"}

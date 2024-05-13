@@ -7,7 +7,7 @@ import Subscriptions from "./pages/profile/Subscriptions";
 import UserAuth from "./components/UserAuth";
 import Explore from "./pages/Explore";
 import Home from "./pages/Home";
-
+;
 
 const App = () => {
   return (
@@ -20,6 +20,7 @@ const App = () => {
         <Route path="/userPosts" element={<UserPosts />} />
         <Route path="/editProfile" element={<EditProfile />} />
         <Route path="/post" element={<Post />} />
+    
       </Routes>
       <UserAuth />
     </main>
