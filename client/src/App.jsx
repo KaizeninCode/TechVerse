@@ -1,4 +1,3 @@
-
 import Post from './pages/Post'
 import Profile from './pages/profile/Profile'
 import EditProfile from './pages/profile/EditProfile'
@@ -36,6 +35,13 @@ const toggleTheme=UpdateTheme()
        <Route path="/subscriptions" element={<Subscriptions />} />
        
       </Routes>
+    <main>
+      <Routes>
+       <Route path='/' element={<Home/>}/> 
+       <Route path='/explore' element={<Explore/>}/> 
+      </Routes>
+      <UserAuth/>
+    </main>
 
       <RightNav theme={theme}/>
     </div>
