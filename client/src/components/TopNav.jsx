@@ -8,7 +8,7 @@ import MenuBar from './MenuBar';
 function TopNav({toggleTheme, theme}) {
     const darkTheme=UseTheme()
   return (
-    <div  className=' p-3 flex justify-around border-b-2 border-gray-400'>
+    <div  className=' p-3 flex justify-around border-b border-gray-700'>
     <SearchBar theme={theme}/>
       <nav>
      <MenuBar toggleTheme={toggleTheme} theme={theme}/>

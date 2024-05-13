@@ -25,6 +25,7 @@ const toggleTheme=UpdateTheme()
    
     <div className='container p-4 flex justify-center w-screen'>
     <Navbar  theme={theme}/>
+   
       <Routes>
         <Route path="/" element={<Home theme={theme} />} />
         <Route path="/explore" element={<Explore theme={theme} />} />

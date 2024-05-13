@@ -35,11 +35,11 @@ const colorMode=useColorMode()
               </div>
               <div className="relative">
                 <label className='font-bold'>Password</label>
-                <input type="password" className='border-2 border-gray-900 relative rounded-md p-4 w-full' placeholder='Password' />
+                <input type="password" className='border-2 border-gray-900 relative rounded-md p-4 w-full' placeholder='********' />
               </div>
               <div className="relative">
                 <label className='font-bold'>Confirm Password</label>
-                <input type="password" className='border-2 border-gray-900 relative rounded-md p-4 w-full' placeholder='Password' />
+                <input type="password" className='border-2 border-gray-900 relative rounded-md p-4 w-full' placeholder='Confirm Password' />
               </div>
             </div>
             <hr />

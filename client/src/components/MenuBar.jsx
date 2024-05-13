@@ -14,7 +14,7 @@ function MenuBar({ toggleTheme }) {
     const darkTheme = UseTheme();
 const navigate=useNavigate()
     return (
-        <Menu>
+        <Menu >
             <MenuButton
                 as={IconButton}
                 fontSize={'2rem'}

@@ -41,7 +41,7 @@ const linkStyles = {
 const Navbar = ({theme}) => {
   const colorMode=useColorMode()
   return (
-    <Box as='nav' style={{background:theme.bg}}  className='w-[25%] max-lg:hidden flex flex-col justify-center border-r-2 border-gray-500  bg-gray-200 h-fit'>
+    <Box as='nav' style={{background:theme.bg}}  className='w-[25%] max-lg:hidden flex flex-col h-3/4 justify-center border-r border-r-gray-700   bg-gray-200'>
       <Box className='flex flex-col items-center w-[100px] m-auto pt-3'>
         <Image src="/logo-transparent.png" alt="TechVerse logo" w={'100px'} h={'100px'}/>
         <Heading textColor={'#33658a'} fontFamily={'Montserrat'} fontWeight={'semibold'}>
