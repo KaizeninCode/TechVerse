@@ -25,6 +25,13 @@ const App = () => {
        <Route path="/subscriptions" element={<Subscriptions />} />
        
       </Routes>
+    <main>
+      <Routes>
+       <Route path='/' element={<Home/>}/> 
+       <Route path='/explore' element={<Explore/>}/> 
+      </Routes>
+      <UserAuth/>
+    </main>
 
       
       
