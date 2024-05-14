@@ -35,11 +35,23 @@ db.init_app(app)
 
 #CRUD FOR USER
 class UserResource(Resource):
+    @jwt_required()
     def get(self):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
+
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
+    @jwt_required()
     def post(self):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role not in ["admin", "staff","student"]:
+            return jsonify({"error": "Unauthorized access"}), 403
+
         data = request.get_json()
         username=data.get('username')
         email=data.get('email')
@@ -70,7 +82,13 @@ class UserResource(Resource):
 
         return jsonify({'message': 'User created successfully'})
 
+    @jwt_required()
     def put(self, id):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
+
         user = User.query.get(id)
         if user:
             data = request.json
@@ -86,7 +104,13 @@ class UserResource(Resource):
         else:
             return jsonify({'message': 'User not found'}), 404
 
+    @jwt_required()
     def delete(self, id):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
+        
         user = User.query.get(id)
         if user:
             db.session.delete(user)
@@ -105,8 +129,8 @@ class UserLoginResource(Resource):
         user = User.query.filter_by(email = email).first()
 
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
-            access_token = create_access_token(identity=user.email)
-            refresh_token = create_refresh_token(identity=user.email)
+            access_token = create_access_token(identity={"email": user.email, "role": user.role})
+            refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
 
             return jsonify(
                 {
@@ -129,7 +153,13 @@ class CommentResource(Resource):
         comments = Comment.query.all()
         return jsonify([{'id': comment.id, 'content_id': comment.content_id, 'text': comment.text, 'parent_comment_id': comment.parent_comment_id, 'created_at': comment.created_at} for comment in comments])
 
+    @jwt_required()
     def post(self):
+        current_user_role = get_jwt_identity()['role']
+        
+        if current_user_role != "student":
+            return jsonify({"error": "Unauthorized access"})
+        
         data = request.json
         new_comment = Comment(
             content_id=data['content_id'],
@@ -192,7 +222,7 @@ class ContentResource(Resource):
         content_type = data.get('type')
         category_id = data.get('category_id')
         published_status = data.get("published_status") 
-        user_id = data.get('user_id')
+        user_id = data.get('user_ id')
 
 
         if not all([title, description, content_type, category_id]):
@@ -219,11 +249,28 @@ class ContentResource(Resource):
 
         return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
-    # @jwt_required() 
+    @jwt_required()
+    def post_approve(self, id):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role not in ["admin", "staff"]:
+            return jsonify({"error": "Unauthorized access"})
+
+        content = Content.query.get(id)
+        if not content:
+            return jsonify({"error": "Content not found"}), 404
+
+        # Change the published_status to True
+        content.published_status = True
+        db.session.commit()
+
+        return jsonify({"message": "Content approved successfully", "content_id": content.id})
+    
+    @jwt_required() 
     def delete(self, id):
-        # current_user = get_jwt_identity()
-        # if current_user["role"] not in ["staff", "student"]:
-        #     return jsonify({"error": "Only staff and students can delete content"}), 403
+        current_user_role = get_jwt_identity()['role']
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
 
         content = Content.query.get(id)
         if not content:
@@ -239,7 +286,7 @@ class ContentResource(Resource):
         return jsonify({"message": "Content deleted successfully"})  
         
     
-api.add_resource(ContentResource, "/contents", "/contents/<int:id>")
+api.add_resource(ContentResource, "/contents", "/contents/<int:id>","/contents/approve/<int:id>")
 
 class ContentById(Resource):
     def get(self, id):
@@ -267,11 +314,12 @@ class CategoryResource(Resource):
         categories = Category.query.all()
         return jsonify([{'id': category.id, 'name': category.name} for category in categories])
     
-    # @jwt_required()
+    @jwt_required()
     def post(self):
-        # current_user = get_jwt_identity()
-        # if current_user["role"] not in ["admin", "staff"]:
-        #     return jsonify({"error": "Only admin and staff can create categories"}), 403
+        current_user_role = get_jwt_identity()['role']
+        
+        if current_user_role not in ["admin", "staff"]:
+            return jsonify({"error": "Unauthorized access"})
         
         data = request.get_json()
         name = data.get('name')
@@ -328,7 +376,13 @@ class SubscriptionResource(Resource):
         subscriptions = Subscription.query.all()
         return jsonify([{'id': sub.id, 'user_id': sub.user_id, 'category_id': sub.category_id} for sub in subscriptions])
 
+    @jwt_required()
     def post(self):
+        current_user_role = get_jwt_identity()['role']
+        
+        if current_user_role != "student":
+            return jsonify({"error": "Unauthorized access"})
+
         data = request.get_json()
         user_id=data.get('user_id')
         category_id=data.get('category_id')
