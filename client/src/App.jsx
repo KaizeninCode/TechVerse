@@ -14,11 +14,11 @@ const App = () => {
    
    
       <Routes>
-        <Route path="/" element={<Home theme={theme} />} />
-        <Route path="/explore" element={<Explore theme={theme} />} />
-       <Route path="/posts" element={<Post theme={theme} />} />
-       <Route path="/profile" element={<Profile theme={theme} />} />
-       <Route path="/edit-profile" element={<EditProfile theme={theme} />} />
+        <Route path="/" element={<Home />} />
+        <Route path="/explore" element={<Explore />} />
+       <Route path="/posts" element={<Post />} />
+       <Route path="/profile" element={<Profile />} />
+       <Route path="/edit-profile" element={<EditProfile />} />
        <Route path="/user-posts" element={<UserPosts />} />
        <Route path="/subscriptions" element={<Subscriptions />} />
        
