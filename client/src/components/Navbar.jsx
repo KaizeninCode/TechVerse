@@ -43,6 +43,7 @@ const linkStyles = {
         color: '#f0f0f0'
     }
 }
+
 const Navbar = ({theme}) => {
   const colorMode=useColorMode()
   return (
@@ -53,12 +54,25 @@ const Navbar = ({theme}) => {
             TechVerse
         </Heading>
       </Box>
+
       <VStack divider={<StackDivider borderColor={'#33658a'}/>} className='mt-10'>
         {navlinks.map(link => (
             <Box key={link.url}  className='flex items-center justify-between w-[150px]'>
                 <NavLink to={link.link} textDecoration='none' className='text-[#33658a] text-lg font-montserrat my-3 flex items-center justify-start'>
                     {link.icon}&nbsp;{link.name}
                 </NavLink>
+            </Box>
+        ))}
+      </VStack>
+      <Post/>
+      <UserAuth/>
+
+      <VStack divider={<StackDivider borderColor={'gray.300'}/>} className='mt-10'>
+        {navlinks.map(link => (
+            <Box as='a' href={link.url} key={link.url}  className='flex flex-grow items-center justify-center'>
+                <Link as='a' href={link.url} key={link.url} color='#33658a' textDecoration='none' className='text-[#33658a] text-lg font-montserrat my-3 flex items-center justify-start'>
+                    {link.icon}&nbsp;{link.name}
+                </Link>
             </Box>
         ))}
       </VStack>
