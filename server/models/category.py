@@ -10,3 +10,6 @@ class Category(db.Model):
     contents = relationship("Content", back_populates="category")
     subscribers = relationship("User", secondary="subscriptions", back_populates="subscriptions")
     
+    def __repr__(self):
+        return f"<Category {self.id}, {self.name}>"
+    
