@@ -5,6 +5,8 @@ import { RiCompassLine } from "react-icons/ri";
 import { CiSquarePlus } from "react-icons/ci";
 import { IoMdPerson } from "react-icons/io";
 import { NavLink } from 'react-router-dom';
+import { LiaDoorOpenSolid } from 'react-icons/lia';
+
 import Post from '../pages/Post';
 import UserAuth from './UserAuth';
 export const navlinks = [
@@ -28,6 +30,11 @@ export const navlinks = [
         link: '/profile',
         icon: <IoMdPerson />
     },
+    {
+        name: 'Log Out',
+        link: '/logout',
+        icon: <LiaDoorOpenSolid />
+    },
 ]
 
 const linkStyles = {
@@ -50,7 +57,7 @@ const Navbar = ({theme}) => {
       </Box>
       <VStack divider={<StackDivider borderColor={'#33658a'}/>} className='mt-10'>
         {navlinks.map(link => (
-            <Box key={link.url}  className='flex items-center justify-center'>
+            <Box key={link.url}  className='flex items-center justify-between border-black w-[150px]'>
                 <NavLink to={link.link} textDecoration='none' className='text-[#33658a] text-lg font-montserrat my-3 flex items-center justify-start'>
                     {link.icon}&nbsp;{link.name}
                 </NavLink>

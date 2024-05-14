@@ -1,8 +1,5 @@
 import { Box, Button, Card, Flex, HStack, Heading, Image, SimpleGrid, StackDivider, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
-import { LiaDoorOpenSolid } from "react-icons/lia";
-import { NavLink } from 'react-router-dom'
-import { navlinks } from './Navbar'
 
 const RightNav = ({theme}) => {
 
@@ -34,12 +31,12 @@ const RightNav = ({theme}) => {
         },
     ]
     return (
-        <div style={{background:theme.bg, color:theme.color2}} className='w-[25%] max-lg:hidden flex flex-col justify-center border-l border-gray-700 bg-gray-200 h-screen'>
+        <div style={{background:theme.bg, color:theme.color2}} className='w-[25%] max-lg:hidden flex flex-col items-center justify-between border-l border-gray-700 bg-gray-200 h-screen'>
             <Box>
                 <Heading fontSize={20} fontFamily={'Raleway'} color={'#33658a'} className='text-center py-10 underline underline-offset-8'>Suggested</Heading>
                 {sampleProfiles.map(profile => (
-                    <Box className='border-[#33658a] rounded-lg mb-8 px-4 flex items-center ' id='suggested'>
-                        <HStack key={profile.username} display={'flex'} className='w-full'>
+                    <Box className='border-[#33658a] rounded-lg mb-8 px-4 flex items-center ' id='suggested' key={profile.username}>
+                        <HStack  display={'flex'} className='w-full'>
                             <Image src={profile.image} w={10} h={10}/>
                             <Box>
                                 <Heading as={'h4'} fontSize={16} color={'#33658a'} fontFamily={'Montserrat'}>{profile.name}</Heading>
@@ -48,9 +45,9 @@ const RightNav = ({theme}) => {
                         </HStack>
                     </Box>
                 ))}
-                <Button color={'#33658a'} fontFamily={'Montserrat'} leftIcon={<LiaDoorOpenSolid />} className='mt-14 ml-8'>
+                {/* <Button color={'#33658a'} fontFamily={'Montserrat'} leftIcon={<LiaDoorOpenSolid />} className='mt-14 ml-8'>
                     Log Out
-                </Button>
+                </Button> */}
             </Box>
         </div>
       )
