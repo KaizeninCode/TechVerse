@@ -8,11 +8,7 @@ import UserAuth from './components/UserAuth'
 import Explore from "./pages/Explore"
 import Home from "./pages/Home"
 import {Routes, Route} from 'react-router-dom'
-import Navbar from './components/Navbar'
-import RightNav from './components/RightNav'
 import { UpdateTheme, UseTheme } from './components/ThemeContext'
-// import colorPallete, {ThemeStyles} from './components/colorPallete'
-import TopNav from './components/TopNav'
 import colorPallete from './components/colorPallete'
 
 const App = () => {
@@ -20,11 +16,8 @@ const theme=colorPallete()
 const toggleTheme=UpdateTheme()
 
   return (
-    <main style={{background:theme.bg, color:theme.color}}  className="bg-gray-100  w-screen" id="main">
-    <TopNav toggleTheme={toggleTheme} theme={theme}/>
-   
-    <div className='container p-4 flex justify-center w-screen'>
-    <Navbar  theme={theme}/>
+    <main className="bg-gray-100  w-screen" id="main">
+
    
       <Routes>
         <Route path="/" element={<Home theme={theme} />} />
@@ -37,8 +30,6 @@ const toggleTheme=UpdateTheme()
        
       </Routes>
 
-      <RightNav theme={theme}/>
-    </div>
       
       
     </main>
