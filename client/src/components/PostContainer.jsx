@@ -4,6 +4,7 @@ import { CiHeart } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
 import { IoMdHeart } from "react-icons/io";
+import UserAuth from './UserAuth';
 
 const PostContainer = () => {
     // const[likeLeftIcon, setLikeLeftIcon] = useState(<CiHeart/>)
@@ -73,7 +74,6 @@ const PostContainer = () => {
                 </CardFooter>
             </Card>
           ))}
-
     </SimpleGrid>
   )
 }

@@ -16,7 +16,7 @@
 } */
 
 #posts::-webkit-scrollbar,
-#main::-webkit-scrollbar {
+#main::-webkit-scrollbar{
     display: none;
 }
 
