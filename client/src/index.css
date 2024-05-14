@@ -9,8 +9,17 @@
     display: none;
 }
 
-@layer utilities {
+/* @layer utilities {
     .section {
-        @apply overflow-y-scroll w-full h-screen no-scrollbar
+        @apply overflow-y-scroll full h-screen no-scrollbar
     }
+} */
+
+#posts::-webkit-scrollbar,
+#main::-webkit-scrollbar{
+    display: none;
+}
+
+#posts:nth-child(1) {
+    margin-top: 1rem;
 }

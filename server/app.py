@@ -340,6 +340,7 @@ class SubscriptionResource(Resource):
 
         db.session.add(new_subscription)
         db.session.commit()
+        
         return jsonify({'message': 'Subscription created successfully'})
 
     def put(self, id):
