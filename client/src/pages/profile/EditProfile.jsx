@@ -11,7 +11,7 @@ const colorMode=useColorMode()
       <button onClick={onOpen} className="px-6 py-3 rounded-full border">Edit Profile</button>
       <Drawer  isOpen={isOpen} onClose={onClose} size={'lg'}>
         <DrawerOverlay />
-        <DrawerContent >
+        <DrawerContent>
 
           <DrawerHeader>
             <div className='justify-between flex'>
