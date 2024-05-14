@@ -4,36 +4,50 @@ import { TfiHome } from "react-icons/tfi";
 import { RiCompassLine } from "react-icons/ri";
 import { CiSquarePlus } from "react-icons/ci";
 import { IoMdPerson } from "react-icons/io";
+import { SiGnuprivacyguard } from "react-icons/si";
+import { LiaSignInAltSolid } from "react-icons/lia";
+
+
 import { NavLink } from 'react-router-dom';
 import { LiaDoorOpenSolid } from 'react-icons/lia';
 
 export const navlinks = [
-    {
-        name: 'Home',
-        link: '/',
-        icon: <TfiHome />
-    },
-    {
-        name: 'Explore',
-        link: '/explore',
-        icon: <RiCompassLine />
-    },
-    {
-        name: 'Post',
-        link: '/post',
-        icon: <CiSquarePlus />
-    },
-    {
-        name: 'Profile',
-        link: '/profile',
-        icon: <IoMdPerson />
-    },
-    {
-        name: 'Log Out',
-        link: '/logout',
-        icon: <LiaDoorOpenSolid />
-    },
-]
+  {
+    name: "Home",
+    link: "/",
+    icon: <TfiHome />,
+  },
+  {
+    name: "Explore",
+    link: "/explore",
+    icon: <RiCompassLine />,
+  },
+  {
+    name: "Post",
+    link: "/post",
+    icon: <CiSquarePlus />,
+  },
+  {
+    name: "Profile",
+    link: "/profile",
+    icon: <IoMdPerson />,
+  },
+  {
+    name: "Sign In",
+    link: "/SignIn",
+    icon: <LiaSignInAltSolid />,
+  },
+  {
+    name: "Sign Up",
+    link: "/SignUp",
+    icon: <SiGnuprivacyguard />,
+  },
+  {
+    name: "Log Out",
+    link: "/logout",
+    icon: <LiaDoorOpenSolid />,
+  },
+];
 
 const linkStyles = {
     color: '#33658a',
