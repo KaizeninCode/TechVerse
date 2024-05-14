@@ -129,8 +129,8 @@ class UserLoginResource(Resource):
         user = User.query.filter_by(email = email).first()
 
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
-            access_token = create_access_token(identity={"email": user.email, "role": user.role})
-            refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
+            access_token = create_access_token(identity=user.email)
+            refresh_token = create_refresh_token(identity=user.email)
 
             return jsonify(
                 {
@@ -256,9 +256,19 @@ class ContentResource(Resource):
         if current_user_role not in ["admin", "staff"]:
             return jsonify({"error": "Unauthorized access"})
 
+    # @jwt_required() 
+    def delete(self, id):
+        # current_user = get_jwt_identity()
+        # if current_user["role"] not in ["staff", "student"]:
+        #     return jsonify({"error": "Only staff and students can delete content"}), 403
+
         content = Content.query.get(id)
         if not content:
             return jsonify({"error": "Content not found"}), 404
+        
+        # Delete associated comments first
+        for comment in content.comments:
+            db.session.delete(comment)
 
         # Change the published_status to True
         content.published_status = True
