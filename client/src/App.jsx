@@ -10,7 +10,7 @@ import { UpdateTheme, UseTheme } from './components/ThemeContext'
 import colorPallete from './components/colorPallete'
 
 const App = () => {
-
+const theme=colorPallete()
   return (
     <main className="bg-gray-100  w-screen" id="main">
 
