@@ -10,8 +10,8 @@ const Home = ({theme}) => {
     <section className='section'>
         <div className="w-full h-screen flex max-lg:flex-col justify-between overflow-y-scroll">
           <Navbar/>
-          <Header theme={theme}/>
-          <PostContainer theme={theme}/>
+          <Header/>
+          <PostContainer/>
           <RightNav/> 
           
         </div>
