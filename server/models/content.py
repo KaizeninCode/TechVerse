@@ -15,7 +15,7 @@ class Content(db.Model):
     updated_at = db.Column(db.DateTime, nullable=False)
     
     user = relationship("User", back_populates="contents")
-    comments = relationship("Comment", back_populates="content")
+    comments = relationship("Comment", back_populates="content", cascade="all, delete-orphan")
     category = relationship("Category", back_populates="contents")
     
     def __repr__(self):
