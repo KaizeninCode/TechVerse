@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, useDisclosure } from '@chakra-ui/react';
+import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, background, useDisclosure } from '@chakra-ui/react';
 import {Formik, Form} from 'formik';
 import * as Yup from 'yup';
 import { useColorMode } from '@chakra-ui/react';
@@ -7,11 +7,11 @@ function EditProfile({theme}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 const colorMode=useColorMode()
   return (
-    <div className='justify-center align-middle flex shadow-md'>
-      <button onClick={onOpen} className="px-6 py-3 rounded-md border-2">Edit Profile</button>
-      <Drawer bg={theme} isOpen={isOpen} onClose={onClose} size={'lg'}>
+    <div className='justify-center align-middle flex rounded-full shadow-md'>
+      <button onClick={onOpen} className="px-6 py-3 rounded-full border">Edit Profile</button>
+      <Drawer  isOpen={isOpen} onClose={onClose} size={'lg'}>
         <DrawerOverlay />
-        <DrawerContent>
+        <DrawerContent >
 
           <DrawerHeader>
             <div className='justify-between flex'>

@@ -39,7 +39,7 @@ const toggleTheme=UpdateTheme()
 
       <RightNav theme={theme}/>
     </div>
-      
+      <UserAuth/> 
       
     </main>
   );

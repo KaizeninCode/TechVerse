@@ -58,7 +58,7 @@ const Navbar = ({theme}) => {
         ))}
       </VStack>
       <Post/>
-      <UserAuth/>
+     
     </Box>
   )
 }
