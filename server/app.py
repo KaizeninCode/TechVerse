@@ -126,16 +126,16 @@ class UserLoginResource(Resource):
             access_token = create_access_token(identity={"email": user.email, "role": user.role})
             refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
 
-            return jsonify(
-                {
-                    "message": "Logged In",
-                    "tokens": {
-                        "access" : access_token,
-                        "refresh": refresh_token
-                    }
-                }
-            )
-
+            response = make_response(jsonify({
+            'access_token': access_token,
+            'id': user.id,
+            'user': user.to_dict(),
+            'username': user.username
+            # Include user data in the response
+        }), 200)
+        if response:
+         print(access_token)
+         return response
         return make_response(jsonify({"error": "Invalid username or password"}), 400)
     
 api.add_resource(UserLoginResource, '/login')

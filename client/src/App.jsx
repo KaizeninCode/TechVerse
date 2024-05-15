@@ -23,7 +23,7 @@ const App = () => {
     <TopNav toggleTheme={toggleTheme} theme={theme}/> 
     
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<Home theme={theme} />} />
         <Route path="/explore" element={<Explore theme={theme} />} />
         <Route path="/posts" element={<Post />} />
         <Route path="/profile" element={<Profile />} />

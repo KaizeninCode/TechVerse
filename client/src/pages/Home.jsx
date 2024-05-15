@@ -4,14 +4,14 @@ import PostContainer from "../components/PostContainer"
 import RightNav from "../components/RightNav"
 
 
-const Home = () => {
+const Home = ({theme}) => {
   
   return (
     <section className='section'>
       <div className="w-full h-screen flex max-lg:flex-col justify-between overflow-y-scroll">
          <Navbar/> 
         <Header/>
-        <PostContainer/>
+        <PostContainer theme={theme}/>
       <RightNav/>  
         
       </div>
