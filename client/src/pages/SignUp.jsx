@@ -3,6 +3,7 @@ import {
   Box,
   FormControl,
   FormLabel,
+  useToast,
   InputRightElement,
   FormErrorMessage,
   Input,
@@ -26,9 +27,12 @@ import { Link } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { signupValidationSchema } from "../Schemas";
+// import { useHistory } from "react-router-dom";
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
+  const toast = useToast();
+  //  const history = useHistory();
 
   function handleTogglePassword() {
     setShowPassword(!showPassword);
@@ -51,18 +55,41 @@ function SignUp() {
         method: "POST",
         body: JSON.stringify(values),
       });
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
       if (response.ok) {
+        const { username } = responseData;
+        showToast(username);
         console.log("User created successfully", values);
+        actions.resetForm();
+        // history.push('/SignIn')
       } else {
         console.error("Error creating user:", response.statusText);
       }
     } catch (error) {
       console.error("Error creating user:", error);
+    } finally {
+      actions.setSubmitting(false);
     }
+  };
+  // Toast notification function
+  const showToast = (username) => {
+    toast({
+      title: `Account created, ${username}!`,
+      description: "We've created your account for you.",
+      status: "info",
+      duration: 5000,
+      isClosable: true,
+      position: "top",
+    });
   };
 
   return (
-    <Flex flexDir={{ base: "column", md: "row" }} align={"stretch"}>
+    <Flex
+      flexDir={{ base: "column", md: "row" }}
+      align={"stretch"}
+      className="overflow - x - hidden"
+    >
       <Flex
         flexDir={"column"}
         justifyContent={"center"}
@@ -83,7 +110,10 @@ function SignUp() {
             TechVerse
           </Text>
         </Box>
-        <Box className="flex flex-col text-white flex-wrap-reverse font-medium" m={"auto"}>
+        <Box
+          className="flex flex-col text-white flex-wrap-reverse font-medium"
+          m={"auto"}
+        >
           <Text>
             Explore our guides, references and examples to tech related content
             on our platform
@@ -92,6 +122,7 @@ function SignUp() {
           <Text> Easily accessible code samples</Text>
         </Box>
         <Image
+          display={{ base: "none", md: "block" }}
           src="/authImage.png"
           w={"350px"}
           h={"350px"}
@@ -116,7 +147,9 @@ function SignUp() {
                   <Field name="username">
                     {({ field, form }) => (
                       <FormControl
-                        isInvalid={form.errors.username && form.touched.username}
+                        isInvalid={
+                          form.errors.username && form.touched.username
+                        }
                       >
                         <InputGroup>
                           <InputLeftElement pointerEvents="none">
@@ -168,7 +201,9 @@ function SignUp() {
                   <Field name="password">
                     {({ field, form }) => (
                       <FormControl
-                        isInvalid={form.errors.password && form.touched.password}
+                        isInvalid={
+                          form.errors.password && form.touched.password
+                        }
                       >
                         <InputGroup>
                           <InputLeftElement pointerEvents="none">
@@ -240,11 +275,14 @@ function SignUp() {
                   </Field>
 
                   {/* Role Field */}
-                  <Field as="select" id="role" name="role" className='p-3'>
+                  <Field
+                    as="select"
+                    id="role"
+                    name="role"
+                    className="h-[30px] rounded-md"
+                  >
                     <option value="admin">Admin</option>
-                    <option value="staff">
-                    Staff
-                    </option>
+                    <option value="staff">Staff</option>
                     <option value="student">Student</option>
                   </Field>
                 </>
@@ -285,4 +323,3 @@ function SignUp() {
 }
 
 export default SignUp;
-

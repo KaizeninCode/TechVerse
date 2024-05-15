@@ -69,7 +69,7 @@ const navigate=useNavigate()
   };
   
   return (
-    <Flex lexDir={{ base: "column", md: "row" }} align={"stretch"}>
+    <Flex flexDir={{ base: "column", md: "row" }} align={"stretch"}>
       <Flex
         flexDir={"column"}
         justifyContent={"center"}
@@ -103,6 +103,7 @@ const navigate=useNavigate()
           <Text> Easily accessible code samples</Text>
         </Box>
         <Image
+          display={{ base: "none", md: "block" }}
           src="/authImage.png"
           w={"350px"}
           h={"350px"}

@@ -5,13 +5,14 @@ class User(db.Model, SerializerMixin):
     __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(255), nullable=False, unique=True)
-    email = db.Column(db.String(255), unique=True, nullable=False)
-    password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(255))
+    username = db.Column(db.String(255), unique=True)
+    email = db.Column(db.String(255), unique=True)
+    password_hash = db.Column(db.String(255))
+    role = db.Column(db.String(255), nullable=False)
     active_status = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime,  server_default=db.func.now())
-    updated_at = db.Column(db.DateTime,  server_default=db.func.now(), onupdate=db.func.now())
+    created_at = db.Column(
+        db.DateTime, server_default=db.func.now())
+    updated_at = db.Column(db.DateTime, server_default=db.func.now(),onupdate=db.func.now())
     
     contents = relationship("Content", back_populates="user")
     comments = relationship("Comment", back_populates="user")
