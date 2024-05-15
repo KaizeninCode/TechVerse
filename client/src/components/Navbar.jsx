@@ -23,11 +23,11 @@ export const navlinks = [
     link: "/explore",
     icon: <RiCompassLine />,
   },
-  {
-    name: "Post",
-    link: "/post",
-    icon: <CiSquarePlus />,
-  },
+  // {
+  //   name: "Post",
+  //   link: "/post",
+  //   icon: <CiSquarePlus />,
+  // },
   {
     name: "Profile",
     link: "/profile",

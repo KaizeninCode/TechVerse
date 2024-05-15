@@ -5,7 +5,7 @@ import ProfileNav from './ProfileNav'
 
 function UserPosts() {
   return (
-    <div >
+    <div className='lg:w-[60%] overflow-y-scroll gap-4 mx-5 my-3' id="posts" >
     <ProfileNav/>
     {/* <h1 className='text-center'>Post cards</h1> */}
     <PostContainer/>
