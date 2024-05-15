@@ -27,12 +27,13 @@ import { Link } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { signupValidationSchema } from "../Schemas";
-// import { useHistory } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+
 
 function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
-  //  const history = useHistory();
+  
 
   function handleTogglePassword() {
     setShowPassword(!showPassword);
@@ -58,11 +59,11 @@ function SignUp() {
       const responseData = await response.json();
       console.log("Server response:", responseData);
       if (response.ok) {
-        const { username } = responseData;
+        const  username  = values.username;
         showToast(username);
         console.log("User created successfully", values);
         actions.resetForm();
-        // history.push('/SignIn')
+        navigate('/SignIn')
       } else {
         console.error("Error creating user:", response.statusText);
       }
