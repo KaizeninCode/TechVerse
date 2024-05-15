@@ -27,12 +27,12 @@ import { Link } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { signupValidationSchema } from "../Schemas";
+// import { useHistory } from "react-router-dom";
 
 function SignUp() {
-  // State to toogle the show password
-  const [showPassword, setShowPassord] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
-
+  //  const history = useHistory();
 
   function handleTogglePassword() {
     setShowPassword(!showPassword);
@@ -41,15 +41,41 @@ function SignUp() {
   const signUpInitialValues = {
     username: "",
     email: "",
-    password_hash: "",
+    password: "",
     confirmPassword: "",
-    role: "",
+    role: "admin", // Default role
   };
 
+  const handleSubmit = async (values, actions) => {
+    try {
+      const response = await fetch("http://127.0.0.1:5555/users", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(values),
+      });
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
+      if (response.ok) {
+        const { username } = responseData;
+        showToast(username);
+        console.log("User created successfully", values);
+        actions.resetForm();
+        // history.push('/SignIn')
+      } else {
+        console.error("Error creating user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+    } finally {
+      actions.setSubmitting(false);
+    }
+  };
   // Toast notification function
-  const showToast = (name) => {
+  const showToast = (username) => {
     toast({
-      title: `Account created, ${name}!`,
+      title: `Account created, ${username}!`,
       description: "We've created your account for you.",
       status: "info",
       duration: 5000,
@@ -58,39 +84,12 @@ function SignUp() {
     });
   };
 
-  const handleSubmit = async (values, actions) => {
-    try {
-      const response = await fetch("http://127.0.0.1:5555/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-
-        body: JSON.stringify(values),
-      });
-
-      //Parse the JSON response
-
-      const responseData = await response.json();
-      if (response.ok) {
-        showToast(responseData.name);
-        console.log(values);
-      actions.resetForm();
-
-      }else{
-         console.error("Failed to create account", responseData.error);
-      }
-    } catch (err) {
-      console.error("Failed to create account", err);
-      console.log(values);
-    } finally {
-      actions.setSubmitting(false);
-    }
-  };
-
   return (
-    <Flex flexDir={{ base: "column", md: "row" }} align={"stretch"}>
+    <Flex
+      flexDir={{ base: "column", md: "row" }}
+      align={"stretch"}
+      className="overflow - x - hidden"
+    >
       <Flex
         flexDir={"column"}
         justifyContent={"center"}
@@ -100,7 +99,6 @@ function SignUp() {
       >
         <Box className="flex gap-3 py-4 px-4">
           <Image
-            display={{ base: "none", md: "block" }}
             display={{ base: "none", md: "block" }}
             src="/logo-transparent.png"
             w={"30px"}
@@ -124,6 +122,7 @@ function SignUp() {
           <Text> Easily accessible code samples</Text>
         </Box>
         <Image
+          display={{ base: "none", md: "block" }}
           src="/authImage.png"
           w={"350px"}
           h={"350px"}
@@ -148,7 +147,9 @@ function SignUp() {
                   <Field name="username">
                     {({ field, form }) => (
                       <FormControl
-                        isInvalid={form.errors.username && form.touched.username}
+                        isInvalid={
+                          form.errors.username && form.touched.username
+                        }
                       >
                         <InputGroup>
                           <InputLeftElement pointerEvents="none">
@@ -195,11 +196,13 @@ function SignUp() {
                       </FormControl>
                     )}
                   </Field>
-                  <Field name="password_hash">
+
+                  {/* Password Field */}
+                  <Field name="password">
                     {({ field, form }) => (
                       <FormControl
                         isInvalid={
-                          form.errors.password_hash && form.touched.password_hash
+                          form.errors.password && form.touched.password
                         }
                       >
                         <InputGroup>
@@ -224,9 +227,9 @@ function SignUp() {
                           </InputRightElement>
                         </InputGroup>
                         <FormErrorMessage color="crimson">
-                          {form.errors.password_hash&&
-                            form.touched.password_hash &&
-                            form.errors.password_hash}
+                          {form.errors.password &&
+                            form.touched.password &&
+                            form.errors.password}
                         </FormErrorMessage>
                       </FormControl>
                     )}
@@ -270,32 +273,21 @@ function SignUp() {
                       </FormControl>
                     )}
                   </Field>
-                  <Field name="role">
-                    {({ field, form }) => (
-                      <FormControl
-                        isInvalid={form.errors.role && form.touched.role}
-                      >
-                        <FormLabel>Choose a user</FormLabel>
-                        <Select
-                          className="rounded-xl"
-                          placeholder="Select user category"
-                          {...field}
-                          id="role"
-                        >
-                          <option value="admin">Admin</option>
-                          <option value="staff">Staff</option>
-                          <option value="student">Student</option>
-                        </Select>
-                        <FormErrorMessage color="crimson">
-                          {form.errors.role &&
-                            form.touched.role &&
-                            form.errors.role}
-                        </FormErrorMessage>
-                      </FormControl>
-                    )}
+
+                  {/* Role Field */}
+                  <Field
+                    as="select"
+                    id="role"
+                    name="role"
+                    className="h-[30px] rounded-md"
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="staff">Staff</option>
+                    <option value="student">Student</option>
                   </Field>
                 </>
 
+                {/* Sign In Link */}
                 <Box fontSize="sm">
                   <Text>
                     Already have an account?{" "}
@@ -331,4 +323,3 @@ function SignUp() {
 }
 
 export default SignUp;
-

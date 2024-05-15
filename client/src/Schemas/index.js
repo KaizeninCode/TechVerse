@@ -11,7 +11,7 @@ export const signupValidationSchema = Yup.object().shape({
     .email("Please enter a valid email address")
     .required("Email is required"),
 
-  password_hash: Yup.string()
+  password: Yup.string()
     .min(8,"Password must be atleast 8 characters")
     .matches(
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$/,
@@ -19,7 +19,7 @@ export const signupValidationSchema = Yup.object().shape({
     )
     .required("Please enter your password"),
   confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password_hash"), null], "password must match")
+    .oneOf([Yup.ref("password"), null], "password must match")
     .required("please confirm your password"),
 });
 

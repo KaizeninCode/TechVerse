@@ -1,4 +1,4 @@
-import  { useState } from "react";
+import { useState } from "react";
 import {
   Box,
   FormControl,
@@ -37,13 +37,33 @@ function SignIn() {
     email: "",
     password: "",
   };
-  const handleSubmit = async (values, actions) => {
-    actions.resetForm({
-      values: signInInitialValues,
-    });
-  };
+ const handleSubmit = async (values, actions) => {
+   try {
+     const response = await fetch("http://127.0.0.1:5555/login", {
+       method: "POST",
+       headers: {
+         "Content-Type": "application/json",
+       },
+       body: JSON.stringify(values),
+     });
+     const data = await response.json(); // Convert response to JSON
+
+     if (response.ok) {
+        localStorage.setItem("access_token", data.access_token);
+       console.log("User logged in successfully", data); // Log the response data
+       actions.resetForm();
+     } else {
+       console.error("Error logging in a user");
+     }
+   } catch (err) {
+     console.error("User login failed ", err);
+   } finally {
+     actions.setSubmitting(false);
+   }
+ };
+
   return (
-    <Flex lexDir={{ base: "column", md: "row" }} align={"stretch"}>
+    <Flex flexDir={{ base: "column", md: "row" }} align={"stretch"}>
       <Flex
         flexDir={"column"}
         justifyContent={"center"}
@@ -77,6 +97,7 @@ function SignIn() {
           <Text> Easily accessible code samples</Text>
         </Box>
         <Image
+          display={{ base: "none", md: "block" }}
           src="/authImage.png"
           w={"350px"}
           h={"350px"}
