@@ -47,11 +47,7 @@ class UserResource(Resource):
 
     @jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()["role"]
-
-        if current_user_role not in ["admin", "staff","student"]:
-            return jsonify({"error": "Unauthorized access"}), 403
-
+        
         data = request.get_json()
         username=data.get('username')
         email=data.get('email')
@@ -60,6 +56,11 @@ class UserResource(Resource):
         active_status=data.get('active_status')
         created_at=datetime.strptime(data.get('created_at'), '%d/%m/%Y')
         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+        
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role not in ["admin", "staff","student"]:
+            return jsonify({"error": "Unauthorized access"}), 403
 
         user_exists = User.query.filter_by(email = email).first()
         if user_exists:
@@ -129,8 +130,8 @@ class UserLoginResource(Resource):
         user = User.query.filter_by(email = email).first()
 
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
-            access_token = create_access_token(identity=user.email)
-            refresh_token = create_refresh_token(identity=user.email)
+            access_token = create_access_token(identity={"email": user.email, "role": user.role})
+            refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
 
             return jsonify(
                 {
@@ -155,7 +156,7 @@ class CommentResource(Resource):
 
     @jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()['role']
+        current_user_role = get_jwt_identity()["role"]
         
         if current_user_role != "student":
             return jsonify({"error": "Unauthorized access"})
@@ -251,7 +252,7 @@ class ContentResource(Resource):
     
     @jwt_required()
     def post_approve(self, id):
-        current_user_role = get_jwt_identity()["role"]
+        current_user_role = get_jwt_identity().role
 
         if current_user_role not in ["admin", "staff"]:
             return jsonify({"error": "Unauthorized access"})
@@ -278,7 +279,7 @@ class ContentResource(Resource):
     
     @jwt_required() 
     def delete(self, id):
-        current_user_role = get_jwt_identity()['role']
+        current_user_role = get_jwt_identity()["role"]
         if current_user_role != "admin":
             return jsonify({"error": "Unauthorized access"})
 
@@ -326,7 +327,7 @@ class CategoryResource(Resource):
     
     @jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()['role']
+        current_user_role = get_jwt_identity()["role"]
         
         if current_user_role not in ["admin", "staff"]:
             return jsonify({"error": "Unauthorized access"})
@@ -388,7 +389,7 @@ class SubscriptionResource(Resource):
 
     @jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()['role']
+        current_user_role = get_jwt_identity()["role"]
         
         if current_user_role != "student":
             return jsonify({"error": "Unauthorized access"})
