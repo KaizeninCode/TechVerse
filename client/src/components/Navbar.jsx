@@ -69,6 +69,7 @@ const Navbar = () => {
             TechVerse
         </Heading>
       </Box>
+
       <VStack divider={<StackDivider borderColor={'#33658a'}/>} className='mt-10'>
         {navlinks.map(link => (
             <Box key={link.url}  className='flex items-center justify-between w-[150px]'>
