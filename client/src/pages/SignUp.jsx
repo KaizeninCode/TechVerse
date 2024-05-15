@@ -240,7 +240,7 @@ function SignUp() {
                   </Field>
 
                   {/* Role Field */}
-                  <Field as="select" id="role" name="role">
+                  <Field as="select" id="role" name="role" className='p-3'>
                     <option value="admin">Admin</option>
                     <option value="staff">
                     Staff

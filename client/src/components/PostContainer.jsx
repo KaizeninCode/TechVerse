@@ -5,11 +5,11 @@ import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
 import { IoMdHeart } from "react-icons/io";
 
-const PostContainer = () => {
+const PostContainer = ({theme}) => {
     // const[likeLeftIcon, setLikeLeftIcon] = useState(<CiHeart/>)
 
     // const handleLikeClick = () => setLikeLeftIcon(prevIcon => prevIcon === <CiHeart/> ? <IoMdHeart/> : <CiHeart/>)
-
+const colorMode=useColorMode()
     const dummyContent = [
         {
             name: 'skippyrednblue',

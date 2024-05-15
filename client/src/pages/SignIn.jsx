@@ -1,4 +1,5 @@
 import  { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   FormControl,
@@ -28,7 +29,7 @@ import { signinValidationSchema } from "../Schemas";
 function SignIn() {
   // State to toogle the show password
   const [showPassword, setShowPassord] = useState(false);
-
+const navigate=useNavigate()
   function handleTogglePassword() {
     setShowPassord(!showPassword);
   }
@@ -38,10 +39,35 @@ function SignIn() {
     password: "",
   };
   const handleSubmit = async (values, actions) => {
-    actions.resetForm({
-      values: signInInitialValues,
-    });
+    try {
+      const response = await fetch('http://127.0.0.1:5555/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to login');
+      }
+      navigate('/')
+      const data = await response.json();
+      const access_token = data.access_token;
+      const username=data.username;
+  
+      if (access_token) {
+        localStorage.setItem('access_token', access_token, 'username',username);
+        localStorage.setItem( 'username',username);
+        
+      } else {
+        throw new Error('Access token not found');
+      }
+    } catch (error) {
+      console.error('Login failed:', error.message);
+    }
   };
+  
   return (
     <Flex lexDir={{ base: "column", md: "row" }} align={"stretch"}>
       <Flex
