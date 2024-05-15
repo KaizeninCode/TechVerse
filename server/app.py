@@ -45,7 +45,7 @@ class UserResource(Resource):
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
-    @jwt_required()
+    # @jwt_required()
     def post(self):
         
         data = request.get_json()
@@ -57,10 +57,10 @@ class UserResource(Resource):
         created_at=datetime.strptime(data.get('created_at'), '%d/%m/%Y')
         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
         
-        current_user_role = get_jwt_identity()["role"]
+        # current_user_role = get_jwt_identity()["role"]
 
-        if current_user_role not in ["admin", "staff","student"]:
-            return jsonify({"error": "Unauthorized access"}), 403
+        # if current_user_role not in ["admin", "staff","student"]:
+        #     return jsonify({"error": "Unauthorized access"}), 403
 
         user_exists = User.query.filter_by(email = email).first()
         if user_exists:
@@ -250,18 +250,20 @@ class ContentResource(Resource):
 
         return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
-    @jwt_required()
-    def post_approve(self, id):
-        current_user_role = get_jwt_identity().role
+    # @jwt_required()
+    # def post_approve(self, id):
+    #     current_user_role = get_jwt_identity()["role"]
 
-        if current_user_role not in ["admin", "staff"]:
-            return jsonify({"error": "Unauthorized access"})
+    #     if current_user_role not in ["admin", "staff"]:
+    #         return jsonify({"error": "Unauthorized access"})
+        
+    #     content = Content.query.get(id)
 
-    # @jwt_required() 
+    @jwt_required() 
     def delete(self, id):
-        # current_user = get_jwt_identity()
-        # if current_user["role"] not in ["staff", "student"]:
-        #     return jsonify({"error": "Only staff and students can delete content"}), 403
+        current_user = get_jwt_identity()["role"]
+        if current_user["role"] not in ["admin"]:
+            return jsonify({"error": "Only staff and students can delete content"}), 403
 
         content = Content.query.get(id)
         if not content:
