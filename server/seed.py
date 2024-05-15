@@ -9,16 +9,16 @@ from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt()
 
-def delete_all(db):
-    meta = db.metadata
-    for table in reversed(meta.sorted_tables):
-        print(f"Clearing table {table}")
-        db.session.execute(table.delete())
-    db.session.commit()
+# def delete_all(db):
+#     meta = db.metadata
+#     for table in reversed(meta.sorted_tables):
+#         print(f"Clearing table {table}")
+#         db.session.execute(table.delete())
+#     db.session.commit()
 
 def seed():
     with app.app_context():
-        delete_all(db)
+        db.drop_all()
         db.create_all()
 
         # Seed categories

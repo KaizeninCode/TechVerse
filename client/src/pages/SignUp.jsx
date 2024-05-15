@@ -28,23 +28,39 @@ import React from "react";
 import { signupValidationSchema } from "../Schemas";
 
 function SignUp() {
-  // State to toogle the show password
-  const [showPassword, setShowPassord] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   function handleTogglePassword() {
-    setShowPassord(!showPassword);
+    setShowPassword(!showPassword);
   }
+
   const signUpInitialValues = {
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
+    role: "admin", // Default role
   };
+
   const handleSubmit = async (values, actions) => {
-    actions.resetForm({
-      values: signUpInitialValues,
-    });
+    try {
+      const response = await fetch("http://127.0.0.1:5555/users", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(values),
+      });
+      if (response.ok) {
+        console.log("User created successfully", values);
+      } else {
+        console.error("Error creating user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+    }
   };
+
   return (
     <Flex flexDir={{ base: "column", md: "row" }} align={"stretch"}>
       <Flex
@@ -56,7 +72,7 @@ function SignUp() {
       >
         <Box className="flex gap-3 py-4 px-4">
           <Image
-          display={{base:'none',md:'block'}}
+            display={{ base: "none", md: "block" }}
             src="/logo-transparent.png"
             w={"30px"}
             h={"30px"}
@@ -67,14 +83,12 @@ function SignUp() {
             TechVerse
           </Text>
         </Box>
-        <Box className="flex flex-col text-white flex-wrap-reverse font-medium"m={'auto'}>
-          
+        <Box className="flex flex-col text-white flex-wrap-reverse font-medium" m={"auto"}>
           <Text>
             Explore our guides, references and examples to tech related content
             on our platform
           </Text>
           <Text>Guided product walkthroughs</Text>
-
           <Text> Easily accessible code samples</Text>
         </Box>
         <Image
@@ -102,9 +116,7 @@ function SignUp() {
                   <Field name="username">
                     {({ field, form }) => (
                       <FormControl
-                        isInvalid={
-                          form.errors.username && form.touched.username
-                        }
+                        isInvalid={form.errors.username && form.touched.username}
                       >
                         <InputGroup>
                           <InputLeftElement pointerEvents="none">
@@ -126,6 +138,7 @@ function SignUp() {
                     )}
                   </Field>
 
+                  {/* Email Field */}
                   <Field name="email">
                     {({ field, form }) => (
                       <FormControl
@@ -150,12 +163,12 @@ function SignUp() {
                       </FormControl>
                     )}
                   </Field>
+
+                  {/* Password Field */}
                   <Field name="password">
                     {({ field, form }) => (
                       <FormControl
-                        isInvalid={
-                          form.errors.password && form.touched.password
-                        }
+                        isInvalid={form.errors.password && form.touched.password}
                       >
                         <InputGroup>
                           <InputLeftElement pointerEvents="none">
@@ -187,6 +200,7 @@ function SignUp() {
                     )}
                   </Field>
 
+                  {/* Confirm Password Field */}
                   <Field name="confirmPassword">
                     {({ field, form }) => (
                       <FormControl
@@ -224,19 +238,18 @@ function SignUp() {
                       </FormControl>
                     )}
                   </Field>
-                  <FormControl>
-                    <FormLabel>Choose a user</FormLabel>
-                    <Select
-                      className="rounded-xl"
-                      placeholder="Select user category"
-                    >
-                      <option>Admin</option>
-                      <option>Staff</option>
-                      <option>Student</option>
-                    </Select>
-                  </FormControl>
+
+                  {/* Role Field */}
+                  <Field as="select" id="role" name="role">
+                    <option value="admin">Admin</option>
+                    <option value="staff">
+                    Staff
+                    </option>
+                    <option value="student">Student</option>
+                  </Field>
                 </>
 
+                {/* Sign In Link */}
                 <Box fontSize="sm">
                   <Text>
                     Already have an account?{" "}
@@ -247,6 +260,8 @@ function SignUp() {
                     </Link>
                   </Text>
                 </Box>
+
+                {/* Submit Button */}
                 <Button
                   alignSelf={"center"}
                   w={"150px"}
@@ -270,3 +285,4 @@ function SignUp() {
 }
 
 export default SignUp;
+
