@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import {
   Box,
   FormControl,
+  useToast,
   InputRightElement,
   FormErrorMessage,
   Input,
@@ -34,6 +35,8 @@ const navigate=useNavigate()
     setShowPassord(!showPassword);
   }
 
+    const toast = useToast();
+
   const signInInitialValues = {
     email: "",
     password: "",
@@ -57,6 +60,7 @@ const navigate=useNavigate()
       const username=data.username;
   
       if (access_token) {
+        showToastLogIn(username)
         localStorage.setItem('access_token', access_token, 'username',username);
         localStorage.setItem( 'username',username);
         
@@ -66,6 +70,18 @@ const navigate=useNavigate()
     } catch (error) {
       console.error('Login failed:', error.message);
     }
+  };
+
+  const showToastLogIn = (username) => {
+    // const name = username || "User";
+    toast({
+      title: `${username}, Welcome back!`,
+      description: "You've successfully logged in.",
+      status: "info",
+      duration: 5000,
+      isClosable: true,
+      position: "top",
+    });
   };
   
   return (
