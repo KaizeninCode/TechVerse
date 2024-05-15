@@ -3,6 +3,7 @@ import {
   Box,
   FormControl,
   FormLabel,
+  useToast,
   InputRightElement,
   FormErrorMessage,
   Input,
@@ -28,7 +29,10 @@ import React from "react";
 import { signupValidationSchema } from "../Schemas";
 
 function SignUp() {
-  const [showPassword, setShowPassword] = useState(false);
+  // State to toogle the show password
+  const [showPassword, setShowPassord] = useState(false);
+  const toast = useToast();
+
 
   function handleTogglePassword() {
     setShowPassword(!showPassword);
@@ -37,27 +41,51 @@ function SignUp() {
   const signUpInitialValues = {
     username: "",
     email: "",
-    password: "",
+    password_hash: "",
     confirmPassword: "",
-    role: "admin", // Default role
+    role: "",
+  };
+
+  // Toast notification function
+  const showToast = (name) => {
+    toast({
+      title: `Account created, ${name}!`,
+      description: "We've created your account for you.",
+      status: "info",
+      duration: 5000,
+      isClosable: true,
+      position: "top",
+    });
   };
 
   const handleSubmit = async (values, actions) => {
     try {
-      const response = await fetch("http://127.0.0.1:5555/users", {
+      const response = await fetch("http://127.0.0.1:5555/signup", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
-        method: "POST",
+
         body: JSON.stringify(values),
       });
+
+      //Parse the JSON response
+
+      const responseData = await response.json();
       if (response.ok) {
-        console.log("User created successfully", values);
-      } else {
-        console.error("Error creating user:", response.statusText);
+        showToast(responseData.name);
+        console.log(values);
+      actions.resetForm();
+
+      }else{
+         console.error("Failed to create account", responseData.error);
       }
-    } catch (error) {
-      console.error("Error creating user:", error);
+    } catch (err) {
+      console.error("Failed to create account", err);
+      console.log(values);
+    } finally {
+      actions.setSubmitting(false);
     }
   };
 
@@ -73,6 +101,7 @@ function SignUp() {
         <Box className="flex gap-3 py-4 px-4">
           <Image
             display={{ base: "none", md: "block" }}
+            display={{ base: "none", md: "block" }}
             src="/logo-transparent.png"
             w={"30px"}
             h={"30px"}
@@ -83,7 +112,10 @@ function SignUp() {
             TechVerse
           </Text>
         </Box>
-        <Box className="flex flex-col text-white flex-wrap-reverse font-medium" m={"auto"}>
+        <Box
+          className="flex flex-col text-white flex-wrap-reverse font-medium"
+          m={"auto"}
+        >
           <Text>
             Explore our guides, references and examples to tech related content
             on our platform
@@ -163,12 +195,12 @@ function SignUp() {
                       </FormControl>
                     )}
                   </Field>
-
-                  {/* Password Field */}
-                  <Field name="password">
+                  <Field name="password_hash">
                     {({ field, form }) => (
                       <FormControl
-                        isInvalid={form.errors.password && form.touched.password}
+                        isInvalid={
+                          form.errors.password_hash && form.touched.password_hash
+                        }
                       >
                         <InputGroup>
                           <InputLeftElement pointerEvents="none">
@@ -192,9 +224,9 @@ function SignUp() {
                           </InputRightElement>
                         </InputGroup>
                         <FormErrorMessage color="crimson">
-                          {form.errors.password &&
-                            form.touched.password &&
-                            form.errors.password}
+                          {form.errors.password_hash&&
+                            form.touched.password_hash &&
+                            form.errors.password_hash}
                         </FormErrorMessage>
                       </FormControl>
                     )}
@@ -238,18 +270,32 @@ function SignUp() {
                       </FormControl>
                     )}
                   </Field>
-
-                  {/* Role Field */}
-                  <Field as="select" id="role" name="role">
-                    <option value="admin">Admin</option>
-                    <option value="staff">
-                    Staff
-                    </option>
-                    <option value="student">Student</option>
+                  <Field name="role">
+                    {({ field, form }) => (
+                      <FormControl
+                        isInvalid={form.errors.role && form.touched.role}
+                      >
+                        <FormLabel>Choose a user</FormLabel>
+                        <Select
+                          className="rounded-xl"
+                          placeholder="Select user category"
+                          {...field}
+                          id="role"
+                        >
+                          <option value="admin">Admin</option>
+                          <option value="staff">Staff</option>
+                          <option value="student">Student</option>
+                        </Select>
+                        <FormErrorMessage color="crimson">
+                          {form.errors.role &&
+                            form.touched.role &&
+                            form.errors.role}
+                        </FormErrorMessage>
+                      </FormControl>
+                    )}
                   </Field>
                 </>
 
-                {/* Sign In Link */}
                 <Box fontSize="sm">
                   <Text>
                     Already have an account?{" "}
