@@ -2,7 +2,7 @@ import React from 'react'
 import { NavLink } from 'react-router-dom'
 import Post from '../Post'
 import EditProfile from './EditProfile'
-function TopNav() {
+function ProfileNav() {
   return (
     <div >
        <img src="https://wallpapers.com/images/featured/cool-profile-picture-87h46gcobjl5e4xu.jpg" className='rounded-full h-20 w-20 m-4'  alt='name' />
@@ -28,4 +28,4 @@ function TopNav() {
   )
 }
 
-export default TopNav
+export default ProfileNav

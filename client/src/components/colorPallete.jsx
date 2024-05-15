@@ -5,13 +5,16 @@ function colorPallete() {
     
     const ThemeStyles = darkTheme === true ? {
         bg: "#141414",
+        bg2:'#202020',
         color: "#e0e0e0",
         color2:'#33658a',
-        color3:"#666666",
-        color4:"#252525"
+        color3:"#212121",
+        color4:"#181818"
     } : {
         bg: "#e0e0e0",
         color: "#141414",
+        color3:'#e1e1e1',
+        color4:"#e1e1e1"
     };
     
        

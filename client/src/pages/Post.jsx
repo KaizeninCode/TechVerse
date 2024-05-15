@@ -69,8 +69,8 @@ const Post = () => {
 
   return (
     <>
-      <button className='rounded-full bg-cyan-600 border font-bold text-slate-300 hover:bg-cyan-700  m-4 px-6 py-3 flex' onClick={onOpen}>
-      <IoAdd className='text-xl'/>
+      <button className='rounded-full bg-cyan-600 border font-bold flex justify-center align-middle  text-slate-300 hover:bg-cyan-700  m-4 px-4 py-3' onClick={onOpen}>
+      <IoAdd fontSize={'1.5rem'}/>
       Create a Post</button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered size={'2xl'} motionPreset='slideInBottom'>
         <ModalOverlay />
