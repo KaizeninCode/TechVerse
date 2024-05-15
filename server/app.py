@@ -243,18 +243,20 @@ class ContentResource(Resource):
 
         return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
-    @jwt_required()
-    def post_approve(self, id):
-        current_user_role = get_jwt_identity().role
+    # @jwt_required()
+    # def post_approve(self, id):
+    #     current_user_role = get_jwt_identity()["role"]
 
-        if current_user_role not in ["admin", "staff"]:
-            return jsonify({"error": "Unauthorized access"})
+    #     if current_user_role not in ["admin", "staff"]:
+    #         return jsonify({"error": "Unauthorized access"})
+        
+    #     content = Content.query.get(id)
 
-    # @jwt_required() 
+    @jwt_required() 
     def delete(self, id):
-        # current_user = get_jwt_identity()
-        # if current_user["role"] not in ["staff", "student"]:
-        #     return jsonify({"error": "Only staff and students can delete content"}), 403
+        current_user = get_jwt_identity()["role"]
+        if current_user["role"] not in ["admin"]:
+            return jsonify({"error": "Only staff and students can delete content"}), 403
 
         content = Content.query.get(id)
         if not content:
