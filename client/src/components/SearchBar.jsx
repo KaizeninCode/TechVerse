@@ -2,7 +2,7 @@ import React from 'react'
 import { FaSearch } from "react-icons/fa";
 function SearchBar({theme}) {
   return (
-    <div style={{background:theme.bg}} className='w-1/2 justify-center flex align-middle' >
+    <div style={{background:theme.bg}} className='w-1/2 justify-center  flex align-middle' >
      <div className='relative w-1/2 mx-auto'>
         <input
           id='search'

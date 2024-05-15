@@ -1,16 +1,16 @@
 import React from 'react'
 import { UseTheme } from './ThemeContext'
-import { MdDarkMode } from "react-icons/md";
-import { CiLight } from "react-icons/ci";
-import { IconButton } from '@chakra-ui/react';
+
+
 import SearchBar from './SearchBar';
 import MenuBar from './MenuBar';
 import { MdNotificationsActive } from "react-icons/md";
-import { color } from 'framer-motion';
+import { useColorMode } from '@chakra-ui/react';
 function TopNav({toggleTheme, theme}) {
     const darkTheme=UseTheme()
+    const colorMode=useColorMode()
   return (
-    <div  className=' p-3 flex justify-around shadow-lg mb-1 border-gray-700'>
+    <div className=' p-3 flex justify-around shadow-lg mb-1 border-gray-700'>
     <SearchBar theme={theme}/>
       <nav className='inline-flex'>
      <MenuBar toggleTheme={toggleTheme} theme={theme}/>
