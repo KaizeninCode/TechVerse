@@ -1,8 +1,8 @@
 import { Box, Button, Card, Flex, HStack, Heading, Image, SimpleGrid, StackDivider, Text, VStack } from '@chakra-ui/react'
 import React from 'react'
-
-const RightNav = ({theme}) => {
-
+import colorPallete from './colorPallete'
+const RightNav = () => {
+const theme=colorPallete()
     const sampleProfiles = [
         {
             username: 'allfourelements',
@@ -31,7 +31,7 @@ const RightNav = ({theme}) => {
         },
     ]
     return (
-        <div className='w-[20%] max-lg:hidden flex flex-col items-center justify-between bg-gray-200 h-screen'>
+        <div bg={theme.color4} color={theme} className='w-[20%] max-lg:hidden shadow-lg flex flex-col items-center justify-between  h-screen'>
             <Box>
                 <Heading fontSize={20} fontFamily={'Raleway'} color={'#33658a'} className='text-center py-10 underline underline-offset-8'>Suggested</Heading>
                 {sampleProfiles.map(profile => (

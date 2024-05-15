@@ -1,11 +1,12 @@
 import React from 'react'
-import TopNav from './topNav'
+
 import PostContainer from '../../components/PostContainer'
+import ProfileNav from './ProfileNav'
 
 function Subscriptions() {
   return (
-    <div className='shadow-md w-full align-middle justify-center flex-col'>
-      <TopNav/>
+    <div className="w-full h-screen flex max-lg:flex-col justify-between overflow-y-scroll">
+      <ProfileNav/>
       
       <PostContainer/> 
     </div>

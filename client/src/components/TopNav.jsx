@@ -10,7 +10,7 @@ import { color } from 'framer-motion';
 function TopNav({toggleTheme, theme}) {
     const darkTheme=UseTheme()
   return (
-    <div  className=' p-3 flex justify-around border-b border-gray-700'>
+    <div  className=' p-3 flex justify-around shadow-lg mb-1 border-gray-700'>
     <SearchBar theme={theme}/>
       <nav className='inline-flex'>
      <MenuBar toggleTheme={toggleTheme} theme={theme}/>

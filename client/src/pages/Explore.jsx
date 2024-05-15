@@ -9,10 +9,10 @@ const Explore = () => {
   return (
     <section className='section'>
       <div className="w-full h-screen flex max-lg:flex-col justify-between overflow-y-scroll">
-          <Navbar/>
+           <Navbar/> 
           <Header/>
           <PostContainer/>
-         
+         <RightNav/>
         </div>
     </section>
   )
