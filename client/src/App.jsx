@@ -14,6 +14,8 @@ import TopNav from "./components/TopNav";
 import { UpdateTheme } from "./components/ThemeContext";
 import Navbar from "./components/Navbar";
 import RightNav from "./components/RightNav";
+import Layout from "./Layout";
+import RequireAuth from "./features/RequireAuth";
 
 const App = () => {
   const toggleTheme=UpdateTheme()
@@ -23,15 +25,23 @@ const App = () => {
     <TopNav toggleTheme={toggleTheme} theme={theme}/> 
     
       <Routes>
-        <Route path="/" element={<Home theme={theme} />} />
+      <Route path="/" element={<Layout />}> 
+      <Route path="/" element={<Home theme={theme} />} />
+      <Route path="/signup" element={<SignUp theme={theme} />} />
+      <Route path="/signin" element={<SignIn theme={theme} />} />
+       <Route element={<RequireAuth/>}>
+
         <Route path="/explore" element={<Explore theme={theme} />} />
         <Route path="/posts" element={<Post />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/signin" element={<SignIn />} />
+        
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/user-posts" element={<UserPosts />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
+       </Route>
+        
+      </Route>
+        
       </Routes>
       
     </main>

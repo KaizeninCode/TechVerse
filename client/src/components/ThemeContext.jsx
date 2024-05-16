@@ -26,6 +26,7 @@ function ThemeProvider({ children }) {
           // Store the theme in local storage
           localStorage.setItem('theme', newTheme ? 'dark' : 'light');
           return newTheme;
+          
         });
       };
 
