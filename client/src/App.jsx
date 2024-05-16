@@ -25,13 +25,14 @@ const App = () => {
     <TopNav toggleTheme={toggleTheme} theme={theme}/> 
     
       <Routes>
-      <Route path="/" element={<Layout />}> 
+      <Route path="/" element={<Layout />}>
+       {/*public routes  */}
       <Route path="/" element={<Home theme={theme} />} />
       <Route path="/signup" element={<SignUp theme={theme} />} />
       <Route path="/signin" element={<SignIn theme={theme} />} />
+      {/* protected routes */}
        <Route element={<RequireAuth/>}>
-
-        <Route path="/explore" element={<Explore theme={theme} />} />
+       <Route path="/explore" element={<Explore theme={theme} />} />
         <Route path="/posts" element={<Post />} />
         <Route path="/profile" element={<Profile />} />
         

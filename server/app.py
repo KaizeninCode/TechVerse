@@ -140,7 +140,7 @@ class UserLoginResource(Resource):
         if response:
          print(access_token)
          return response
-        return make_response(jsonify({"error": "Invalid username or password"}), 400)
+        return jsonify({"message": "Invalid username or password"}), 401
     
 api.add_resource(UserLoginResource, '/login')
 

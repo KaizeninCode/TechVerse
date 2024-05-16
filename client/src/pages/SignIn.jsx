@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { setCredentials } from "../features/AuthSlice";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-
+import { useToast } from "@chakra-ui/react";
 import { useLoginMutation } from "../features/authApiSlice";
 
 import {
@@ -35,6 +35,7 @@ function SignIn({ theme }) {
   // State to toggle the show password
   const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
+  const toast = useToast();
   const dispatch = useDispatch();
   const [login, { isLoading, isError }] = useLoginMutation();
   const from = location.state?.from?.pathname || "/";
@@ -51,31 +52,40 @@ function SignIn({ theme }) {
 
   const handleSubmit = async (values, actions) => {
     try {
-      const response = await login({
-        email: values.email,
-        password: values.password,
-      });
+        const response = await login({
+            email: values.email,
+            password: values.password,
+        });
 
-      if (response.error) {
-        throw new Error("Failed to login");
-      }
+        if (response.error) {
+            const errorMessage = response.error.message || "Login failed";
+            showToast(errorMessage);
+            return;
+        }
 
-      
-      const { data } = response;
-      const access_token = data.access_token;
-      const username = data.username;
-      const role = data.role;
-      const content = data.content;
-      
-      dispatch(setCredentials({ accessToken: access_token, username: username, role: role, user:content}));
+        const { data } = response;
+        const { access_token, username, role, content } = data;
 
-      // Store access token and username in local storage
-     
-      navigate(from, { replace: true });
+        dispatch(setCredentials({ accessToken: access_token, username: username, role: role, user: content }));
+        showToast("Welcome back", username);
+
+        navigate(from, { replace: true });
     } catch (error) {
-      console.error("Login failed:", error.message);
+        console.error("Login failed:", error.message);
+        showToast("Login failed. Please try again later.");
     }
-  };
+};
+
+const showToast = (message, username) => {
+    toast({
+        title: `${message}!`,
+        description: username ? `Welcome back ${username}!` : "Use correct information.",
+        status: username ? "success" : "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
+    });
+};
 
   return (
     <Flex

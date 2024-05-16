@@ -46,6 +46,7 @@ function EditProfile({ theme }) {
 
             if (response.ok) {
                 console.log('Success: Profile updated');
+                onClose
             } else {
                 console.error('Error: Profile update failed');
             }
@@ -62,15 +63,17 @@ function EditProfile({ theme }) {
                 <DrawerContent>
 
                     <DrawerHeader>
-                        <div className='justify-between flex'>
-                            <h1>Edit Profile</h1>
-                            <button onClick={onClose} className='bg-black rounded-full text-slate-200 px-6 py-2'>Save</button>
-                        </div>
-                        <img src="https://wallpapers.com/images/featured/cool-profile-picture-87h46gcobjl5e4xu.jpg" alt="name" className='rounded-full w-24 h-24' />
+                        
                     </DrawerHeader>
 
                     <DrawerBody>
                         <form onSubmit={handleSubmit}>
+                        <div className='justify-between flex'>
+                            <h1>Edit Profile</h1>
+                           
+                            <button type="submit"  className='bg-black rounded-full text-slate-200 px-6 py-2'>Save</button>
+                        </div>
+                        <img src="https://wallpapers.com/images/featured/cool-profile-picture-87h46gcobjl5e4xu.jpg" alt="name" className='rounded-full w-24 h-24' />
                             <h1 className='text-center font-bold text-xl'>Personal Details</h1>
                             <div className='grid shadow-md'>
                                 <div className="relative">
@@ -119,7 +122,7 @@ function EditProfile({ theme }) {
                                     <option value="student">Student</option>
                                 </select>
                             </div>
-                            <button type="submit">Submit</button>
+                            {/* <button type="submit">Submit</button> */}
                         </form>
                     </DrawerBody>
 
