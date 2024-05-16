@@ -24,8 +24,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = "e27c00e982d1d07709adb9eb"
 
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 1800 
-
 app.secret_key = "hgfedcba"
 
 migrate = Migrate(app, db)
@@ -38,12 +36,12 @@ db.init_app(app)
 
 #CRUD FOR USER
 class UserResource(Resource):
-    # @jwt_required()
+    @jwt_required()
     def get(self):
-        # current_user_role = get_jwt_identity()["role"]
+        current_user_role = get_jwt_identity()["role"]
 
-        # if current_user_role != "admin":
-        #     return jsonify({"error": "Unauthorized access"})
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
 
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
@@ -114,49 +112,7 @@ class UserResource(Resource):
             return jsonify({'message': 'User deleted successfully'})
         else:
             return jsonify({'message': 'User not found'}), 404
-
-
-# class UserSignupResource(Resource):
-#     def post(self):
-#         data = request.get_json()
-#         username = data.get('username')
-#         email = data.get('email')
-#         password = data.get('password')
-#         role = data.get('role')
-#         active_status=data.get('active_status')
-#         created_at=datetime.strptime(data.get('created_at'), '%d/%m/%Y')
-#         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
         
-
-#         # Check if the user already exists
-#         user_exists = User.query.filter_by(email=email).first()
-#         if user_exists:
-#             return jsonify({'error': 'User already exists'})
-
-#         # Hash the password
-#         hashed_password = bcrypt.generate_password_hash(password)
-
-#         # Create a new user
-#         new_user = User(
-#             username=username,
-#             email=email,
-#             password_hash=hashed_password,
-#             role=role,  # Assuming default role is 'student'
-#             active_status=active_status,  # Assuming default active status is True
-#             created_at=created_at,
-#             updated_at=updated_at
-#         )
-
-#         db.session.add(new_user)
-#         db.session.commit()
-
-#         return jsonify({'message': 'User created successfully'})
-
-# # Add the new resource to the API routes
-# api.add_resource(UserSignupResource, '/signup')
-
-
-
 # login user
 class UserLoginResource(Resource):
     def post(self):
