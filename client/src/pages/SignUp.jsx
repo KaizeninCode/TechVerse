@@ -64,7 +64,7 @@ function SignUp({theme}) {
         showToast(username);
         console.log("User created successfully", values);
         actions.resetForm();
-        // history.push('/SignIn')
+        navigate('/SignIn')
       } else {
         console.error("Error creating user:", response.statusText);
       }

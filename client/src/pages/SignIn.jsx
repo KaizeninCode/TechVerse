@@ -9,6 +9,7 @@ import { useLoginMutation } from "../features/authApiSlice";
 import {
   Box,
   FormControl,
+  useToast,
   InputRightElement,
   FormErrorMessage,
   Input,
@@ -35,7 +36,7 @@ function SignIn({ theme }) {
   // State to toggle the show password
   const [showPassword, setShowPassword] = useState(false);
   const location = useLocation();
-  const toast = useToast();
+ 
   const dispatch = useDispatch();
   const [login, { isLoading, isError }] = useLoginMutation();
   const from = location.state?.from?.pathname || "/";
@@ -44,6 +45,8 @@ function SignIn({ theme }) {
   function handleTogglePassword() {
     setShowPassword(!showPassword);
   }
+
+    const toast = useToast();
 
   const signInInitialValues = {
     email: "",
