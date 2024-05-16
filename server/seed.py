@@ -44,8 +44,8 @@ def seed():
 
         # Seed contents
         contents = [
-            Content(title="New Tech Gadget", description="An article about the latest tech gadget", type="article", category_id=1, published_status=True, user_id=2, created_at=datetime.now(), updated_at=datetime.now()),
-            Content(title="Business Strategies", description="Tips for improving your business", type="article", category_id=2, published_status=True, user_id=2, created_at=datetime.now(), updated_at=datetime.now()),
+            Content(title="New Tech Gadget", description="An article about the latest tech gadget", type="article", category_id=1, published_status=True, user_id=9, created_at=datetime.now(), updated_at=datetime.now()),
+            Content(title="Business Strategies", description="Tips for improving your business", type="article", category_id=2, published_status=True, user_id=8, created_at=datetime.now(), updated_at=datetime.now()),
             Content(title="The Revolution of AI", description="How AI is taking over the world today", type="video", category_id=3, published_status=True, user_id=2, created_at=datetime.now(), updated_at=datetime.now()),
             Content(title="Deep Dive into Cybersecurity", description="Going throught the latest cybersecurity developments", type="article", category_id=4, published_status=False, user_id=3, created_at=datetime.now(), updated_at=datetime.now()),
             Content(title="Software Engineering Today", description="The evolution of Software Engineering", type="article", category_id=5, published_status=True, user_id=4, created_at=datetime.now(), updated_at=datetime.now()),

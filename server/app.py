@@ -15,7 +15,7 @@ from models.user import User
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app)
+CORS(app,supports_credentials=True)
 api = Api(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -76,12 +76,12 @@ class UserResource(Resource):
 
         return jsonify({'message': 'User created successfully'})
 
-    @jwt_required()
+    # @jwt_required()
     def put(self, id):
-        current_user_role = get_jwt_identity()["role"]
+        # current_user_role = get_jwt_identity()["role"]
 
-        if current_user_role != "admin":
-            return jsonify({"error": "Unauthorized access"})
+        # if current_user_role != "admin":
+        #     return jsonify({"error": "Unauthorized access"})
 
         user = User.query.get(id)
         if user:
@@ -125,18 +125,22 @@ class UserLoginResource(Resource):
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
             access_token = create_access_token(identity={"email": user.email, "role": user.role})
             refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
-
+            
             response = make_response(jsonify({
             'access_token': access_token,
             'id': user.id,
-            'user': user.to_dict(),
-            'username': user.username
+            'content': user.to_dict(),
+            'username': user.username,
+            'role': user.role,
+            'refresh_token':refresh_token
             # Include user data in the response
         }), 200)
+        
+       
         if response:
          print(access_token)
          return response
-        return make_response(jsonify({"error": "Invalid username or password"}), 400)
+        return jsonify({"message": "Invalid username or password"}), 401
     
 api.add_resource(UserLoginResource, '/login')
 
@@ -204,11 +208,11 @@ class ContentResource(Resource):
         return jsonify([{'id': content.id, 'title': content.title, 'description': content.description, 'type': content.type, 'category_id': content.category_id,'published_status': content.published_status,'user_id': content.user_id,'created_at': content.created_at,'updated_at': content.updated_at,} for content in contents])
 
     
-    # @jwt_required()
+    @jwt_required()
     def post(self):
-        # current_user = get_jwt_identity()
-        # if current_user["role"] not in ["staff", "student"]:
-        #     return jsonify({"error": "Only staff and students allowed to post"}), 403
+        current_user = get_jwt_identity()
+        if current_user["role"] not in ["staff", "student"]:
+            return jsonify({"error": "Only staff and students allowed to post"}), 403
 
         data = request.get_json()
         title = data.get('title')
@@ -216,15 +220,15 @@ class ContentResource(Resource):
         content_type = data.get('type')
         category_id = data.get('category_id')
         published_status = data.get("published_status") 
-        user_id = data.get('user_ id')
+        user_id = data.get('user_id')
 
 
         if not all([title, description, content_type, category_id]):
             return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
 
         # Get the user_id from the current_user
-        # user_id = current_user.get('id')
-        # user_id = data.get('id')
+        user_id = current_user.get('id')
+        user_id = data.get('id')
 
         # Create new content
         new_content = Content(
