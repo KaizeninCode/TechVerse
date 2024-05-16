@@ -1,7 +1,9 @@
 import  { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Box,
   FormControl,
+  useToast,
   InputRightElement,
   FormErrorMessage,
   Input,
@@ -28,22 +30,62 @@ import { signinValidationSchema } from "../Schemas";
 function SignIn() {
   // State to toogle the show password
   const [showPassword, setShowPassord] = useState(false);
-
+const navigate=useNavigate()
   function handleTogglePassword() {
     setShowPassord(!showPassword);
   }
+
+    const toast = useToast();
 
   const signInInitialValues = {
     email: "",
     password: "",
   };
   const handleSubmit = async (values, actions) => {
-    actions.resetForm({
-      values: signInInitialValues,
+    try {
+      const response = await fetch('http://127.0.0.1:5555/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(values)
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to login');
+      }
+      navigate('/')
+      const data = await response.json();
+      const access_token = data.access_token;
+      const username=data.username;
+  
+      if (access_token) {
+        showToastLogIn(username)
+        localStorage.setItem('access_token', access_token, 'username',username);
+        localStorage.setItem( 'username',username);
+        
+      } else {
+        throw new Error('Access token not found');
+      }
+    } catch (error) {
+      console.error('Login failed:', error.message);
+    }
+  };
+
+  const showToastLogIn = (username) => {
+    // const name = username || "User";
+    toast({
+      title: `${username}, Welcome back!`,
+      description: "You've successfully logged in.",
+      status: "info",
+      duration: 5000,
+      isClosable: true,
+      position: "top",
     });
   };
+  
   return (
-    <Flex lexDir={{ base: "column", md: "row" }} align={"stretch"}>
+    <Flex flexDir={{ base: "column", md: "row" }} align={"stretch"}>
       <Flex
         flexDir={"column"}
         justifyContent={"center"}
@@ -77,6 +119,7 @@ function SignIn() {
           <Text> Easily accessible code samples</Text>
         </Box>
         <Image
+          display={{ base: "none", md: "block" }}
           src="/authImage.png"
           w={"350px"}
           h={"350px"}

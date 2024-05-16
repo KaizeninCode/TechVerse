@@ -1,4 +1,4 @@
-import React from 'react';
+import {useState} from 'react';
 import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, background, useDisclosure } from '@chakra-ui/react';
 import {Formik, Form} from 'formik';
 import * as Yup from 'yup';
@@ -6,6 +6,13 @@ import { useColorMode } from '@chakra-ui/react';
 function EditProfile({theme}) {
   const { isOpen, onOpen, onClose } = useDisclosure();
 const colorMode=useColorMode()
+const [values,setValues]= useState({
+  username:'',
+  email:'',
+  password:'',
+  confirmPassword:'',
+  category:''
+})
   return (
     <div className='justify-center align-middle flex rounded-full shadow-md'>
       <button onClick={onOpen} className="px-6 py-3 rounded-full border">Edit Profile</button>
@@ -43,7 +50,7 @@ const colorMode=useColorMode()
               </div>
             </div>
             <hr />
-            <h1 className='text-center font-bold text-xl'>Change Preferences</h1>
+            <h1 className='text-center font-bold text-xl'>Select Preferences</h1>
             <div className='grid shadow-md p-3'>
               <div className='p-1 '>
                 <input type="checkbox" />

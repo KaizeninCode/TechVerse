@@ -1,11 +1,13 @@
-import React from 'react'
-import TopNav from './topNav'
+import {useState} from 'react'
+import TopNav from './ProfileNav'
 import PostContainer from '../../components/PostContainer'
+import ProfileNav from './ProfileNav'
 
 function UserPosts() {
+  const [userPost, setUserPosts]= useState([])
   return (
-    <div >
-    <TopNav/>
+    <div className='lg:w-[60%] overflow-y-scroll gap-4 mx-5 my-3' id="posts" >
+    <ProfileNav/>
     {/* <h1 className='text-center'>Post cards</h1> */}
     <PostContainer/>
     </div>

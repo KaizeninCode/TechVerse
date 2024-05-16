@@ -3,6 +3,7 @@ import {
   Box,
   FormControl,
   FormLabel,
+  useToast,
   InputRightElement,
   FormErrorMessage,
   Input,
@@ -26,27 +27,70 @@ import { Link } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import React from "react";
 import { signupValidationSchema } from "../Schemas";
+import { useNavigate } from "react-router-dom";
+
 
 function SignUp() {
-  // State to toogle the show password
-  const [showPassword, setShowPassord] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const toast = useToast();
+  
 
   function handleTogglePassword() {
-    setShowPassord(!showPassword);
+    setShowPassword(!showPassword);
   }
+
   const signUpInitialValues = {
     username: "",
     email: "",
     password: "",
     confirmPassword: "",
+    role: "admin", // Default role
   };
+
   const handleSubmit = async (values, actions) => {
-    actions.resetForm({
-      values: signUpInitialValues,
+    try {
+      const response = await fetch("http://127.0.0.1:5555/users", {
+        headers: {
+          "Content-Type": "application/json",
+        },
+        method: "POST",
+        body: JSON.stringify(values),
+      });
+      const responseData = await response.json();
+      console.log("Server response:", responseData);
+      if (response.ok) {
+        const  username  = values.username;
+        showToast(username);
+        console.log("User created successfully", values);
+        actions.resetForm();
+        navigate('/SignIn')
+      } else {
+        console.error("Error creating user:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error creating user:", error);
+    } finally {
+      actions.setSubmitting(false);
+    }
+  };
+  // Toast notification function
+  const showToast = (username) => {
+    toast({
+      title: `Account created, ${username}!`,
+      description: "We've created your account for you.",
+      status: "info",
+      duration: 5000,
+      isClosable: true,
+      position: "top",
     });
   };
+
   return (
-    <Flex flexDir={{ base: "column", md: "row" }} align={"stretch"}>
+    <Flex
+      flexDir={{ base: "column", md: "row" }}
+      align={"stretch"}
+      className="overflow - x - hidden"
+    >
       <Flex
         flexDir={"column"}
         justifyContent={"center"}
@@ -56,7 +100,7 @@ function SignUp() {
       >
         <Box className="flex gap-3 py-4 px-4">
           <Image
-          display={{base:'none',md:'block'}}
+            display={{ base: "none", md: "block" }}
             src="/logo-transparent.png"
             w={"30px"}
             h={"30px"}
@@ -67,17 +111,19 @@ function SignUp() {
             TechVerse
           </Text>
         </Box>
-        <Box className="flex flex-col text-white flex-wrap-reverse font-medium"m={'auto'}>
-          
+        <Box
+          className="flex flex-col text-white flex-wrap-reverse font-medium"
+          m={"auto"}
+        >
           <Text>
             Explore our guides, references and examples to tech related content
             on our platform
           </Text>
           <Text>Guided product walkthroughs</Text>
-
           <Text> Easily accessible code samples</Text>
         </Box>
         <Image
+          display={{ base: "none", md: "block" }}
           src="/authImage.png"
           w={"350px"}
           h={"350px"}
@@ -126,6 +172,7 @@ function SignUp() {
                     )}
                   </Field>
 
+                  {/* Email Field */}
                   <Field name="email">
                     {({ field, form }) => (
                       <FormControl
@@ -150,6 +197,8 @@ function SignUp() {
                       </FormControl>
                     )}
                   </Field>
+
+                  {/* Password Field */}
                   <Field name="password">
                     {({ field, form }) => (
                       <FormControl
@@ -187,6 +236,7 @@ function SignUp() {
                     )}
                   </Field>
 
+                  {/* Confirm Password Field */}
                   <Field name="confirmPassword">
                     {({ field, form }) => (
                       <FormControl
@@ -224,19 +274,21 @@ function SignUp() {
                       </FormControl>
                     )}
                   </Field>
-                  <FormControl>
-                    <FormLabel>Choose a user</FormLabel>
-                    <Select
-                      className="rounded-xl"
-                      placeholder="Select user category"
-                    >
-                      <option>Admin</option>
-                      <option>Staff</option>
-                      <option>Student</option>
-                    </Select>
-                  </FormControl>
+
+                  {/* Role Field */}
+                  <Field
+                    as="select"
+                    id="role"
+                    name="role"
+                    className="h-[30px] rounded-md"
+                  >
+                    <option value="admin">Admin</option>
+                    <option value="staff">Staff</option>
+                    <option value="student">Student</option>
+                  </Field>
                 </>
 
+                {/* Sign In Link */}
                 <Box fontSize="sm">
                   <Text>
                     Already have an account?{" "}
@@ -247,6 +299,8 @@ function SignUp() {
                     </Link>
                   </Text>
                 </Box>
+
+                {/* Submit Button */}
                 <Button
                   alignSelf={"center"}
                   w={"150px"}

@@ -3,6 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_bcrypt import Bcrypt
+from flask_cors import CORS
 from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from models.dbconfig import db
 from models.category import Category
@@ -14,7 +15,7 @@ from models.user import User
 from datetime import datetime
 
 app = Flask(__name__)
-
+CORS(app)
 api = Api(app)
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
@@ -47,37 +48,29 @@ class UserResource(Resource):
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
-    # @jwt_required()
+    
+class UserResource(Resource):
     def post(self):
-        
         data = request.get_json()
-        username=data.get('username')
-        email=data.get('email')
-        password_hash=data.get('password_hash')
-        role=data.get('role')
-        active_status=data.get('active_status')
-        created_at=datetime.strptime(data.get('created_at'), '%d/%m/%Y')
-        updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
-        
-        # current_user_role = get_jwt_identity()["role"]
+        username = data.get('username')
+        email = data.get('email')
+        password_hash = data.get('password')  # Change variable name to 'password'
+        role = data.get('role')
 
-        # if current_user_role not in ["admin", "staff","student"]:
-        #     return jsonify({"error": "Unauthorized access"}), 403
+        if not all([username, email, password_hash, role]):  # Ensure all required fields are provided
+            return jsonify({"error": "Username, email, password, and role are required fields"}), 400
 
-        user_exists = User.query.filter_by(email = email).first()
+        user_exists = User.query.filter_by(email=email).first()
         if user_exists:
             return jsonify({'error': 'User already exists'})
 
-        hashed_password = bcrypt.generate_password_hash(password_hash)
-    
+        hashed_password = bcrypt.generate_password_hash(password_hash)  # Generate password hash
+
         new_user = User(
             username=username,
-            email=email, 
+            email=email,
             password_hash=hashed_password,
-            role=role,
-            active_status=active_status,
-            created_at=created_at,
-            updated_at=updated_at
+            role=role
         )
 
         db.session.add(new_user)
@@ -98,9 +91,9 @@ class UserResource(Resource):
             user.username = data.get('username', user.username)
             user.email = data.get('email', user.email)
             user.role = data.get('role', user.role)
-            user.active_status = data.get('active_status' == True, user.active_status)
-            user.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
-            user.updated_at = datetime.strptime(data.get('updated_at', user.updated_at), '%d/%m/%Y')
+            # user.active_status = data.get('active_status' == True, user.active_status)
+            # user.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
+            # user.updated_at = datetime.strptime(data.get('updated_at', user.updated_at), '%d/%m/%Y')
             db.session.commit()
 
             return jsonify({'message': 'User updated successfully'})
@@ -177,16 +170,16 @@ class UserLoginResource(Resource):
             access_token = create_access_token(identity={"email": user.email, "role": user.role})
             refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
 
-            return jsonify(
-                {
-                    "message": "Logged In",
-                    "tokens": {
-                        "access" : access_token,
-                        "refresh": refresh_token
-                    }
-                }
-            )
-
+            response = make_response(jsonify({
+            'access_token': access_token,
+            'id': user.id,
+            'user': user.to_dict(),
+            'username': user.username
+            # Include user data in the response
+        }), 200)
+        if response:
+         print(access_token)
+         return response
         return make_response(jsonify({"error": "Invalid username or password"}), 400)
     
 api.add_resource(UserLoginResource, '/login')
