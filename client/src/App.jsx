@@ -37,7 +37,7 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         
         <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/user-posts" element={<UserPosts />} />
+        <Route path="/user-posts" element={<UserPosts theme={theme} />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
        </Route>
         

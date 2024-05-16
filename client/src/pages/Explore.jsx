@@ -13,7 +13,7 @@ const Explore = ({theme}) => {
           <Header/>
           
           
-          <PostContainer/>
+          <PostContainer theme={theme}/>
           
          
  

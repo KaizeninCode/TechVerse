@@ -3,12 +3,12 @@ import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, useDisc
 import { useColorMode } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { selectUserData } from '../../features/AuthSlice';
-
+import { useToast } from '@chakra-ui/react';
 function EditProfile({ theme }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const user = useSelector(selectUserData);
     const colorMode = useColorMode();
-
+  const toast=useToast()
     const [values, setValues] = useState({
         username: user.username,
         email: user.email,
@@ -27,34 +27,49 @@ function EditProfile({ theme }) {
     };
 
     const handleSubmit = async (event) => {
-        event.preventDefault();
-
-        try {
-            const response = await fetch(`http://127.0.0.1:5555/users/${user.id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    username: values.username,
-                    email: values.email,
-                    password: values.password,
-                    confirmPassword: values.confirmPassword,
-                    category: values.category
-                })
-            });
-
-            if (response.ok) {
-                console.log('Success: Profile updated');
-                onClose
-            } else {
-                console.error('Error: Profile update failed');
-            }
-        } catch (error) {
-            console.error('Error: Profile update failed', error);
-        }
-    };
-
+      event.preventDefault();
+  
+      try {
+          const response = await fetch(`http://127.0.0.1:5555/users/${user.id}`, {
+              method: 'PUT',
+              headers: {
+                  'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({
+                  username: values.username,
+                  email: values.email,
+                  password: values.password,
+                  confirmPassword: values.confirmPassword,
+                  role: values.role,
+                  category: values.category
+              })
+          });
+  
+          if (response.ok) {
+              console.log('Success: Profile updated');
+              showToast('Profile updated', true);
+              onClose(); 
+          } else {
+              console.error('Error: Profile update failed');
+              showToast('Profile update failed', false);
+          }
+      } catch (error) {
+          console.error('Error: Profile update failed', error);
+      }
+  };
+  
+  const showToast = (message, isSuccess) => {
+      toast({
+          title: `${message}!`,
+          description: isSuccess ? 'Profile updated successfully!' : "Profile update failed! Something went wrong!",
+          status: isSuccess ? "success" : "error",
+          duration: 5000,
+          isClosable: true,
+          position: "top",
+      });
+  };
+  
+  
     return (
         <div className='justify-center align-middle flex rounded-full shadow-md'>
             <button onClick={onOpen} className="px-6 py-3 rounded-full border">Edit Profile</button>
@@ -113,16 +128,16 @@ function EditProfile({ theme }) {
                 <label className='p-1 font-montserrat font-medium' onChange={handleChange}  name="category" value="devops">DevOps</label>
               </div>
               </div>
-                            <div>
-                                <h1>Update Role</h1>
-                                <select name="role" onChange={handleChange} value={values.role}>
+                            <div className='p-3 shadow-md mt-3'>
+                                <h1 className='font-bold'>Update Role</h1>
+                                <select name="role" onChange={handleChange} value={values.role} className="px-6 py-2">
                                     <option value="">Select Role</option>
                                     <option value="admin">Admin</option>
                                     <option value="staff">Staff</option>
                                     <option value="student">Student</option>
                                 </select>
                             </div>
-                            {/* <button type="submit">Submit</button> */}
+                            
                         </form>
                     </DrawerBody>
 
