@@ -353,34 +353,6 @@ class ContentResource(Resource):
 
     #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
-    @jwt_required()
-    def post_approve(self, id):
-        current_user_role = get_jwt_identity()["role"]
-
-        if current_user_role not in ["admin", "staff"]:
-            return jsonify({"error": "Unauthorized access"})
-        
-        content = Content.query.get(id)
-
-    @jwt_required() 
-    def delete(self, id):
-        current_user = get_jwt_identity()["role"]
-        if current_user["role"] not in ["admin", "staff"]:
-            return jsonify({"error": "Only staff and students can delete content"}), 403
-
-        content = Content.query.get(id)
-        if not content:
-            return jsonify({"error": "Content not found"}), 404
-        
-        # Delete associated comments first
-        for comment in content.comments:
-            db.session.delete(comment)
-
-        # Change the published_status to True
-        content.published_status = True
-        db.session.commit()
-
-        return jsonify({"message": "Content approved successfully", "content_id": content.id})
     
     # @jwt_required() 
     def delete(self, id):
@@ -402,7 +374,7 @@ class ContentResource(Resource):
         return jsonify({"message": "Content deleted successfully"})  
         
     
-api.add_resource(ContentResource, "/contents", "/contents/<int:id>","/contents/approve/<int:id>")
+api.add_resource(ContentResource, "/contents", "/contents/<int:id>")
 
 class ContentById(Resource):
     def get(self, id):
@@ -424,6 +396,27 @@ class ContentByTitle(Resource):
             return jsonify({"message": "Content not found"}), 404
         
 api.add_resource(ContentByTitle, "/contents/search")
+
+#Content approval
+class ContentApprovalResource(Resource):
+    @jwt_required()
+    def put(self, id):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role not in ["admin", "staff"]:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+        content = Content.query.get(id)
+
+        if not content:
+            return jsonify({"error": "Content not found"}), 404
+
+        content.published_status = True
+        db.session.commit()
+
+        return jsonify({"message": "Content approved successfully"}), 200
+    
+api.add_resource(ContentApprovalResource, "/contents/approve/<int:id>")
 
 class CategoryResource(Resource):
     def get(self):
