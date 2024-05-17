@@ -25,15 +25,16 @@ import {
 } from "@chakra-ui/icons";
 import { Link } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
+import { useNavigate } from "react-router-dom";
 import React from "react";
 import { signupValidationSchema } from "../Schemas";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-
-function SignUp() {
+function SignUp({theme}) {
   const [showPassword, setShowPassword] = useState(false);
   const toast = useToast();
-  
+  const location= useLocation();
+  const from = location.state?.from?.pathname || "/";
 
   function handleTogglePassword() {
     setShowPassword(!showPassword);
@@ -59,7 +60,7 @@ function SignUp() {
       const responseData = await response.json();
       console.log("Server response:", responseData);
       if (response.ok) {
-        const  username  = values.username;
+        const username  = values.username;
         showToast(username);
         console.log("User created successfully", values);
         actions.resetForm();
@@ -96,7 +97,7 @@ function SignUp() {
         justifyContent={"center"}
         alignItems={"center"}
         w={{ base: "100%", md: "50%" }}
-        bg={"#33658a"}
+        bg={theme.color5}
       >
         <Box className="flex gap-3 py-4 px-4">
           <Image
@@ -318,6 +319,7 @@ function SignUp() {
             </Form>
           )}
         </Formik>
+        <button style={{background:theme.bg, color:theme.color}} className="px-6 py-3" onClick={()=> navigate(from, { replace: true })}>Go back</button>
       </Box>
     </Flex>
   );

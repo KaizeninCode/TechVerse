@@ -1,5 +1,11 @@
-import  { useState } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { setCredentials } from "../features/AuthSlice";
+import { useDispatch } from "react-redux";
+import { useLocation } from "react-router-dom";
+import { useToast } from "@chakra-ui/react";
+import { useLoginMutation } from "../features/authApiSlice";
+
 import {
   Box,
   FormControl,
@@ -24,15 +30,20 @@ import {
   ViewOffIcon,
 } from "@chakra-ui/icons";
 import { Field, Form, Formik } from "formik";
-import React from "react";
 import { signinValidationSchema } from "../Schemas";
 
-function SignIn() {
-  // State to toogle the show password
-  const [showPassword, setShowPassord] = useState(false);
-const navigate=useNavigate()
+function SignIn({ theme }) {
+  // State to toggle the show password
+  const [showPassword, setShowPassword] = useState(false);
+  const location = useLocation();
+ 
+  const dispatch = useDispatch();
+  const [login, { isLoading, isError }] = useLoginMutation();
+  const from = location.state?.from?.pathname || "/";
+  const navigate = useNavigate();
+
   function handleTogglePassword() {
-    setShowPassord(!showPassword);
+    setShowPassword(!showPassword);
   }
 
     const toast = useToast();
@@ -41,57 +52,55 @@ const navigate=useNavigate()
     email: "",
     password: "",
   };
+
   const handleSubmit = async (values, actions) => {
     try {
-      const response = await fetch('http://127.0.0.1:5555/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(values)
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to login');
-      }
-      navigate('/')
-      const data = await response.json();
-      const access_token = data.access_token;
-      const username=data.username;
-  
-      if (access_token) {
-        showToastLogIn(username)
-        localStorage.setItem('access_token', access_token, 'username',username);
-        localStorage.setItem( 'username',username);
-        
-      } else {
-        throw new Error('Access token not found');
-      }
-    } catch (error) {
-      console.error('Login failed:', error.message);
-    }
-  };
+        const response = await login({
+            email: values.email,
+            password: values.password,
+        });
 
-  const showToastLogIn = (username) => {
-    // const name = username || "User";
+        if (response.error) {
+            const errorMessage = response.error.message || "Login failed";
+            showToast(errorMessage);
+            return;
+        }
+
+        const { data } = response;
+        const { access_token, username, role, content } = data;
+
+        dispatch(setCredentials({ accessToken: access_token, username: username, role: role, user: content }));
+        showToast("Welcome back", username);
+
+        navigate(from, { replace: true });
+    } catch (error) {
+        console.error("Login failed:", error.message);
+        showToast("Login failed. Please try again later.");
+    }
+};
+
+const showToast = (message, username) => {
     toast({
-      title: `${username}, Welcome back!`,
-      description: "You've successfully logged in.",
-      status: "info",
-      duration: 5000,
-      isClosable: true,
-      position: "top",
+        title: `${message}!`,
+        description: username ? `Welcome back ${username}!` : "Use correct information.",
+        status: username ? "success" : "error",
+        duration: 5000,
+        isClosable: true,
+        position: "top",
     });
-  };
-  
+};
+
   return (
-    <Flex flexDir={{ base: "column", md: "row" }} align={"stretch"}>
+    <Flex
+      flexDir={{ base: "column", md: "row" }}
+      align={"stretch"}
+    >
       <Flex
         flexDir={"column"}
         justifyContent={"center"}
         alignItems={"center"}
         w={{ base: "100%", md: "50%" }}
-        bg={"#33658a"}
+        bg={theme.color5}
       >
         <Box className="flex gap-3 py-4 px-4">
           <Image
@@ -231,9 +240,11 @@ const navigate=useNavigate()
             </Form>
           )}
         </Formik>
+        <button style={{background:theme.bg, color:theme.color}} className="px-6 py-3" onClick={()=> navigate(from, { replace: true })}>Go back</button>
       </Box>
     </Flex>
   );
 }
 
 export default SignIn;
+``

@@ -73,7 +73,7 @@ const Navbar = () => {
       <VStack divider={<StackDivider borderColor={'#33658a'}/>} className='mt-10'>
         {navlinks.map(link => (
             <Box key={link.url}  className='flex items-center justify-between w-[150px]'>
-                <NavLink to={link.link} textDecoration='none' className='text-[#33658a] text-lg font-montserrat my-3 flex items-center justify-start'>
+                <NavLink to={link.link} textDecoration='none' style={{color:theme.color2}} className='text-lg font-montserrat font-bold my-3 flex items-center justify-start'>
                     {link.icon}&nbsp;{link.name}
                 </NavLink>
                 

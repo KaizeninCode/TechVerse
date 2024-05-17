@@ -5,9 +5,12 @@ import './index.css'
 import { ChakraProvider } from '@chakra-ui/react'
 import { BrowserRouter as Router } from'react-router-dom'
 import ThemeProvider from './components/ThemeContext.jsx'
+import { Provider } from 'react-redux'
+import {store} from './store/store.jsx'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
- <ThemeProvider>
+  <Provider store={store}>
+    <ThemeProvider>
    <ChakraProvider>
   
   <Router>
@@ -16,6 +19,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
   
   </ChakraProvider>
  </ThemeProvider>
+  </Provider>
+ 
  
     
   </React.StrictMode>

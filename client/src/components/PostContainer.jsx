@@ -4,10 +4,10 @@ import { CiHeart } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
 import { IoMdHeart } from "react-icons/io";
-
-const PostContainer = ({theme}) => {
+import colorPallete from './colorPallete';
+const PostContainer = () => {
     // const[likeLeftIcon, setLikeLeftIcon] = useState(<CiHeart/>)
-
+const theme=colorPallete()
     // const handleLikeClick = () => setLikeLeftIcon(prevIcon => prevIcon === <CiHeart/> ? <IoMdHeart/> : <CiHeart/>)
 const colorMode=useColorMode()
     const dummyContent = [
@@ -50,7 +50,7 @@ const colorMode=useColorMode()
   return (
     <SimpleGrid className='lg:w-[60%] overflow-y-scroll gap-4 mx-5 my-3' id='posts'>
           {dummyContent.map(item => (
-            <Card key={item.name}>
+            <Card key={item.name} bg={theme.bg} color={theme}>
                 <CardHeader>
                     <Flex justify={'space-between'} alignItems={'center'}>
                             <Image src={item.image} w={16} h={16} mr={5}/>
