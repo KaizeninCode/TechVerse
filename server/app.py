@@ -103,7 +103,7 @@ class UserResource(Resource):
 
         user = User.query.get(id)
         if user:
-            data = request.json
+            data = request.get_json()
             user.username = data.get('username', user.username)
             user.email = data.get('email', user.email)
             user.role = data.get('role', user.role)
@@ -247,20 +247,34 @@ class ContentResource(Resource):
     #     app.logger.info(f"Form data: {request.form}")
     #     app.logger.info(f"Files: {request.files}")
 
-    #     file_to_upload = request.files.get('file')
-    #     title = request.form.get('title')
-    #     description = request.form.get('description')
-    #     content_type = request.form.get('type')
-    #     category_id = request.form.get('category_id')
-    #     user_id = request.form.get('user_id')
-    #     published_status = request.form.get(
-    #         'published_status', 'false').lower() in ['true', '1']
+        file_to_upload = request.files.get('file')
+        title = request.form.get('title')
+        description = request.form.get('description')
+        content_type = request.form.get('type')
+        category_id = request.form.get('category_id')
+        user_id = request.form.get('user_id')
+        published_status = request.form.get(
+            'published_status', 'false').lower() in ['true', '1']
+        category=Category.query.filter(category_id==Category.name).first()
+        app.logger.info(
+            f"Received data: title={title}, description={description}, type={content_type}, category_id={category.id}, user_id={user_id}")
 
-    #     app.logger.info(
-    #         f"Received data: title={title}, description={description}, type={content_type}, category_id={category_id}, user_id={user_id}")
+        # Check for missing fields and log them
+        missing_fields = []
+        if not title:
+            missing_fields.append("title")
+        if not description:
+            missing_fields.append("description")
+        if not content_type:
+            missing_fields.append("type")
+        if not category_id:
+            missing_fields.append("category_id")
+        if not file_to_upload:
+            missing_fields.append("file")
 
-    #     if not all([title, description, content_type, category_id, file_to_upload]):
-    #         return {"error": "Title, description, type, category_id, and file are required fields"}, 400
+        if missing_fields:
+            app.logger.error(f"Missing fields: {missing_fields}")
+            return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
 
     #     try:
     #         if content_type == 'video':
@@ -272,134 +286,73 @@ class ContentResource(Resource):
     #         app.logger.error(f"Error uploading file to Cloudinary: {e}")
     #         return {"error": "File upload failed"}, 500
 
-    #     app.logger.info(upload_result)
+        app.logger.info(upload_result)
 
-    #     try:
-    #         new_content = Content(
-    #             title=title,
-    #             description=description,
-    #             type=content_type,
-    #             category_id=category_id,
-    #             user_id=user_id,
-    #             published_status=published_status,
-    #             created_at=datetime.utcnow(),
-    #             updated_at=datetime.utcnow()
-    #         )
-    #         db.session.add(new_content)
-    #         db.session.commit()
-    #     except Exception as e:
-    #         app.logger.error(f"Error saving content to database: {e}")
-    #         return {"error": "Content creation failed"}, 500
+        file_url = upload_result.get('url')
 
-    #     return {
-    #         "message": "Content uploaded and created successfully",
-    #         "content_id": new_content.id,
-    #         "upload_result": upload_result
-    #     }, 201
+        try:
+            new_content = Content(
+                title=title,
+                description=description,
+                type=file_url,  # Save the file URL instead of the file object
+                category_id=category.id,
+                user_id=user_id,
+                published_status=published_status,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
+            print(new_content)
+            db.session.add(new_content)
+            db.session.commit()
+        except Exception as e:
+            app.logger.error(f"Error saving content to database: {e}")
+            return {"error": "Content creation failed"}, 500
 
-        
-    @jwt_required() 
-    def post(self):
-        current_user = get_jwt_identity()
-        if current_user["role"] not in ["staff", "student"]:
-            return jsonify({"error": "Only staff and students allowed to post"}), 403
-
-        data = request.get_json()
-        title = data.get('title')
-        description = data.get('description')
-        content_type = data.get('type')
-        category_id = data.get('category_id')
-        published_status = data.get("published_status") 
-        user_id = data.get('user_ id')
-
-
-        if not all([title, description, content_type, category_id]):
-            return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
-
-        # Get the user_id from the current_user
-        # user_id = current_user.get('id')
-        # user_id = data.get('id')
-
-        # Create new content
-        new_content = Content(
-            title=title,
-            user_id=user_id,
-            description=description,
-            type=content_type,
-            category_id=category_id,
-            # user_id=user_id,
-            published_status=published_status,
-            created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
-            updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
-        )
-        db.session.add(new_content)
-        db.session.commit()
-
-        return jsonify({"message": "Content created successfully", "content_id": new_content.id})
+        return {
+            "message": "Content uploaded and created successfully",
+            "content_id": new_content.id,
+            "upload_result": upload_result
+        }, 201
+    # @jwt_required()
     
-    @jwt_required()
-    def put(self, content_id):
-        current_user = get_jwt_identity()
-        if current_user["role"] not in ["staff", "student"]:
-            return jsonify({"error": "Only staff and students allowed to update content"}), 403
+    # def post(self):
+    #     current_user = get_jwt_identity()
+    #     if current_user["role"] not in ["staff", "student"]:
+    #         return jsonify({"error": "Only staff and students allowed to post"}), 403
 
-        data = request.get_json()
-        title = data.get('title')
-        description = data.get('description')
-        content_type = data.get('type')
-        category_id = data.get('category_id')
-        published_status = data.get("published_status")
+    #     data = request.get_json()
+    #     title = data.get('title')
+    #     description = data.get('description')
+    #     content_type = data.get('type')
+    #     category_id = data.get('category_id')
+    #     published_status = data.get("published_status") 
+    #     user_id = data.get('user_ id')
 
-        if not all([title, description, content_type, category_id]):
-            return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
 
-        content = Content.query.get(content_id)
-        if not content:
-            return jsonify({"error": "Content not found"}), 404
+    #     if not all([title, description, content_type, category_id]):
+    #         return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
 
-        if content.user_id != current_user.get('id'):
-            return jsonify({"error": "Unauthorized action"}), 403
+    #     # Get the user_id from the current_user
+    #     # user_id = current_user.get('id')
+    #     # user_id = data.get('id')
 
-        # Update content fields
-        content.title = title
-        content.description = description
-        content.type = content_type
-        content.category_id = category_id
-        content.published_status = published_status
-        content.updated_at = datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+    #     # Create new content
+    #     new_content = Content(
+    #         title=title,
+    #         user_id=user_id,
+    #         description=description,
+    #         type=content_type,
+    #         category_id=category_id,
+    #         # user_id=user_id,
+    #         published_status=published_status,
+    #         created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
+    #         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+    #     )
+    #     db.session.add(new_content)
+    #     db.session.commit()
 
-        db.session.commit()
-
-        return jsonify({"message": "Content updated successfully", "content_id": content.id})
-        
-    @jwt_required()
-    def post_approve(self, id):
-        current_user_role = get_jwt_identity()["role"]
-
-        if current_user_role not in ["admin", "staff"]:
-            return jsonify({"error": "Unauthorized access"})
-        
-        content = Content.query.get(id)
-
-    @jwt_required() 
-    def delete(self, id):
-        current_user = get_jwt_identity()["role"]
-        if current_user["role"] not in ["admin", "staff"]:
-            return jsonify({"error": "Only staff and students can delete content"}), 403
-
-        content = Content.query.get(id)
-        if not content:
-            return jsonify({"error": "Content not found"}), 404
-        
-        # Delete associated comments first
-        for comment in content.comments:
-            db.session.delete(comment)
-
-        # Change the published_status to True
-        content.published_status = True
-        db.session.commit()
-
-        return jsonify({"message": "Content approved successfully", "content_id": content.id})
+    #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
+    
     
     # @jwt_required() 
     def delete(self, id):
@@ -421,7 +374,7 @@ class ContentResource(Resource):
         return jsonify({"message": "Content deleted successfully"})  
         
     
-api.add_resource(ContentResource, "/contents", "/contents/<int:id>","/contents/approve/<int:id>")
+api.add_resource(ContentResource, "/contents", "/contents/<int:id>")
 
 class ContentById(Resource):
     def get(self, id):
@@ -460,6 +413,27 @@ class ContentByTitle(Resource):
             return jsonify({"message": "Content not found"}), 404
 
 api.add_resource(ContentByTitle, "/contents/search")
+
+#Content approval
+class ContentApprovalResource(Resource):
+    @jwt_required()
+    def put(self, id):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role not in ["admin", "staff"]:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+        content = Content.query.get(id)
+
+        if not content:
+            return jsonify({"error": "Content not found"}), 404
+
+        content.published_status = True
+        db.session.commit()
+
+        return jsonify({"message": "Content approved successfully"}), 200
+    
+api.add_resource(ContentApprovalResource, "/contents/approve/<int:id>")
 
 class CategoryResource(Resource):
     def get(self):

@@ -23,11 +23,15 @@ def seed():
 
         # Seed categories
         categories = [
-            Category(name="Technology"),
-            Category(name="Business"),
-            Category(name="Sports"),
-            Category(name="Science"),
-            Category(name="Entertainment"),
+            Category(name="Frontend Programming"),
+            Category(name="Backend Programming"),
+            Category(name="FullStack Programming"),
+            Category(name="DevOps"),
+            Category(name="UI/UX"),
+            Category(name="Machine Learning"),
+            Category(name="Mobile-App development"),
+            Category(name="Data Visualization"),
+            Category(name="Cyber Security")
         ]
         db.session.add_all(categories)
         db.session.commit()

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { setCredentials } from "../features/AuthSlice";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
+import { IoChevronBack } from "react-icons/io5";
 import { useLoginMutation } from "../features/authApiSlice";
 
 import {
@@ -68,7 +69,6 @@ function SignIn({ theme }) {
         const { data } = response;
         const { access_token, username, role, content } = data;
         console.log(content)
-
         dispatch(setCredentials({ accessToken: access_token, username: username, role: role, user: content }));
         showToast("Welcome back", username);
 
@@ -240,11 +240,13 @@ const showToast = (message, username) => {
             </Form>
           )}
         </Formik>
-        <button style={{background:theme.bg, color:theme.color}} className="px-6 py-3" onClick={()=> navigate(from, { replace: true })}>Go back</button>
+        <button  className="px-6 py-3 flex text-red-700 font-bold" onClick={()=> navigate('/')}>
+          <IoChevronBack fontSize={'1.3rem'}/>Back
+          </button>
       </Box>
     </Flex>
   );
 }
 
 export default SignIn;
-``
+

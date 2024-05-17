@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { IoChevronBack } from "react-icons/io5";
 import {
   Box,
   FormControl,
@@ -35,7 +36,7 @@ function SignUp({theme}) {
   const toast = useToast();
   const location= useLocation();
   const from = location.state?.from?.pathname || "/";
-
+  const navigate=useNavigate();
   function handleTogglePassword() {
     setShowPassword(!showPassword);
   }
@@ -319,7 +320,9 @@ function SignUp({theme}) {
             </Form>
           )}
         </Formik>
-        <button style={{background:theme.bg, color:theme.color}} className="px-6 py-3" onClick={()=> navigate(from, { replace: true })}>Go back</button>
+        <button  className="px-6 py-3 flex text-red-700 font-bold" onClick={()=> navigate('/')}>
+          <IoChevronBack fontSize={'1.3rem'}/>Back
+          </button>
       </Box>
     </Flex>
   );

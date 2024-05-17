@@ -4,7 +4,7 @@ const AuthSlice =createSlice({
     name:'auth',
     initialState:{
         isLoggedIn:false,
-        user:{},
+        user:[],
         username:null,
         role:null,
         accessToken:null,
@@ -35,5 +35,5 @@ export default AuthSlice.reducer
 
 export const selectCurrentUser = (state) =>state?.auth?.username //export the current user  information after login
 export const selectCurrentToken = (state) =>state?.auth?.accessToken //export the current user access token after login
-export const selectCurrentRole = (state) =>state?.auth?.role
+export const selectCurrentRole = (state) =>state?.auth?.user?.role
 export const selectUserData=(state)=>state?.auth.user
