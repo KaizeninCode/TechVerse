@@ -1,5 +1,6 @@
-from flask import Flask, request , jsonify, make_response
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.datastructures import FileStorage
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_bcrypt import Bcrypt
@@ -11,12 +12,22 @@ from models.comment import Comment
 from models.content import Content
 from models.subscription import Subscription
 from models.user import User
+import cloudinary
+from cloudinary import uploader
+import logging
+import os
 
 from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv()
+
 
 app = Flask(__name__)
 CORS(app,supports_credentials=True)
 api = Api(app)
+
+
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
@@ -33,6 +44,13 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 db.init_app(app)
+
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name=os.getenv('CLOUD_NAME'),
+    api_key=os.getenv('API_KEY'),
+    api_secret=os.getenv('API_SECRET')
+)
 
 #CRUD FOR USER
 class UserResource(Resource):

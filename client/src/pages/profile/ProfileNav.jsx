@@ -28,7 +28,7 @@ function ProfileNav() {
   </ul>
 </nav>
     </div>
-  )
+  );
 }
 
 export default ProfileNav
