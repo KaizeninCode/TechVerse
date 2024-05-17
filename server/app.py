@@ -12,10 +12,10 @@ from models.comment import Comment
 from models.content import Content
 from models.subscription import Subscription
 from models.user import User
-import cloudinary
-from cloudinary import uploader
-import logging
-import os
+# import cloudinary
+# from cloudinary import uploader
+# import logging
+# import os
 
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -47,12 +47,12 @@ jwt = JWTManager(app)
 
 db.init_app(app)
 
-# Configure Cloudinary
-cloudinary.config(
-    cloud_name=os.getenv('CLOUD_NAME'),
-    api_key=os.getenv('API_KEY'),
-    api_secret=os.getenv('API_SECRET')
-)
+# # Configure Cloudinary
+# cloudinary.config(
+#     cloud_name=os.getenv('CLOUD_NAME'),
+#     api_key=os.getenv('API_KEY'),
+#     api_secret=os.getenv('API_SECRET')
+# )
 
 #CRUD FOR USER
 class UserResource(Resource):
@@ -243,63 +243,62 @@ class ContentResource(Resource):
         contents = Content.query.all()
         return jsonify([{'id': content.id, 'title': content.title, 'description': content.description, 'type': content.type, 'category_id': content.category_id,'published_status': content.published_status,'user_id': content.user_id,'created_at': content.created_at,'updated_at': content.updated_at,} for content in contents])
 
-    def post(self):
-        app.logger.info(f"Form data: {request.form}")
-        app.logger.info(f"Files: {request.files}")
+    # def post(self):
+    #     app.logger.info(f"Form data: {request.form}")
+    #     app.logger.info(f"Files: {request.files}")
 
-        file_to_upload = request.files.get('file')
-        title = request.form.get('title')
-        description = request.form.get('description')
-        content_type = request.form.get('type')
-        category_id = request.form.get('category_id')
-        user_id = request.form.get('user_id')
-        published_status = request.form.get(
-            'published_status', 'false').lower() in ['true', '1']
+    #     file_to_upload = request.files.get('file')
+    #     title = request.form.get('title')
+    #     description = request.form.get('description')
+    #     content_type = request.form.get('type')
+    #     category_id = request.form.get('category_id')
+    #     user_id = request.form.get('user_id')
+    #     published_status = request.form.get(
+    #         'published_status', 'false').lower() in ['true', '1']
 
-        app.logger.info(
-            f"Received data: title={title}, description={description}, type={content_type}, category_id={category_id}, user_id={user_id}")
+    #     app.logger.info(
+    #         f"Received data: title={title}, description={description}, type={content_type}, category_id={category_id}, user_id={user_id}")
 
-        if not all([title, description, content_type, category_id, file_to_upload]):
-            return {"error": "Title, description, type, category_id, and file are required fields"}, 400
+    #     if not all([title, description, content_type, category_id, file_to_upload]):
+    #         return {"error": "Title, description, type, category_id, and file are required fields"}, 400
 
-        try:
-            if content_type == 'video':
-                upload_result = uploader.upload(
-                    file_to_upload, resource_type='video')
-            else:
-                upload_result = uploader.upload(file_to_upload)
-        except Exception as e:
-            app.logger.error(f"Error uploading file to Cloudinary: {e}")
-            return {"error": "File upload failed"}, 500
+    #     try:
+    #         if content_type == 'video':
+    #             upload_result = uploader.upload(
+    #                 file_to_upload, resource_type='video')
+    #         else:
+    #             upload_result = uploader.upload(file_to_upload)
+    #     except Exception as e:
+    #         app.logger.error(f"Error uploading file to Cloudinary: {e}")
+    #         return {"error": "File upload failed"}, 500
 
-        app.logger.info(upload_result)
+    #     app.logger.info(upload_result)
 
-        try:
-            new_content = Content(
-                title=title,
-                description=description,
-                type=content_type,
-                category_id=category_id,
-                user_id=user_id,
-                published_status=published_status,
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
-            )
-            db.session.add(new_content)
-            db.session.commit()
-        except Exception as e:
-            app.logger.error(f"Error saving content to database: {e}")
-            return {"error": "Content creation failed"}, 500
+    #     try:
+    #         new_content = Content(
+    #             title=title,
+    #             description=description,
+    #             type=content_type,
+    #             category_id=category_id,
+    #             user_id=user_id,
+    #             published_status=published_status,
+    #             created_at=datetime.utcnow(),
+    #             updated_at=datetime.utcnow()
+    #         )
+    #         db.session.add(new_content)
+    #         db.session.commit()
+    #     except Exception as e:
+    #         app.logger.error(f"Error saving content to database: {e}")
+    #         return {"error": "Content creation failed"}, 500
 
-        return {
-            "message": "Content uploaded and created successfully",
-            "content_id": new_content.id,
-            "upload_result": upload_result
-        }, 201
+    #     return {
+    #         "message": "Content uploaded and created successfully",
+    #         "content_id": new_content.id,
+    #         "upload_result": upload_result
+    #     }, 201
 
         
-    @jwt_required()
-    
+    @jwt_required() 
     def post(self):
         current_user = get_jwt_identity()
         if current_user["role"] not in ["staff", "student"]:
@@ -338,6 +337,41 @@ class ContentResource(Resource):
 
         return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
+    @jwt_required()
+    def put(self, content_id):
+        current_user = get_jwt_identity()
+        if current_user["role"] not in ["staff", "student"]:
+            return jsonify({"error": "Only staff and students allowed to update content"}), 403
+
+        data = request.get_json()
+        title = data.get('title')
+        description = data.get('description')
+        content_type = data.get('type')
+        category_id = data.get('category_id')
+        published_status = data.get("published_status")
+
+        if not all([title, description, content_type, category_id]):
+            return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
+
+        content = Content.query.get(content_id)
+        if not content:
+            return jsonify({"error": "Content not found"}), 404
+
+        if content.user_id != current_user.get('id'):
+            return jsonify({"error": "Unauthorized action"}), 403
+
+        # Update content fields
+        content.title = title
+        content.description = description
+        content.type = content_type
+        content.category_id = category_id
+        content.published_status = published_status
+        content.updated_at = datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+
+        db.session.commit()
+
+        return jsonify({"message": "Content updated successfully", "content_id": content.id})
+        
     @jwt_required()
     def post_approve(self, id):
         current_user_role = get_jwt_identity()["role"]
@@ -400,14 +434,31 @@ class ContentById(Resource):
 api.add_resource(ContentById, "/contents/<int:id>")
 
 class ContentByTitle(Resource):
+    @jwt_required()
     def get(self):
         title = request.args.get('title')
-        content = Content.query.filter(Content.title.ilike(f'%{title}')).all()
+        if not title:
+            return jsonify({"error": "Title parameter is required"}), 400
+
+        content = Content.query.filter_by(title=={title}).all()
         if content:
-            return jsonify([c.to_dict() for c in content])
+            content_list = []
+            for c in content:
+                content_list.append({
+                    "id": c.id,
+                    "title": c.title,
+                    "description": c.description,
+                    "type": c.type,
+                    "category_id": c.category_id,
+                    "user_id": c.user_id,
+                    "published_status": c.published_status,
+                    "created_at": c.created_at.strftime('%d/%m/%Y'),
+                    "updated_at": c.updated_at.strftime('%d/%m/%Y')
+                })
+            return jsonify(content_list), 200
         else:
             return jsonify({"message": "Content not found"}), 404
-        
+
 api.add_resource(ContentByTitle, "/contents/search")
 
 class CategoryResource(Resource):
