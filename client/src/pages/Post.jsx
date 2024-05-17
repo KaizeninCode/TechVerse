@@ -16,8 +16,12 @@ import {
 } from "@chakra-ui/react";
 import { FaImages } from "react-icons/fa";
 import { IoAdd } from "react-icons/io5";
+import { selectUserData } from "../features/AuthSlice";
+import { useSelector } from "react-redux";
 
 const Post = () => {
+  const user = useSelector(selectUserData);
+  console.log(user.id)
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [file, setFile] = useState(null);
   const [input, setInput] = useState({
@@ -25,7 +29,8 @@ const Post = () => {
     title: "",
     description: "",
     link: "",
-    type:'',
+    user_id:user.id,
+    type: "",
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -68,9 +73,9 @@ const Post = () => {
     formData.append("category_id", input.category_id);
     formData.append("title", input.title);
     formData.append("description", input.description);
-    formData.append("file", file);
+    formData.append("type", input.type);
     formData.append("link", input.link);
-
+    formData.append("user_id", user.id);
     try {
       const response = await fetch("http://127.0.0.1:5555/contents", {
         method: "POST",
@@ -79,6 +84,9 @@ const Post = () => {
 
       if (!response.ok) {
         const errorMessage = await response.json();
+      console.log(formData);
+
+
         setError(
           errorMessage.error || "An error occurred. Please try again later."
         );
@@ -175,6 +183,7 @@ const Post = () => {
                     accept="image/*, video/*"
                     onChange={handleFileChange}
                     style={{ display: "none" }}
+                    value={input.type}
                   />
                   <p className="w-fit flex p-2">
                     Drag and drop an image/video
