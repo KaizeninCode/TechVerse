@@ -12,10 +12,10 @@ from models.comment import Comment
 from models.content import Content
 from models.subscription import Subscription
 from models.user import User
-import cloudinary
-from cloudinary import uploader
-import logging
-import os
+# import cloudinary
+# from cloudinary import uploader
+# import logging
+# import os
 
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
@@ -47,12 +47,12 @@ jwt = JWTManager(app)
 
 db.init_app(app)
 
-# Configure Cloudinary
-cloudinary.config(
-    cloud_name=os.getenv('CLOUD_NAME'),
-    api_key=os.getenv('API_KEY'),
-    api_secret=os.getenv('API_SECRET')
-)
+# # Configure Cloudinary
+# cloudinary.config(
+#     cloud_name=os.getenv('CLOUD_NAME'),
+#     api_key=os.getenv('API_KEY'),
+#     api_secret=os.getenv('API_SECRET')
+# )
 
 #CRUD FOR USER
 class UserResource(Resource):
@@ -243,9 +243,9 @@ class ContentResource(Resource):
         contents = Content.query.all()
         return jsonify([{'id': content.id, 'title': content.title, 'description': content.description, 'type': content.type, 'category_id': content.category_id,'published_status': content.published_status,'user_id': content.user_id,'created_at': content.created_at,'updated_at': content.updated_at,} for content in contents])
 
-    def post(self):
-        app.logger.info(f"Form data: {request.form}")
-        app.logger.info(f"Files: {request.files}")
+    # def post(self):
+    #     app.logger.info(f"Form data: {request.form}")
+    #     app.logger.info(f"Files: {request.files}")
 
         file_to_upload = request.files.get('file')
         title = request.form.get('title')
@@ -276,15 +276,15 @@ class ContentResource(Resource):
             app.logger.error(f"Missing fields: {missing_fields}")
             return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
 
-        try:
-            if content_type == 'video':
-                upload_result = uploader.upload(
-                    file_to_upload, resource_type='video')
-            else:
-                upload_result = uploader.upload(file_to_upload)
-        except Exception as e:
-            app.logger.error(f"Error uploading file to Cloudinary: {e}")
-            return {"error": "File upload failed"}, 500
+    #     try:
+    #         if content_type == 'video':
+    #             upload_result = uploader.upload(
+    #                 file_to_upload, resource_type='video')
+    #         else:
+    #             upload_result = uploader.upload(file_to_upload)
+    #     except Exception as e:
+    #         app.logger.error(f"Error uploading file to Cloudinary: {e}")
+    #         return {"error": "File upload failed"}, 500
 
         app.logger.info(upload_result)
 
@@ -387,14 +387,31 @@ class ContentById(Resource):
 api.add_resource(ContentById, "/contents/<int:id>")
 
 class ContentByTitle(Resource):
+    @jwt_required()
     def get(self):
         title = request.args.get('title')
-        content = Content.query.filter(Content.title.ilike(f'%{title}')).all()
+        if not title:
+            return jsonify({"error": "Title parameter is required"}), 400
+
+        content = Content.query.filter_by(title=={title}).all()
         if content:
-            return jsonify([c.to_dict() for c in content])
+            content_list = []
+            for c in content:
+                content_list.append({
+                    "id": c.id,
+                    "title": c.title,
+                    "description": c.description,
+                    "type": c.type,
+                    "category_id": c.category_id,
+                    "user_id": c.user_id,
+                    "published_status": c.published_status,
+                    "created_at": c.created_at.strftime('%d/%m/%Y'),
+                    "updated_at": c.updated_at.strftime('%d/%m/%Y')
+                })
+            return jsonify(content_list), 200
         else:
             return jsonify({"message": "Content not found"}), 404
-        
+
 api.add_resource(ContentByTitle, "/contents/search")
 
 #Content approval
