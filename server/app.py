@@ -140,6 +140,17 @@ class UserLoginResource(Resource):
     
 api.add_resource(UserLoginResource, '/login')
 
+# Logout User
+class UserLogoutResource(Resource):
+    @jwt_required()
+    def delete(self):
+        jti = get_raw_jwt()['jti']
+        revoke_token(jti) # revoke current_user token
+
+        return {'message': 'Successfully logged out'}, 200
+    
+api.add_resource(UserLogoutResource, '/logout')
+
         
 #CRUD FOR COMMENTS
 class CommentResource(Resource):
@@ -243,14 +254,47 @@ class ContentResource(Resource):
 
         return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
-    # @jwt_required()
-    # def post_approve(self, id):
-    #     current_user_role = get_jwt_identity()["role"]
+    @jwt_required()
+    def post_approve(self, id):
+        current_user_role = get_jwt_identity()["role"]
 
-    #     if current_user_role not in ["admin", "staff"]:
-    #         return jsonify({"error": "Unauthorized access"})
+        if current_user_role not in ["admin", "staff"]:
+            return jsonify({"error": "Unauthorized access"})
         
-    #     content = Content.query.get(id)
+        content = Content.query.get(id)
+        return jsonify({"message": "Content approved successfully", "content_id": content.id})
+    
+    
+    @jwt_required()
+    def put(self, id):
+        # Check if the user is authorized to edit content
+        current_user = get_jwt_identity()
+        user_role = current_user.get('role')
+        if user_role not in ["admin", "staff"]:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+        # Get the data from the request
+        data = request.get_json()
+
+        # Find the content by its ID
+        content = Content.query.get(id)
+        if not content:
+            return jsonify({'error': 'Content not found'}), 404
+
+        # Update content details with new values
+        content.title = data.get('title', content.title)
+        content.description = data.get('description', content.description)
+        content.type = data.get('type', content.type)
+        content.category_id = data.get('category_id', content.category_id)
+        content.published_status = data.get('published_status', content.published_status)
+        content.updated_at = datetime.now()  # Update the updated_at timestamp
+
+        # Commit the changes to the database
+        db.session.commit()
+
+        return jsonify({'message': 'Content details updated successfully'})
+
+    
 
     @jwt_required() 
     def delete(self, id):
@@ -270,24 +314,6 @@ class ContentResource(Resource):
         content.published_status = True
         db.session.commit()
 
-        return jsonify({"message": "Content approved successfully", "content_id": content.id})
-    
-    @jwt_required() 
-    def delete(self, id):
-        current_user_role = get_jwt_identity()["role"]
-        if current_user_role != "admin":
-            return jsonify({"error": "Unauthorized access"})
-
-        content = Content.query.get(id)
-        if not content:
-            return jsonify({"error": "Content not found"}), 404
-        
-        # Delete associated comments first
-        for comment in content.comments:
-            db.session.delete(comment)
-
-        db.session.delete(content)
-        db.session.commit()
 
         return jsonify({"message": "Content deleted successfully"})  
         
@@ -426,6 +452,29 @@ class SubscriptionResource(Resource):
         
 # Add resources to routes
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
+
+# # customized interests
+# class InterestResource(Resource):
+#     @jwt_required()
+#     def put(self):
+#         current_user = get_jwt_identity()
+#         user_id = current_user['id']
+#         user = User.query.get(user_id)
+#         if not user:
+#             return jsonify({'error': 'User not found'}), 404
+        
+#         data = request.get_json()
+#         new_interests = data.get('interests')
+#         if not new_interests:
+#             return jsonify({'error': 'No interests provided'}), 400
+        
+#         # Update user's interests
+#         user.interests = new_interests
+#         db.session.commit()
+        
+#         return jsonify({'message': 'Interests updated successfully'})
+    
+# api.add_resource(InterestResource, '/interests') 
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
