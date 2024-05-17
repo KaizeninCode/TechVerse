@@ -31,7 +31,7 @@ const App = () => {
       <Route path="/signup" element={<SignUp theme={theme} />} />
       <Route path="/signin" element={<SignIn theme={theme} />} />
       {/* protected routes */}
-       <Route element={<RequireAuth/>}>
+       <Route element={<RequireAuth allowedRoles={['staff','admin','student']} />}>
        <Route path="/explore" element={<Explore theme={theme} />} />
         <Route path="/posts" element={<Post />} />
         <Route path="/profile" element={<Profile />} />

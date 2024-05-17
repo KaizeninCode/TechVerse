@@ -38,11 +38,11 @@ export const navlinks = [
     link: "/SignIn",
     icon: <LiaSignInAltSolid />,
   },
-  {
-    name: "Sign Up",
-    link: "/SignUp",
-    icon: <SiGnuprivacyguard />,
-  },
+  // {
+  //   name: "Sign Up",
+  //   link: "/SignUp",
+  //   icon: <SiGnuprivacyguard />,
+  // },
   {
     name: "Log Out",
     link: "/logout",
