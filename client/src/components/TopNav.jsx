@@ -5,14 +5,15 @@ import { useSelector } from 'react-redux';
 import SearchBar from './SearchBar';
 import MenuBar from './MenuBar';
 import { MdNotificationsActive } from "react-icons/md";
-import { useColorMode } from '@chakra-ui/react';
+import { selectUserData } from '../features/AuthSlice';
 function TopNav({toggleTheme, theme}) {
-  
+  const user=useSelector(selectUserData)
+  console.log(user.id)
     const username=useSelector(selectCurrentUser)
     console.log(username)
   return (
     <div className=' p-3 flex justify-around shadow-lg mb-1 border-gray-700'>
-    <h1 style={{color:theme}} className='text-xl'>Welcome {username}</h1>
+    <h1 style={{color:theme}} className='text-xl'>Welcome {user.username}</h1>
     <SearchBar theme={theme}/>
       <nav className='inline-flex'>
      <MenuBar toggleTheme={toggleTheme} theme={theme}/>

@@ -1,13 +1,44 @@
 import { useLocation, Navigate, Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
-import { selectCurrentToken } from "./AuthSlice";
-import { selectCurrentRole } from "./AuthSlice";
-function RequireAuth() {
+import { selectCurrentToken, selectCurrentRole, selectCurrentUser } from "./AuthSlice";
+import { useToast } from "@chakra-ui/react";
+import { useEffect } from "react";
+
+function RequireAuth({ allowedRoles }) {
   const location = useLocation();
   const token = useSelector(selectCurrentToken);
-const role=useSelector(selectCurrentRole);
+  const role = useSelector(selectCurrentRole);
+  const user = useSelector(selectCurrentUser);
+  const toast = useToast();
 
-  return token ? <Outlet /> : <Navigate to="/signin" state={{ from: location }} replace />;
+  useEffect(() => {
+    if (!user) {
+      showToast("Not Logged In", false);
+    } else if (!allowedRoles.includes(role)) {
+      showToast("Unauthorized", true);
+    }
+  }, [user, role, allowedRoles, toast]);
+
+  const showToast = (message, userExists) => {
+    toast({
+      title: userExists ? "Unauthorized" : "Not Logged In",
+      description: userExists ? "You are not allowed to perform this action." : "Please login before proceeding.",
+      status: "error",
+      duration: 5000,
+      isClosable: true,
+      position: "top",
+    });
+  };
+
+  if (!user) {
+    return <Navigate to="/signin" state={{ from: location }} replace />;
+  }
+
+  if (!allowedRoles.includes(role)) {
+    return <Navigate to="/" state={{ from: location }} replace />;
+  }
+
+  return <Outlet />;
 }
 
 export default RequireAuth;
