@@ -103,7 +103,7 @@ class UserResource(Resource):
 
         user = User.query.get(id)
         if user:
-            data = request.json
+            data = request.get_json()
             user.username = data.get('username', user.username)
             user.email = data.get('email', user.email)
             user.role = data.get('role', user.role)
@@ -255,12 +255,26 @@ class ContentResource(Resource):
         user_id = request.form.get('user_id')
         published_status = request.form.get(
             'published_status', 'false').lower() in ['true', '1']
-
+        category=Category.query.filter(category_id==Category.name).first()
         app.logger.info(
-            f"Received data: title={title}, description={description}, type={content_type}, category_id={category_id}, user_id={user_id}")
+            f"Received data: title={title}, description={description}, type={content_type}, category_id={category.id}, user_id={user_id}")
 
-        if not all([title, description, content_type, category_id, file_to_upload]):
-            return {"error": "Title, description, type, category_id, and file are required fields"}, 400
+        # Check for missing fields and log them
+        missing_fields = []
+        if not title:
+            missing_fields.append("title")
+        if not description:
+            missing_fields.append("description")
+        if not content_type:
+            missing_fields.append("type")
+        if not category_id:
+            missing_fields.append("category_id")
+        if not file_to_upload:
+            missing_fields.append("file")
+
+        if missing_fields:
+            app.logger.error(f"Missing fields: {missing_fields}")
+            return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
 
         try:
             if content_type == 'video':
@@ -274,17 +288,20 @@ class ContentResource(Resource):
 
         app.logger.info(upload_result)
 
+        file_url = upload_result.get('url')
+
         try:
             new_content = Content(
                 title=title,
                 description=description,
-                type=content_type,
-                category_id=category_id,
+                type=file_url,  # Save the file URL instead of the file object
+                category_id=category.id,
                 user_id=user_id,
                 published_status=published_status,
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow()
             )
+            print(new_content)
             db.session.add(new_content)
             db.session.commit()
         except Exception as e:
@@ -296,47 +313,45 @@ class ContentResource(Resource):
             "content_id": new_content.id,
             "upload_result": upload_result
         }, 201
-
-        
-    @jwt_required()
+    # @jwt_required()
     
-    def post(self):
-        current_user = get_jwt_identity()
-        if current_user["role"] not in ["staff", "student"]:
-            return jsonify({"error": "Only staff and students allowed to post"}), 403
+    # def post(self):
+    #     current_user = get_jwt_identity()
+    #     if current_user["role"] not in ["staff", "student"]:
+    #         return jsonify({"error": "Only staff and students allowed to post"}), 403
 
-        data = request.get_json()
-        title = data.get('title')
-        description = data.get('description')
-        content_type = data.get('type')
-        category_id = data.get('category_id')
-        published_status = data.get("published_status") 
-        user_id = data.get('user_ id')
+    #     data = request.get_json()
+    #     title = data.get('title')
+    #     description = data.get('description')
+    #     content_type = data.get('type')
+    #     category_id = data.get('category_id')
+    #     published_status = data.get("published_status") 
+    #     user_id = data.get('user_ id')
 
 
-        if not all([title, description, content_type, category_id]):
-            return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
+    #     if not all([title, description, content_type, category_id]):
+    #         return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
 
-        # Get the user_id from the current_user
-        # user_id = current_user.get('id')
-        # user_id = data.get('id')
+    #     # Get the user_id from the current_user
+    #     # user_id = current_user.get('id')
+    #     # user_id = data.get('id')
 
-        # Create new content
-        new_content = Content(
-            title=title,
-            user_id=user_id,
-            description=description,
-            type=content_type,
-            category_id=category_id,
-            # user_id=user_id,
-            published_status=published_status,
-            created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
-            updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
-        )
-        db.session.add(new_content)
-        db.session.commit()
+    #     # Create new content
+    #     new_content = Content(
+    #         title=title,
+    #         user_id=user_id,
+    #         description=description,
+    #         type=content_type,
+    #         category_id=category_id,
+    #         # user_id=user_id,
+    #         published_status=published_status,
+    #         created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
+    #         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+    #     )
+    #     db.session.add(new_content)
+    #     db.session.commit()
 
-        return jsonify({"message": "Content created successfully", "content_id": new_content.id})
+    #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
     @jwt_required()
     def post_approve(self, id):

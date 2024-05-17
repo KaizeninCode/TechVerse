@@ -29,8 +29,8 @@ const Post = () => {
     title: "",
     description: "",
     link: "",
-    user_id:user.id,
-    type: "",
+    user_id: user.id,
+    type: null, // Initialize type as null
   });
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -47,6 +47,12 @@ const Post = () => {
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
     setFile(selectedFile);
+
+    // Update the input state with the selected file
+    setInput((prevState) => ({
+      ...prevState,
+      type: selectedFile,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -70,12 +76,14 @@ const Post = () => {
     setSuccess(null);
 
     const formData = new FormData();
-    formData.append("category_id", input.category_id);
-    formData.append("title", input.title);
-    formData.append("description", input.description);
-    formData.append("type", input.type);
-    formData.append("link", input.link);
-    formData.append("user_id", user.id);
+  formData.append("category_id", input.category_id);
+  formData.append("title", input.title);
+  formData.append("description", input.description);
+  formData.append("type", file.type.startsWith("video/") ? "video" : "image");
+  formData.append("link", input.link);
+  formData.append("user_id", user.id);
+  formData.append("file", file); // Note: changed from input.type to file
+    
     try {
       const response = await fetch("http://127.0.0.1:5555/contents", {
         method: "POST",
@@ -84,9 +92,7 @@ const Post = () => {
 
       if (!response.ok) {
         const errorMessage = await response.json();
-      console.log(formData);
-
-
+        console.log(input);
         setError(
           errorMessage.error || "An error occurred. Please try again later."
         );
@@ -97,6 +103,8 @@ const Post = () => {
           title: "",
           description: "",
           link: "",
+          user_id: user.id,
+          type: null, // Reset type to null
         });
         setFile(null);
       }
@@ -155,8 +163,14 @@ const Post = () => {
                 </option>
                 <option value="Data Science">Data Science</option>
                 <option value="Machine Learning">Machine Learning</option>
-                <option value="Dev-Ops">Dev-Ops</option>
+                <option value="DevOps">Dev-Ops</option>
                 <option value="UI/UX">UI/UX</option>
+                <option value="Data Visualization">Data Visualization</option>
+                <option value="Mobile-App development">Mobile-App Development</option>
+                <option value="Game Development">Game Development</option>
+                <option value="Cyber Security">
+                  Cyber Security
+                </option>
               </select>
               <h3 className="font-bold">Text</h3>
               <input
@@ -183,7 +197,6 @@ const Post = () => {
                     accept="image/*, video/*"
                     onChange={handleFileChange}
                     style={{ display: "none" }}
-                    value={input.type}
                   />
                   <p className="w-fit flex p-2">
                     Drag and drop an image/video
@@ -235,8 +248,9 @@ const Post = () => {
                 <button
                   type="submit"
                   className="bg-blue-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                  disabled={isLoading}
                 >
-                  Post
+                  {isLoading ? 'Posting...' : 'Post'}
                 </button>
               </div>
             </form>
