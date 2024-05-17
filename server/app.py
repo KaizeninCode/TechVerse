@@ -11,7 +11,7 @@ from models.comment import Comment
 from models.content import Content
 from models.subscription import Subscription
 from models.user import User
-
+from datetime import timedelta
 from datetime import datetime
 
 app = Flask(__name__)
@@ -23,6 +23,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = "e27c00e982d1d07709adb9eb"
+
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=1800) 
 
 app.secret_key = "hgfedcba"
 
@@ -46,8 +48,6 @@ class UserResource(Resource):
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
-    
-class UserResource(Resource):
     def post(self):
         data = request.get_json()
         username = data.get('username')
@@ -112,6 +112,27 @@ class UserResource(Resource):
             return jsonify({'message': 'User deleted successfully'})
         else:
             return jsonify({'message': 'User not found'}), 404
+        
+    @jwt_required()
+    def patch(self, id):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
+
+        user = User.query.get(id)
+        if user:
+            data = request.json
+            user.active_status = data.get('active_status', user.active_status)
+            
+            db.session.commit()
+            status = "activated" if user.active_status else "deactivated"
+            
+            return jsonify({'message': f'User {status} successfully'})
+        
+        return jsonify({'error': 'User not found'}), 404
+    
+api.add_resource(UserResource, '/users', '/users/<int:id>', '/users/deactivate/<int:id>')
         
 # login user
 class UserLoginResource(Resource):
@@ -206,7 +227,6 @@ class CommentResource(Resource):
             return jsonify({'message': 'Comment not found'}), 404
 
 # Add resources to routes
-api.add_resource(UserResource, '/users', '/users/<int:id>')
 api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
 @app.route('/')
