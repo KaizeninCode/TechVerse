@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { setCredentials } from "../features/AuthSlice";
 import { useDispatch } from "react-redux";
 import { useLocation } from "react-router-dom";
-import { useToast } from "@chakra-ui/react";
 import { useLoginMutation } from "../features/authApiSlice";
 
 import {
@@ -68,6 +67,7 @@ function SignIn({ theme }) {
 
         const { data } = response;
         const { access_token, username, role, content } = data;
+        console.log(content)
 
         dispatch(setCredentials({ accessToken: access_token, username: username, role: role, user: content }));
         showToast("Welcome back", username);
