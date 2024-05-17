@@ -17,7 +17,7 @@ from cloudinary import uploader
 import logging
 import os
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -34,6 +34,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = "e27c00e982d1d07709adb9eb"
+
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=1800) 
 
 app.secret_key = "hgfedcba"
 
@@ -129,6 +131,27 @@ class UserResource(Resource):
         else:
             return jsonify({'message': 'User not found'}), 404
         
+    @jwt_required()
+    def patch(self, id):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
+
+        user = User.query.get(id)
+        if user:
+            data = request.json
+            user.active_status = data.get('active_status', user.active_status)
+            
+            db.session.commit()
+            status = "activated" if user.active_status else "deactivated"
+            
+            return jsonify({'message': f'User {status} successfully'})
+        
+        return jsonify({'error': 'User not found'}), 404
+    
+api.add_resource(UserResource, '/users', '/users/<int:id>', '/users/deactivate/<int:id>')
+        
 # login user
 class UserLoginResource(Resource):
     def post(self):
@@ -209,7 +232,6 @@ class CommentResource(Resource):
             return jsonify({'message': 'Comment not found'}), 404
 
 # Add resources to routes
-api.add_resource(UserResource, '/users', '/users/<int:id>')
 api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
 @app.route('/')
@@ -276,59 +298,59 @@ class ContentResource(Resource):
         }, 201
 
         
-    # @jwt_required()
+    @jwt_required()
     
-    # def post(self):
-    #     # current_user = get_jwt_identity()
-    #     # if current_user["role"] not in ["staff", "student"]:
-    #     #     return jsonify({"error": "Only staff and students allowed to post"}), 403
+    def post(self):
+        current_user = get_jwt_identity()
+        if current_user["role"] not in ["staff", "student"]:
+            return jsonify({"error": "Only staff and students allowed to post"}), 403
 
-    #     data = request.get_json()
-    #     title = data.get('title')
-    #     description = data.get('description')
-    #     content_type = data.get('type')
-    #     category_id = data.get('category_id')
-    #     published_status = data.get("published_status") 
-    #     user_id = data.get('user_ id')
+        data = request.get_json()
+        title = data.get('title')
+        description = data.get('description')
+        content_type = data.get('type')
+        category_id = data.get('category_id')
+        published_status = data.get("published_status") 
+        user_id = data.get('user_ id')
 
 
-    #     if not all([title, description, content_type, category_id]):
-    #         return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
+        if not all([title, description, content_type, category_id]):
+            return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
 
-    #     # Get the user_id from the current_user
-    #     # user_id = current_user.get('id')
-    #     # user_id = data.get('id')
+        # Get the user_id from the current_user
+        # user_id = current_user.get('id')
+        # user_id = data.get('id')
 
-    #     # Create new content
-    #     new_content = Content(
-    #         title=title,
-    #         user_id=user_id,
-    #         description=description,
-    #         type=content_type,
-    #         category_id=category_id,
-    #         # user_id=user_id,
-    #         published_status=published_status,
-    #         created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
-    #         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
-    #     )
-    #     db.session.add(new_content)
-    #     db.session.commit()
+        # Create new content
+        new_content = Content(
+            title=title,
+            user_id=user_id,
+            description=description,
+            type=content_type,
+            category_id=category_id,
+            # user_id=user_id,
+            published_status=published_status,
+            created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
+            updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+        )
+        db.session.add(new_content)
+        db.session.commit()
 
-    #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
+        return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
-    # @jwt_required()
-    # def post_approve(self, id):
-    #     current_user_role = get_jwt_identity()["role"]
+    @jwt_required()
+    def post_approve(self, id):
+        current_user_role = get_jwt_identity()["role"]
 
-    #     if current_user_role not in ["admin", "staff"]:
-    #         return jsonify({"error": "Unauthorized access"})
+        if current_user_role not in ["admin", "staff"]:
+            return jsonify({"error": "Unauthorized access"})
         
-    #     content = Content.query.get(id)
+        content = Content.query.get(id)
 
-    # @jwt_required() 
+    @jwt_required() 
     def delete(self, id):
         current_user = get_jwt_identity()["role"]
-        if current_user["role"] not in ["admin"]:
+        if current_user["role"] not in ["admin", "staff"]:
             return jsonify({"error": "Only staff and students can delete content"}), 403
 
         content = Content.query.get(id)
