@@ -1,5 +1,6 @@
-from flask import Flask, request , jsonify, make_response
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
+from werkzeug.datastructures import FileStorage
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_bcrypt import Bcrypt
@@ -11,12 +12,22 @@ from models.comment import Comment
 from models.content import Content
 from models.subscription import Subscription
 from models.user import User
-from datetime import timedelta
-from datetime import datetime
+import cloudinary
+from cloudinary import uploader
+import logging
+import os
+
+from datetime import datetime, timedelta
+from dotenv import load_dotenv
+load_dotenv()
+
 
 app = Flask(__name__)
 CORS(app,supports_credentials=True)
 api = Api(app)
+
+
+
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
@@ -35,6 +46,13 @@ bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
 
 db.init_app(app)
+
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name=os.getenv('CLOUD_NAME'),
+    api_key=os.getenv('API_KEY'),
+    api_secret=os.getenv('API_SECRET')
+)
 
 #CRUD FOR USER
 class UserResource(Resource):
@@ -76,12 +94,12 @@ class UserResource(Resource):
 
         return jsonify({'message': 'User created successfully'})
 
-    # @jwt_required()
+    @jwt_required()
     def put(self, id):
-        # current_user_role = get_jwt_identity()["role"]
+        current_user_role = get_jwt_identity()["role"]
 
-        # if current_user_role != "admin":
-        #     return jsonify({"error": "Unauthorized access"})
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
 
         user = User.query.get(id)
         if user:
@@ -146,35 +164,22 @@ class UserLoginResource(Resource):
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
             access_token = create_access_token(identity={"email": user.email, "role": user.role})
             refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
-            
+
             response = make_response(jsonify({
             'access_token': access_token,
             'id': user.id,
             'content': user.to_dict(),
             'username': user.username,
-            'role': user.role,
-            'refresh_token':refresh_token
+            'role':user.role,
+            'refresh_token': refresh_token
             # Include user data in the response
         }), 200)
-        
-       
         if response:
          print(access_token)
          return response
-        return jsonify({"message": "Invalid username or password"}), 401
+        return make_response(jsonify({"error": "Invalid username or password"}), 400)
     
 api.add_resource(UserLoginResource, '/login')
-
-# Logout User
-class UserLogoutResource(Resource):
-    @jwt_required()
-    def delete(self):
-        jti = get_raw_jwt()['jti']
-        revoke_token(jti) # revoke current_user token
-
-        return {'message': 'Successfully logged out'}, 200
-    
-api.add_resource(UserLogoutResource, '/logout')
 
         
 #CRUD FOR COMMENTS
@@ -238,8 +243,63 @@ class ContentResource(Resource):
         contents = Content.query.all()
         return jsonify([{'id': content.id, 'title': content.title, 'description': content.description, 'type': content.type, 'category_id': content.category_id,'published_status': content.published_status,'user_id': content.user_id,'created_at': content.created_at,'updated_at': content.updated_at,} for content in contents])
 
-    
+    def post(self):
+        app.logger.info(f"Form data: {request.form}")
+        app.logger.info(f"Files: {request.files}")
+
+        file_to_upload = request.files.get('file')
+        title = request.form.get('title')
+        description = request.form.get('description')
+        content_type = request.form.get('type')
+        category_id = request.form.get('category_id')
+        user_id = request.form.get('user_id')
+        published_status = request.form.get(
+            'published_status', 'false').lower() in ['true', '1']
+
+        app.logger.info(
+            f"Received data: title={title}, description={description}, type={content_type}, category_id={category_id}, user_id={user_id}")
+
+        if not all([title, description, content_type, category_id, file_to_upload]):
+            return {"error": "Title, description, type, category_id, and file are required fields"}, 400
+
+        try:
+            if content_type == 'video':
+                upload_result = uploader.upload(
+                    file_to_upload, resource_type='video')
+            else:
+                upload_result = uploader.upload(file_to_upload)
+        except Exception as e:
+            app.logger.error(f"Error uploading file to Cloudinary: {e}")
+            return {"error": "File upload failed"}, 500
+
+        app.logger.info(upload_result)
+
+        try:
+            new_content = Content(
+                title=title,
+                description=description,
+                type=content_type,
+                category_id=category_id,
+                user_id=user_id,
+                published_status=published_status,
+                created_at=datetime.utcnow(),
+                updated_at=datetime.utcnow()
+            )
+            db.session.add(new_content)
+            db.session.commit()
+        except Exception as e:
+            app.logger.error(f"Error saving content to database: {e}")
+            return {"error": "Content creation failed"}, 500
+
+        return {
+            "message": "Content uploaded and created successfully",
+            "content_id": new_content.id,
+            "upload_result": upload_result
+        }, 201
+
+        
     @jwt_required()
+    
     def post(self):
         current_user = get_jwt_identity()
         if current_user["role"] not in ["staff", "student"]:
@@ -251,15 +311,15 @@ class ContentResource(Resource):
         content_type = data.get('type')
         category_id = data.get('category_id')
         published_status = data.get("published_status") 
-        user_id = data.get('user_id')
+        user_id = data.get('user_ id')
 
 
         if not all([title, description, content_type, category_id]):
             return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
 
         # Get the user_id from the current_user
-        user_id = current_user.get('id')
-        user_id = data.get('id')
+        # user_id = current_user.get('id')
+        # user_id = data.get('id')
 
         # Create new content
         new_content = Content(
@@ -286,44 +346,11 @@ class ContentResource(Resource):
             return jsonify({"error": "Unauthorized access"})
         
         content = Content.query.get(id)
-        return jsonify({"message": "Content approved successfully", "content_id": content.id})
-    
-    
-    @jwt_required()
-    def put(self, id):
-        # Check if the user is authorized to edit content
-        current_user = get_jwt_identity()
-        user_role = current_user.get('role')
-        if user_role not in ["admin", "staff"]:
-            return jsonify({"error": "Unauthorized access"}), 403
-
-        # Get the data from the request
-        data = request.get_json()
-
-        # Find the content by its ID
-        content = Content.query.get(id)
-        if not content:
-            return jsonify({'error': 'Content not found'}), 404
-
-        # Update content details with new values
-        content.title = data.get('title', content.title)
-        content.description = data.get('description', content.description)
-        content.type = data.get('type', content.type)
-        content.category_id = data.get('category_id', content.category_id)
-        content.published_status = data.get('published_status', content.published_status)
-        content.updated_at = datetime.now()  # Update the updated_at timestamp
-
-        # Commit the changes to the database
-        db.session.commit()
-
-        return jsonify({'message': 'Content details updated successfully'})
-
-    
 
     @jwt_required() 
     def delete(self, id):
         current_user = get_jwt_identity()["role"]
-        if current_user["role"] not in ["admin"]:
+        if current_user["role"] not in ["admin", "staff"]:
             return jsonify({"error": "Only staff and students can delete content"}), 403
 
         content = Content.query.get(id)
@@ -338,6 +365,24 @@ class ContentResource(Resource):
         content.published_status = True
         db.session.commit()
 
+        return jsonify({"message": "Content approved successfully", "content_id": content.id})
+    
+    # @jwt_required() 
+    def delete(self, id):
+        current_user_role = get_jwt_identity()["role"]
+        if current_user_role != "admin":
+            return jsonify({"error": "Unauthorized access"})
+
+        content = Content.query.get(id)
+        if not content:
+            return jsonify({"error": "Content not found"}), 404
+        
+        # Delete associated comments first
+        for comment in content.comments:
+            db.session.delete(comment)
+
+        db.session.delete(content)
+        db.session.commit()
 
         return jsonify({"message": "Content deleted successfully"})  
         
@@ -477,28 +522,24 @@ class SubscriptionResource(Resource):
 # Add resources to routes
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
-# # customized interests
-# class InterestResource(Resource):
-#     @jwt_required()
-#     def put(self):
-#         current_user = get_jwt_identity()
-#         user_id = current_user['id']
-#         user = User.query.get(user_id)
-#         if not user:
-#             return jsonify({'error': 'User not found'}), 404
-        
-#         data = request.get_json()
-#         new_interests = data.get('interests')
-#         if not new_interests:
-#             return jsonify({'error': 'No interests provided'}), 400
-        
-#         # Update user's interests
-#         user.interests = new_interests
-#         db.session.commit()
-        
-#         return jsonify({'message': 'Interests updated successfully'})
-    
-# api.add_resource(InterestResource, '/interests') 
+
+# @app.route("/upload", methods=['POST'])
+# def upload_file():
+#     app.logger.info('in upload route')
+
+#     cloudinary.config(cloud_name=os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'),
+#                       api_secret=os.getenv('API_SECRET'))
+#     upload_result = None
+#     if request.method == 'POST':
+#         file_to_upload = request.files['file']
+#         app.logger.info('%s file_to_upload', file_to_upload)
+#         if file_to_upload:
+#             upload_result = uploader.upload(
+#                 file_to_upload, resource_type='video')
+#             app.logger.info(upload_result)
+#             return jsonify(upload_result)
+
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
