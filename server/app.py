@@ -96,22 +96,10 @@ class UserResource(Resource):
 
     # @jwt_required()
     def put(self, id):
-<<<<<<< HEAD
-        # current_user = get_jwt_identity()
-        
-        # if not current_user:
-        #     return jsonify({"error": "Unauthorized access"}), 401
-
-        # current_user_role = current_user.get("role")
-        
-        # if current_user_role != "admin":
-        #     return jsonify({"error": "Unauthorized access"}), 403
-=======
         # current_user_role = get_jwt_identity()["role"]
 
         # if current_user_role != "admin":
         #     return jsonify({"error": "Unauthorized access"})
->>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
 
         user = User.query.get(id)
         if not user:
@@ -301,8 +289,6 @@ class ContentResource(Resource):
             "content_id": new_content.id,
             "upload_result": upload_result
         }, 201
-<<<<<<< HEAD
-=======
 
         
     @jwt_required()
@@ -345,7 +331,6 @@ class ContentResource(Resource):
 
     #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
->>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
     @jwt_required()
     def post_approve(self, id):
         current_user_role = get_jwt_identity()["role"]
@@ -568,10 +553,6 @@ class SubscriptionResource(Resource):
 # Add resources to routes
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
-<<<<<<< HEAD
-
-
-=======
 # # customized interests
 # class InterestResource(Resource):
 #     @jwt_required()
@@ -594,7 +575,6 @@ api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id
 #         return jsonify({'message': 'Interests updated successfully'})
     
 # api.add_resource(InterestResource, '/interests') 
->>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
