@@ -1,6 +1,8 @@
 import React, { useState } from "react";
+
 import {
   Textarea,
+  useToast,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -21,7 +23,7 @@ import { useSelector } from "react-redux";
 
 const Post = () => {
   const user = useSelector(selectUserData);
-  console.log(user.id)
+ const toast=useToast()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [file, setFile] = useState(null);
   const [input, setInput] = useState({
@@ -108,6 +110,7 @@ const Post = () => {
         });
         setFile(null);
       }
+      showToast('Post Created!')
     } catch (error) {
       console.error("Error posting data:", error);
       setError("An error occurred. Please try again later.");
@@ -115,7 +118,16 @@ const Post = () => {
       setIsLoading(false);
     }
   };
-
+const showToast = () => {
+  toast({
+    title: "Post Created!",
+    description: "Post created successfully!",
+    status: "success",
+    duration: 5000,
+    isClosable: true,
+    position: "top",
+  });
+}
   return (
     <>
       <button

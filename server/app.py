@@ -96,25 +96,37 @@ class UserResource(Resource):
 
     # @jwt_required()
     def put(self, id):
+<<<<<<< HEAD
+        # current_user = get_jwt_identity()
+        
+        # if not current_user:
+        #     return jsonify({"error": "Unauthorized access"}), 401
+
+        # current_user_role = current_user.get("role")
+        
+        # if current_user_role != "admin":
+        #     return jsonify({"error": "Unauthorized access"}), 403
+=======
         # current_user_role = get_jwt_identity()["role"]
 
         # if current_user_role != "admin":
         #     return jsonify({"error": "Unauthorized access"})
+>>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
 
         user = User.query.get(id)
-        if user:
-            data = request.get_json()
-            user.username = data.get('username', user.username)
-            user.email = data.get('email', user.email)
-            user.role = data.get('role', user.role)
-            # user.active_status = data.get('active_status' == True, user.active_status)
-            # user.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
-            # user.updated_at = datetime.strptime(data.get('updated_at', user.updated_at), '%d/%m/%Y')
-            db.session.commit()
-
-            return jsonify({'message': 'User updated successfully'})
-        else:
+        if not user:
             return jsonify({'message': 'User not found'}), 404
+
+        data = request.get_json()
+        
+        user.username = data.get('username', user.username)
+        user.email = data.get('email', user.email)
+        user.role = data.get('role', user.role)
+        user.active_status = data.get('active_status', user.active_status)
+
+        db.session.commit()
+
+       
 
     @jwt_required()
     def delete(self, id):
@@ -289,6 +301,8 @@ class ContentResource(Resource):
             "content_id": new_content.id,
             "upload_result": upload_result
         }, 201
+<<<<<<< HEAD
+=======
 
         
     @jwt_required()
@@ -331,6 +345,7 @@ class ContentResource(Resource):
 
     #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
     
+>>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
     @jwt_required()
     def post_approve(self, id):
         current_user_role = get_jwt_identity()["role"]
@@ -518,10 +533,10 @@ class SubscriptionResource(Resource):
         data = request.get_json()
         user_id=data.get('user_id')
         category_id=data.get('category_id')
-    
+        category=Category.query.filter(category_id==Category.name).first()
         new_subscription = Subscription(
             user_id=user_id,
-            category_id=category_id, 
+            category_id=category.id, 
         )
 
         db.session.add(new_subscription)
@@ -553,6 +568,10 @@ class SubscriptionResource(Resource):
 # Add resources to routes
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
+<<<<<<< HEAD
+
+
+=======
 # # customized interests
 # class InterestResource(Resource):
 #     @jwt_required()
@@ -575,6 +594,7 @@ api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id
 #         return jsonify({'message': 'Interests updated successfully'})
     
 # api.add_resource(InterestResource, '/interests') 
+>>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

@@ -11,6 +11,7 @@ import colorPallete from './colorPallete';
 import { NavLink } from 'react-router-dom';
 import { LiaDoorOpenSolid } from 'react-icons/lia';
 import Post from '../pages/Post';
+import LogOut from '../pages/LogOut';
 
 export const navlinks = [
   {
@@ -43,11 +44,11 @@ export const navlinks = [
   //   link: "/SignUp",
   //   icon: <SiGnuprivacyguard />,
   // },
-  {
-    name: "Log Out",
-    link: "/logout",
-    icon: <LiaDoorOpenSolid />,
-  },
+  // {
+  //   name: "Log Out",
+  //   link: "/logout",
+  //   icon: <LiaDoorOpenSolid />,
+  // },
 ];
 
 const linkStyles = {
@@ -78,8 +79,11 @@ const Navbar = () => {
                 </NavLink>
                 
             </Box>
-        ))}
+        ))} 
+
+        <LogOut/>
       </VStack>
+     
       <Post/>
     </Box>
   )

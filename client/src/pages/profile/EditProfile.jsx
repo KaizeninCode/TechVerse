@@ -51,6 +51,7 @@ function EditProfile({ theme }) {
               onClose(); 
           } else {
               console.error('Error: Profile update failed');
+              console.log('Error: Profile update failed')
               showToast('Profile update failed', false);
           }
       } catch (error) {
