@@ -1,11 +1,11 @@
-from flask import Flask, request, jsonify, make_response
+from flask import Flask, request, jsonify, make_response,uploader
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.datastructures import FileStorage
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity,get_raw_jwt,revoke_token
 from models.dbconfig import db
 from models.category import Category
 from models.comment import Comment
