@@ -94,27 +94,32 @@ class UserResource(Resource):
 
         return jsonify({'message': 'User created successfully'})
 
-    @jwt_required()
+    # @jwt_required()
     def put(self, id):
-        current_user_role = get_jwt_identity()["role"]
+        # current_user = get_jwt_identity()
+        
+        # if not current_user:
+        #     return jsonify({"error": "Unauthorized access"}), 401
 
-        if current_user_role != "admin":
-            return jsonify({"error": "Unauthorized access"})
+        # current_user_role = current_user.get("role")
+        
+        # if current_user_role != "admin":
+        #     return jsonify({"error": "Unauthorized access"}), 403
 
         user = User.query.get(id)
-        if user:
-            data = request.get_json()
-            user.username = data.get('username', user.username)
-            user.email = data.get('email', user.email)
-            user.role = data.get('role', user.role)
-            # user.active_status = data.get('active_status' == True, user.active_status)
-            # user.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
-            # user.updated_at = datetime.strptime(data.get('updated_at', user.updated_at), '%d/%m/%Y')
-            db.session.commit()
-
-            return jsonify({'message': 'User updated successfully'})
-        else:
+        if not user:
             return jsonify({'message': 'User not found'}), 404
+
+        data = request.get_json()
+        
+        user.username = data.get('username', user.username)
+        user.email = data.get('email', user.email)
+        user.role = data.get('role', user.role)
+        user.active_status = data.get('active_status', user.active_status)
+
+        db.session.commit()
+
+       
 
     @jwt_required()
     def delete(self, id):
@@ -313,46 +318,6 @@ class ContentResource(Resource):
             "content_id": new_content.id,
             "upload_result": upload_result
         }, 201
-    # @jwt_required()
-    
-    # def post(self):
-    #     current_user = get_jwt_identity()
-    #     if current_user["role"] not in ["staff", "student"]:
-    #         return jsonify({"error": "Only staff and students allowed to post"}), 403
-
-    #     data = request.get_json()
-    #     title = data.get('title')
-    #     description = data.get('description')
-    #     content_type = data.get('type')
-    #     category_id = data.get('category_id')
-    #     published_status = data.get("published_status") 
-    #     user_id = data.get('user_ id')
-
-
-    #     if not all([title, description, content_type, category_id]):
-    #         return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
-
-    #     # Get the user_id from the current_user
-    #     # user_id = current_user.get('id')
-    #     # user_id = data.get('id')
-
-    #     # Create new content
-    #     new_content = Content(
-    #         title=title,
-    #         user_id=user_id,
-    #         description=description,
-    #         type=content_type,
-    #         category_id=category_id,
-    #         # user_id=user_id,
-    #         published_status=published_status,
-    #         created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
-    #         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
-    #     )
-    #     db.session.add(new_content)
-    #     db.session.commit()
-
-    #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
-    
     @jwt_required()
     def post_approve(self, id):
         current_user_role = get_jwt_identity()["role"]
@@ -502,10 +467,10 @@ class SubscriptionResource(Resource):
         data = request.get_json()
         user_id=data.get('user_id')
         category_id=data.get('category_id')
-    
+        category=Category.query.filter(category_id==Category.name).first()
         new_subscription = Subscription(
             user_id=user_id,
-            category_id=category_id, 
+            category_id=category.id, 
         )
 
         db.session.add(new_subscription)
@@ -537,22 +502,6 @@ class SubscriptionResource(Resource):
 # Add resources to routes
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
-
-# @app.route("/upload", methods=['POST'])
-# def upload_file():
-#     app.logger.info('in upload route')
-
-#     cloudinary.config(cloud_name=os.getenv('CLOUD_NAME'), api_key=os.getenv('API_KEY'),
-#                       api_secret=os.getenv('API_SECRET'))
-#     upload_result = None
-#     if request.method == 'POST':
-#         file_to_upload = request.files['file']
-#         app.logger.info('%s file_to_upload', file_to_upload)
-#         if file_to_upload:
-#             upload_result = uploader.upload(
-#                 file_to_upload, resource_type='video')
-#             app.logger.info(upload_result)
-#             return jsonify(upload_result)
 
 
 
