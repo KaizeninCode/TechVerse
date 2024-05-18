@@ -175,9 +175,30 @@ api.add_resource(UserLogoutResource, '/logout')
         
 #CRUD FOR COMMENTS
 class CommentResource(Resource):
-    def get(self):
-        comments = Comment.query.all()
-        return jsonify([{'id': comment.id, 'content_id': comment.content_id, 'text': comment.text, 'parent_comment_id': comment.parent_comment_id, 'created_at': comment.created_at} for comment in comments])
+    def get(self, id=None):
+        if id:
+            comments = Comment.query.filter_by(user_id=id).all()
+        else:
+            comments = Comment.query.all()
+
+        result = []
+        for comment in comments:
+            user = User.query.filter_by(id=comment.user_id).first()
+
+            result.append({
+                'id': comment.id,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                } if user else None,
+                'content_id': comment.content_id,
+                'text': comment.text,
+                'parent_comment_id': comment.parent_comment_id,
+                'created_at': comment.created_at
+            })
+
+        return jsonify(result)
 
     @jwt_required()
     def post(self):
