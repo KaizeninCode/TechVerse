@@ -12,12 +12,12 @@ from models.comment import Comment
 from models.content import Content
 from models.subscription import Subscription
 from models.user import User
-import cloudinary
-from cloudinary import uploader
-import logging
-import os
+# import cloudinary
+# from cloudinary import uploader
+# import logging
+# import os
 
-from datetime import datetime, timedelta
+from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -35,8 +35,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = "e27c00e982d1d07709adb9eb"
 
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(seconds=1800) 
-
 app.secret_key = "hgfedcba"
 
 migrate = Migrate(app, db)
@@ -47,12 +45,12 @@ jwt = JWTManager(app)
 
 db.init_app(app)
 
-# Configure Cloudinary
-cloudinary.config(
-    cloud_name=os.getenv('CLOUD_NAME'),
-    api_key=os.getenv('API_KEY'),
-    api_secret=os.getenv('API_SECRET')
-)
+# # Configure Cloudinary
+# cloudinary.config(
+#     cloud_name=os.getenv('CLOUD_NAME'),
+#     api_key=os.getenv('API_KEY'),
+#     api_secret=os.getenv('API_SECRET')
+# )
 
 #CRUD FOR USER
 class UserResource(Resource):
@@ -66,6 +64,8 @@ class UserResource(Resource):
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
+    
+class UserResource(Resource):
     def post(self):
         data = request.get_json()
         username = data.get('username')
@@ -96,6 +96,7 @@ class UserResource(Resource):
 
     # @jwt_required()
     def put(self, id):
+<<<<<<< HEAD
         # current_user = get_jwt_identity()
         
         # if not current_user:
@@ -105,6 +106,12 @@ class UserResource(Resource):
         
         # if current_user_role != "admin":
         #     return jsonify({"error": "Unauthorized access"}), 403
+=======
+        # current_user_role = get_jwt_identity()["role"]
+
+        # if current_user_role != "admin":
+        #     return jsonify({"error": "Unauthorized access"})
+>>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
 
         user = User.query.get(id)
         if not user:
@@ -136,27 +143,6 @@ class UserResource(Resource):
         else:
             return jsonify({'message': 'User not found'}), 404
         
-    @jwt_required()
-    def patch(self, id):
-        current_user_role = get_jwt_identity()["role"]
-
-        if current_user_role != "admin":
-            return jsonify({"error": "Unauthorized access"})
-
-        user = User.query.get(id)
-        if user:
-            data = request.json
-            user.active_status = data.get('active_status', user.active_status)
-            
-            db.session.commit()
-            status = "activated" if user.active_status else "deactivated"
-            
-            return jsonify({'message': f'User {status} successfully'})
-        
-        return jsonify({'error': 'User not found'}), 404
-    
-api.add_resource(UserResource, '/users', '/users/<int:id>', '/users/deactivate/<int:id>')
-        
 # login user
 class UserLoginResource(Resource):
     def post(self):
@@ -169,22 +155,35 @@ class UserLoginResource(Resource):
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
             access_token = create_access_token(identity={"email": user.email, "role": user.role})
             refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
-
+            
             response = make_response(jsonify({
             'access_token': access_token,
             'id': user.id,
             'content': user.to_dict(),
             'username': user.username,
-            'role':user.role,
-            'refresh_token': refresh_token
+            'role': user.role,
+            'refresh_token':refresh_token
             # Include user data in the response
         }), 200)
+        
+       
         if response:
          print(access_token)
          return response
-        return make_response(jsonify({"error": "Invalid username or password"}), 400)
+        return jsonify({"message": "Invalid username or password"}), 401
     
 api.add_resource(UserLoginResource, '/login')
+
+# Logout User
+class UserLogoutResource(Resource):
+    @jwt_required()
+    def delete(self):
+        jti = get_raw_jwt()['jti']
+        revoke_token(jti) # revoke current_user token
+
+        return {'message': 'Successfully logged out'}, 200
+    
+api.add_resource(UserLogoutResource, '/logout')
 
         
 #CRUD FOR COMMENTS
@@ -237,6 +236,7 @@ class CommentResource(Resource):
             return jsonify({'message': 'Comment not found'}), 404
 
 # Add resources to routes
+api.add_resource(UserResource, '/users', '/users/<int:id>')
 api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
 @app.route('/')
@@ -260,26 +260,12 @@ class ContentResource(Resource):
         user_id = request.form.get('user_id')
         published_status = request.form.get(
             'published_status', 'false').lower() in ['true', '1']
-        category=Category.query.filter(category_id==Category.name).first()
+
         app.logger.info(
-            f"Received data: title={title}, description={description}, type={content_type}, category_id={category.id}, user_id={user_id}")
+            f"Received data: title={title}, description={description}, type={content_type}, category_id={category_id}, user_id={user_id}")
 
-        # Check for missing fields and log them
-        missing_fields = []
-        if not title:
-            missing_fields.append("title")
-        if not description:
-            missing_fields.append("description")
-        if not content_type:
-            missing_fields.append("type")
-        if not category_id:
-            missing_fields.append("category_id")
-        if not file_to_upload:
-            missing_fields.append("file")
-
-        if missing_fields:
-            app.logger.error(f"Missing fields: {missing_fields}")
-            return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
+        if not all([title, description, content_type, category_id, file_to_upload]):
+            return {"error": "Title, description, type, category_id, and file are required fields"}, 400
 
         try:
             if content_type == 'video':
@@ -293,20 +279,17 @@ class ContentResource(Resource):
 
         app.logger.info(upload_result)
 
-        file_url = upload_result.get('url')
-
         try:
             new_content = Content(
                 title=title,
                 description=description,
-                type=file_url,  # Save the file URL instead of the file object
-                category_id=category.id,
+                type=content_type,
+                category_id=category_id,
                 user_id=user_id,
                 published_status=published_status,
                 created_at=datetime.utcnow(),
                 updated_at=datetime.utcnow()
             )
-            print(new_content)
             db.session.add(new_content)
             db.session.commit()
         except Exception as e:
@@ -318,6 +301,51 @@ class ContentResource(Resource):
             "content_id": new_content.id,
             "upload_result": upload_result
         }, 201
+<<<<<<< HEAD
+=======
+
+        
+    @jwt_required()
+    
+    def post(self):
+        current_user = get_jwt_identity()
+        if current_user["role"] not in ["staff", "student"]:
+            return jsonify({"error": "Only staff and students allowed to post"}), 403
+
+        data = request.get_json()
+        title = data.get('title')
+        description = data.get('description')
+        content_type = data.get('type')
+        category_id = data.get('category_id')
+        published_status = data.get("published_status") 
+        user_id = data.get('user_ id')
+
+
+    #     if not all([title, description, content_type, category_id]):
+    #         return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
+
+        # Get the user_id from the current_user
+        # user_id = current_user.get('id')
+        # user_id = data.get('id')
+
+    #     # Create new content
+    #     new_content = Content(
+    #         title=title,
+    #         user_id=user_id,
+    #         description=description,
+    #         type=content_type,
+    #         category_id=category_id,
+    #         # user_id=user_id,
+    #         published_status=published_status,
+    #         created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
+    #         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
+    #     )
+    #     db.session.add(new_content)
+    #     db.session.commit()
+
+    #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
+    
+>>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
     @jwt_required()
     def post_approve(self, id):
         current_user_role = get_jwt_identity()["role"]
@@ -367,7 +395,7 @@ class ContentResource(Resource):
         return jsonify({"message": "Content deleted successfully"})  
         
     
-api.add_resource(ContentResource, "/contents", "/contents/<int:id>","/contents/approve/<int:id>")
+api.add_resource(ContentResource, "/contents", "/contents/<int:id>")
 
 class ContentById(Resource):
     def get(self, id):
@@ -380,15 +408,53 @@ class ContentById(Resource):
 api.add_resource(ContentById, "/contents/<int:id>")
 
 class ContentByTitle(Resource):
+    @jwt_required()
     def get(self):
         title = request.args.get('title')
-        content = Content.query.filter(Content.title.ilike(f'%{title}')).all()
+        if not title:
+            return jsonify({"error": "Title parameter is required"}), 400
+
+        content = Content.query.filter_by(title=={title}).all()
         if content:
-            return jsonify([c.to_dict() for c in content])
+            content_list = []
+            for c in content:
+                content_list.append({
+                    "id": c.id,
+                    "title": c.title,
+                    "description": c.description,
+                    "type": c.type,
+                    "category_id": c.category_id,
+                    "user_id": c.user_id,
+                    "published_status": c.published_status,
+                    "created_at": c.created_at.strftime('%d/%m/%Y'),
+                    "updated_at": c.updated_at.strftime('%d/%m/%Y')
+                })
+            return jsonify(content_list), 200
         else:
             return jsonify({"message": "Content not found"}), 404
-        
+
 api.add_resource(ContentByTitle, "/contents/search")
+
+#Content approval
+class ContentApprovalResource(Resource):
+    @jwt_required()
+    def put(self, id):
+        current_user_role = get_jwt_identity()["role"]
+
+        if current_user_role not in ["admin", "staff"]:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+        content = Content.query.get(id)
+
+        if not content:
+            return jsonify({"error": "Content not found"}), 404
+
+        content.published_status = True
+        db.session.commit()
+
+        return jsonify({"message": "Content approved successfully"}), 200
+    
+api.add_resource(ContentApprovalResource, "/contents/approve/<int:id>")
 
 class CategoryResource(Resource):
     def get(self):
@@ -502,8 +568,33 @@ class SubscriptionResource(Resource):
 # Add resources to routes
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
+<<<<<<< HEAD
 
 
+=======
+# # customized interests
+# class InterestResource(Resource):
+#     @jwt_required()
+#     def put(self):
+#         current_user = get_jwt_identity()
+#         user_id = current_user['id']
+#         user = User.query.get(user_id)
+#         if not user:
+#             return jsonify({'error': 'User not found'}), 404
+        
+#         data = request.get_json()
+#         new_interests = data.get('interests')
+#         if not new_interests:
+#             return jsonify({'error': 'No interests provided'}), 400
+        
+#         # Update user's interests
+#         user.interests = new_interests
+#         db.session.commit()
+        
+#         return jsonify({'message': 'Interests updated successfully'})
+    
+# api.add_resource(InterestResource, '/interests') 
+>>>>>>> 8427a08fcc1064e22cc51864bcf3a03c759eec88
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
