@@ -1,19 +1,19 @@
-from flask import Flask, request, jsonify, make_response,uploader
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.datastructures import FileStorage
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 from flask_bcrypt import Bcrypt
 from flask_cors import CORS
-from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity,get_raw_jwt,revoke_token
+from flask_jwt_extended import JWTManager, create_access_token, create_refresh_token, jwt_required, get_jwt_identity
 from models.dbconfig import db
 from models.category import Category
 from models.comment import Comment
 from models.content import Content
 from models.subscription import Subscription
 from models.user import User
-# import cloudinary
-# from cloudinary import uploader
+import cloudinary
+from cloudinary import uploader
 # import logging
 # import os
 
@@ -53,6 +53,7 @@ db.init_app(app)
 # )
 
 #CRUD FOR USER
+    
 class UserResource(Resource):
     @jwt_required()
     def get(self):
@@ -64,8 +65,6 @@ class UserResource(Resource):
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
-    
-class UserResource(Resource):
     def post(self):
         data = request.get_json()
         username = data.get('username')
@@ -225,6 +224,7 @@ class CommentResource(Resource):
 
 # Add resources to routes
 api.add_resource(UserResource, '/users', '/users/<int:id>')
+# api.add_resource(UserResource, '/users', methods=['GET'])
 api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
 @app.route('/')
