@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, make_response, request
+from flask import Flask, request, jsonify, make_response
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.datastructures import FileStorage
 from flask_migrate import Migrate
@@ -12,8 +12,8 @@ from models.comment import Comment
 from models.content import Content
 from models.subscription import Subscription
 from models.user import User
-# import cloudinary
-# from cloudinary import uploader
+import cloudinary
+from cloudinary import uploader
 # import logging
 # import os
 
@@ -53,6 +53,7 @@ db.init_app(app)
 # )
 
 #CRUD FOR USER
+    
 class UserResource(Resource):
     @jwt_required()
     def get(self):
@@ -198,9 +199,30 @@ api.add_resource(UserLogoutResource, '/logout')
         
 #CRUD FOR COMMENTS
 class CommentResource(Resource):
-    def get(self):
-        comments = Comment.query.all()
-        return jsonify([{'id': comment.id, 'content_id': comment.content_id, 'text': comment.text, 'parent_comment_id': comment.parent_comment_id, 'created_at': comment.created_at} for comment in comments])
+    def get(self, id=None):
+        if id:
+            comments = Comment.query.filter_by(user_id=id).all()
+        else:
+            comments = Comment.query.all()
+
+        result = []
+        for comment in comments:
+            user = User.query.filter_by(id=comment.user_id).first()
+
+            result.append({
+                'id': comment.id,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                } if user else None,
+                'content_id': comment.content_id,
+                'text': comment.text,
+                'parent_comment_id': comment.parent_comment_id,
+                'created_at': comment.created_at
+            })
+
+        return jsonify(result)
 
     @jwt_required()
     def post(self):
@@ -246,6 +268,8 @@ class CommentResource(Resource):
             return jsonify({'message': 'Comment not found'}), 404
 
 # Add resources to routes
+api.add_resource(UserResource, '/users', '/users/<int:id>')
+# api.add_resource(UserResource, '/users', methods=['GET'])
 api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
 @app.route('/')
