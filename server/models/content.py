@@ -1,5 +1,6 @@
 from sqlalchemy.orm import relationship
 from .dbconfig import db
+from datetime import datetime
 
 
 class Content(db.Model):
@@ -12,8 +13,8 @@ class Content(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     published_status = db.Column(db.Boolean, default=False)
-    created_at = db.Column(db.DateTime, nullable=False)
-    updated_at = db.Column(db.DateTime, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
+    updated_at = db.Column(db.DateTime, default=datetime.now, onupdate=datetime.now)
 
     user = relationship("User", back_populates="contents")
     comments = relationship(

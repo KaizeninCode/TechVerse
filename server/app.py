@@ -65,6 +65,28 @@ class UserResource(Resource):
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
+    @jwt_required()
+    def get_user_contents(user_id):
+        current_user = get_jwt_identity()
+        if current_user["role"] != "admin" and current_user["id"] != user_id:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+        contents = Content.query.filter_by(user_id=user_id).all()
+        if not contents:
+            return jsonify({"message": "No contents found for this user"}), 404
+
+        return jsonify([{
+            'id': content.id,
+            'title': content.title,
+            'description': content.description,
+            'type': content.type,
+            'category_id': content.category_id,
+            'user_id': content.user_id,
+            'published_status': content.published_status,
+            'created_at': content.created_at,
+            'updated_at': content.updated_at
+        } for content in contents])
+
     def post(self):
         data = request.get_json()
         username = data.get('username')
@@ -129,6 +151,8 @@ class UserResource(Resource):
             return jsonify({'message': 'User deleted successfully'})
         else:
             return jsonify({'message': 'User not found'}), 404
+        
+api.add_resource(UserResource, '/users', '/users/<int:id>')
         
 # login user
 class UserLoginResource(Resource):
