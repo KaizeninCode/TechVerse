@@ -61,7 +61,7 @@ const PostContainer = () => {
             </CardBody>
             <CardFooter>
               <HStack className='font-raleway max-lg:mx-auto '>
-              <Button variant={'ghost'} color={'#33658a'}><CiHeart/></Button>
+              <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
                 <Button variant={'ghost'} color={'#33658a'}><BiComment /></Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
