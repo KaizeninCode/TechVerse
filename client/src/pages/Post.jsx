@@ -11,10 +11,7 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
+  
 } from "@chakra-ui/react";
 import { FaImages } from "react-icons/fa";
 import { IoAdd } from "react-icons/io5";

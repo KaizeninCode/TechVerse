@@ -3,6 +3,7 @@ import { logout } from '../features/AuthSlice'
 import { useDispatch } from 'react-redux'
 import { LiaDoorOpenSolid } from 'react-icons/lia';
 import { useToast } from '@chakra-ui/react';
+import RequireAuth from '../features/RequireAuth';
 function LogOut() {
     const dispatch=useDispatch()
     const toast = useToast();
@@ -11,9 +12,10 @@ function LogOut() {
       
      
         dispatch(logout())
-        window.location.href = '/signin';
+        window.location.href = '/signin';  
+       
       },3000)
-      showToast('You have been logged out')
+     showToast('You have been logged out')
   }
   const showToast = (message) => {
    
@@ -26,12 +28,15 @@ function LogOut() {
     });
   }
   return (
-    <div className='flex items-center justify-between w-[150px]'>
+   
+        <div className='flex items-center justify-between w-[150px]'>
       <button onClick={handleLogout} className='text-lg font-montserrat font-bold my-3 flex items-center justify-start' type="button">
       <LiaDoorOpenSolid fontSize={'1.5rem'}/>
       Logout
       </button>
     </div>
+   
+  
   )
 }
 

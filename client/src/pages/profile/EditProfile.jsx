@@ -28,8 +28,8 @@ function EditProfile({ theme }) {
 
     const handleSubmit = async (event) => {
       event.preventDefault();
-  
-      try {
+      
+         try {
           const response = await fetch(`http://127.0.0.1:5555/users/${user.id}`, {
               method: 'PUT',
               headers: {
@@ -57,6 +57,9 @@ function EditProfile({ theme }) {
       } catch (error) {
           console.error('Error: Profile update failed', error);
       }
+     
+  
+     
   };
   
   const showToast = (message, isSuccess) => {

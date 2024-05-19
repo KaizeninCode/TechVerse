@@ -3,21 +3,22 @@ import { Menu, MenuButton, MenuList, MenuItem, IconButton, useColorMode } from '
 import { IoMdSettings } from "react-icons/io";
 import { MdDarkMode } from "react-icons/md";
 import { UseTheme } from './ThemeContext';
-import { BsToggleOn } from "react-icons/bs";
-import { BsToggleOff } from "react-icons/bs";
+import { MdOutlinePublishedWithChanges } from "react-icons/md";
 import { FaEdit } from "react-icons/fa";
-import EditProfile from '../pages/profile/EditProfile';
+import { FaFlag } from "react-icons/fa";
 import { Link } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
-import { BiSolidCategory } from "react-icons/bi";
-import Categories from '../pages/Categories';
+import { BiDotsVerticalRounded } from "react-icons/bi";
+import { MdUnsubscribe } from "react-icons/md";
 import useAuth from '../features/UseAuth';
 import { TiUserAdd } from "react-icons/ti";
-function MenuBar({ toggleTheme }) {
-    const { colorMode } = useColorMode();
-    const darkTheme = UseTheme();
+import { FaShare } from "react-icons/fa6";
+function PostMenu({ toggleTheme }) {
+   const colorMode=useColorMode()
     const isAuthorized = useAuth(['staff', 'admin']);
-    const isAdmin = useAuth(['admin']);
+    const isAdmin = useAuth(['admin','staff']);
+    const isStaff = useAuth(['staff']);
+    const isStudent = useAuth(['student']);
 const navigate=useNavigate()
     return (
         <Menu >
@@ -25,58 +26,54 @@ const navigate=useNavigate()
                 as={IconButton}
                 fontSize={'2rem'}
                 aria-label='Options'
-                icon={<IoMdSettings />}
+                icon={<BiDotsVerticalRounded />}
                 variant='ghost'
                 color
             />
             <MenuList bg={colorMode === 'dark' ? 'gray.800' : 'white'} color={colorMode === 'dark' ? 'white' : 'gray.800'}>
-                <MenuItem
+            {isAdmin &&<MenuItem
                     display='flex'
                     alignItems='center'
                     justifyContent='space-between'
-                    icon={<MdDarkMode />}
-                    onClick={toggleTheme}
-                >
-                    <span>Dark Mode</span>
-                    <IconButton
-                        aria-label='Toggle Dark Mode'
-                        fontSize={'2rem'}
-                        icon={darkTheme ? <BsToggleOn /> : <BsToggleOff />}
-                        bg={colorMode === 'dark' ? 'gray.700' : 'gray.200'}
-                        color={colorMode === 'dark' ? 'white' : 'gray.800'}
-                        _hover={{ bg: colorMode === 'dark' ? 'gray.600' : 'gray.300' }}
-                        _active={{ bg: colorMode === 'dark' ? 'gray.600' : 'gray.300' }}
-                    />
-
-                </MenuItem>
-                <MenuItem
+                    icon={<MdOutlinePublishedWithChanges/>}>
+                   <span>Publish</span>
+                </MenuItem>}
+                
+                {isStaff &&<MenuItem
                     display='flex'
                     alignItems='center'
                     justifyContent='space-between'
-                    icon={<FaEdit />}
-                    onClick={()=>navigate('/profile')}
+                   icon={<FaEdit/>}
                     >
 
                     <span>
-                        Edit Profile
+                        Edit Post
                     </span>
-                    </MenuItem>
-                    {isAuthorized && 
+                    </MenuItem>}
+                    {isStudent && 
                     <MenuItem
                      display='flex'
                     alignItems='center'
                     justifyContent='space-between'
+                    icon={<MdUnsubscribe/>}
                      >
-                     <Categories/>
+                    <span>Subscribe</span>
+                    </MenuItem>}
+                    {isStudent && 
+                    <MenuItem
+                     display='flex'
+                    alignItems='center'
+                    justifyContent='space-between'
+                    icon={<FaShare/>}
+                     >
+                    <span>Share</span>
                     </MenuItem>}
                    {isAdmin&& <MenuItem
                     display='flex'
                     alignItems='center'
                     justifyContent='space-between'
-                   onClick={()=>navigate('/signup')}
-                   icon={<TiUserAdd />}
-                   >
-                    <span>Add user</span>
+                    icon={<FaFlag/>}>
+                    <span>Flag Post</span>
                    </MenuItem>}
                   
             </MenuList>
@@ -84,4 +81,4 @@ const navigate=useNavigate()
     );
 }
 
-export default MenuBar;
+export default PostMenu;
