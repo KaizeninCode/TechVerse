@@ -135,15 +135,15 @@ const PostContainer = () => {
     return (
         <SimpleGrid className='lg:w-[60%] overflow-y-scroll gap-4 mx-5 my-3' id='posts'>
             {content.map(item => (
-                <Card key={item.name} bg={theme.bg} color={theme}>
+                <Card key={item.title} bg={theme.bg} color={theme}>
                     <CardHeader>
                         <Flex justify={'space-between'} alignItems={'center'}>
                             <Image src={item.image} w={16} h={16} mr={5} />
                             <Stack mr={'auto'}>
-                                <Heading fontSize={20} className='text-[#33658a]'>@{item.name}</Heading>
-                                <Text>{item.time}</Text>
+                                <Heading fontSize={20} className='text-[#33658a]'>@{item.title}</Heading>
+                                <Text>{item.description}</Text>
                             </Stack>
-                            <Text ml={5} pr={8} fontFamily={'Montserrat'} fontSize={14} className='max-md:hidden'>{item.location}</Text>
+                            <Text ml={5} pr={8} fontFamily={'Montserrat'} fontSize={14} className='max-md:hidden'>{item.created_at}</Text>
                         </Flex>
                     </CardHeader>
                     <CardBody className='font-raleway'>
