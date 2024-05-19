@@ -16,7 +16,7 @@ import Navbar from "./components/Navbar";
 import RightNav from "./components/RightNav";
 import Layout from "./Layout";
 import RequireAuth from "./features/RequireAuth";
-
+import Categories from "./pages/Categories";
 const App = () => {
   const toggleTheme=UpdateTheme()
   const theme=colorPallete()
@@ -35,7 +35,7 @@ const App = () => {
        <Route path="/explore" element={<Explore theme={theme} />} />
         <Route path="/posts" element={<Post />} />
         <Route path="/profile" element={<Profile />} />
-        
+        <Route path='/categories' element={<Categories/>} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/user-posts" element={<UserPosts theme={theme} />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
