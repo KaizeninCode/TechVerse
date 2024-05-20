@@ -1,16 +1,16 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 
-const useDisclosure = () => {
-  const [isOpen, setIsOpen] = useState(false);
-  const commentRef = useRef(null);
+const useDisclosure = (initialState = {}) => {
+  const [isOpen, setIsOpen] = useState(initialState);
 
-  function handleDisclose() {
-    if (commentRef.current) {
-      setIsOpen(!isOpen);
-    }
-  }
+  const handleDisclose = (id) => {
+    setIsOpen((prev) => ({
+      ...prev,
+      [id]: !prev[id],
+    }));
+  };
 
-  return { isOpen, handleDisclose, commentRef };
+  return { isOpen, handleDisclose };
 };
 
 export default useDisclosure;
