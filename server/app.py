@@ -312,10 +312,7 @@ class ContentResource(Resource):
         published_status = request.form.get(
             'published_status', 'false').lower() in ['true', '1']
         category = Category.query.filter(category_id == Category.name).first()
-<<<<<<< HEAD
 
-=======
->>>>>>> 4e58475 ({Feat}: "Implemented the comment section a user ")
         app.logger.info(
             f"Received data: title={title}, description={description}, type={content_type}, category_id={category.id}, user_id={user_id}")
 
@@ -371,11 +368,7 @@ class ContentResource(Resource):
             new_content = Content(
                 title=title,
                 description=description,
-<<<<<<< HEAD
                 type=file_url,
-=======
-                type=file_url,  # Save the file URL instead of the file object
->>>>>>> 4e58475 ({Feat}: "Implemented the comment section a user ")
                 category_id=category.id,
                 user_id=user_id,
                 published_status=published_status,
@@ -394,12 +387,10 @@ class ContentResource(Resource):
             "upload_result": upload_result
         }, 201
 
-<<<<<<< HEAD
-=======
+        
         
 
-    
->>>>>>> 4e58475 ({Feat}: "Implemented the comment section a user ")
+
     @jwt_required()
     def post_approve(self, id):
         current_user_role = get_jwt_identity()["role"]
