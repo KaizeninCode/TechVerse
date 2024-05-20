@@ -167,7 +167,7 @@ const showToast = () => {
                   Frontend Programming
                 </option>
                 <option value="Backend Programming">Backend Programming</option>
-                <option value="Fullstack Development">
+                <option value="FullStack Programming">
                   Fullstack Development
                 </option>
                 <option value="Data Science">Data Science</option>

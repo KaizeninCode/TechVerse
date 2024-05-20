@@ -21,7 +21,7 @@ function LogOut() {
    
     toast({
       title: message,
-      status:'success',
+      status:'info',
       duration: 5000,
       isClosable: true,
       position: "top",

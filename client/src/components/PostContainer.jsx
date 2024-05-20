@@ -39,8 +39,11 @@ const PostContainer = () => {
               <Flex justify={'space-between'} alignItems={'center'}>
                 <Image src={item.image} w={16} h={16} mr={5} />
                 <Stack mr={'auto'}>
-                  <Heading fontSize={20} className='text-[#33658a]'>@{item.user_id}</Heading>
+                  <Heading fontSize={20} className='text-[#33658a]'>@{item.user_id}
+                   <Text fontSize={12} className='text-gray-700'>{item.created_at.slice(0,16)}</Text>
+                  </Heading>
                   <Text>{item.title}</Text>
+                 
                 </Stack>
               </Flex>
             <PostMenu/>

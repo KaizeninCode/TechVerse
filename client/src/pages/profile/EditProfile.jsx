@@ -135,7 +135,7 @@ function EditProfile({ theme }) {
                             <div className='p-3 shadow-md mt-3'>
                                 <h1 className='font-bold'>Update Role</h1>
                                 <select name="role" onChange={handleChange} value={values.role} className="px-6 py-2">
-                                    <option value="">Select Role</option>
+                                    <option value=''>{user.role}</option>
                                     <option value="admin">Admin</option>
                                     <option value="staff">Staff</option>
                                     <option value="student">Student</option>

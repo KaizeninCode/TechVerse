@@ -13,6 +13,7 @@ import { MdUnsubscribe } from "react-icons/md";
 import useAuth from '../features/UseAuth';
 import { TiUserAdd } from "react-icons/ti";
 import { FaShare } from "react-icons/fa6";
+import DeletePost from './deletePost';
 function PostMenu({ toggleTheme }) {
    const colorMode=useColorMode()
     const isAuthorized = useAuth(['staff', 'admin']);
@@ -24,7 +25,7 @@ const navigate=useNavigate()
         <Menu >
             <MenuButton
                 as={IconButton}
-                fontSize={'2rem'}
+                fontSize={'1.5rem'}
                 aria-label='Options'
                 icon={<BiDotsVerticalRounded />}
                 variant='ghost'
@@ -72,8 +73,8 @@ const navigate=useNavigate()
                     display='flex'
                     alignItems='center'
                     justifyContent='space-between'
-                    icon={<FaFlag/>}>
-                    <span>Flag Post</span>
+                   >
+                   <DeletePost/>
                    </MenuItem>}
                   
             </MenuList>
