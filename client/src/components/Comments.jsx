@@ -9,6 +9,7 @@ const Comments = ({ postId }) => {
   const user = useSelector(selectUserData);
   const url = `http://127.0.0.1:5555/comments?contentId=${postId}`;
   const [comments, setComments] = useState([]);
+  const FilterComments=comments.filter(comment=>comment.content_id === postId);
   const [postComment, setPostComment] = useState({
     user_id: user.id,
     content_id: postId,
@@ -59,6 +60,7 @@ const Comments = ({ postId }) => {
       });
       if (!response.ok)
         throw new Error(`HTTP error! status ${response.status}`);
+        console.log("post",postId, "comment", postComment)
       const data = await response.json();
       setComments([data.comment, ...comments]);
       setPostComment({ ...postComment, text: "" });
@@ -83,6 +85,7 @@ const Comments = ({ postId }) => {
       );
       if (!response.ok)
         throw new Error(`HTTP error! status ${response.status}`);
+    
       const data = await response.json();
       setComments(
         comments.map((comment) => (comment.id === data.id ? data : comment))
@@ -127,7 +130,7 @@ const Comments = ({ postId }) => {
       {loading ? (
         <Spinner />
       ) : comments.length > 0 ? (
-        comments.map((comment) => (
+        FilterComments.map((comment) => (
           <Box key={comment.id} p={3} borderBottom="1px solid #ccc">
             {editComment && editComment.id === comment.id ? (
               <form onSubmit={handleEditSubmit}>
@@ -143,9 +146,9 @@ const Comments = ({ postId }) => {
               </form>
             ) : (
               <>
-                <Text fontWeight="bold">{comment.user.username}</Text>
+                <Text fontWeight="bold">{comment?.user.username}</Text>
                 <Text>{comment.text}</Text>
-                {user.id === comment.user_id && (
+                {/* {user.id === comment.user_id && ( */}
                   <Box className="flex gap-2">
                     <Text
                       className="underline cursor-pointer"
@@ -158,7 +161,7 @@ const Comments = ({ postId }) => {
                       <MdDeleteForever className="text-2xl " />
                     </button>
                   </Box>
-                )}
+                {/* )} */}
               </>
             )}
           </Box>

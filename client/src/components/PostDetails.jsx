@@ -10,11 +10,14 @@ import colorPallete from './colorPallete';
 import { CiHeart } from "react-icons/ci";
 import { BiComment } from "react-icons/bi"
 import { RiShareForwardLine } from "react-icons/ri";
+import useDisclosure from "../utils/useDisclosure";
+import Comments from './Comments'
 function PostDetails() {
     const currentPost=useLocation()
     const post=currentPost.state?.post
     console.log(post.title)
     const theme = colorPallete();
+    const { isOpen, handleDisclose } = useDisclosure();
   return (
     <div className="w-full h-screen flex max-lg:flex-col justify-between overflow-y-scroll">
       <Navbar/>
@@ -55,10 +58,13 @@ function PostDetails() {
             <CardFooter>
               <HStack className='font-raleway max-lg:mx-auto '>
               <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
-                <Button variant={'ghost'} color={'#33658a'}><BiComment /></Button>
+                <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}><BiComment /></Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
             </CardFooter>
+            <Box display={isOpen[post.id] ? "block" : "none"}>
+          <Comments postId={post.id} />
+        </Box>
           </Card>
         
       </SimpleGrid>

@@ -9,11 +9,14 @@ import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
 import { Link } from'react-router-dom';
 import PostMenu from '../../components/postMenu';
+import useDisclosure from '../../utils/useDisclosure';
+import Comments from '../../components/Comments';
 function UserPosts() {
   const [userPosts, setUserPosts]= useState([])
   const user=useSelector(selectUserData)
   const theme=colorPallete()
   const filterUserPosts=userPosts.filter(userPost => userPost.user_id ===user.username)
+  const { isOpen, handleDisclose } = useDisclosure();
   useEffect(() => {
     const fetchContent = async () => {
       try {
@@ -69,10 +72,13 @@ function UserPosts() {
             <CardFooter>
               <HStack className='font-raleway max-lg:mx-auto '>
               <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
-                <Button variant={'ghost'} color={'#33658a'}><BiComment /></Button>
+              <Button variant={'ghost'} color={'#33658a'}   onClick={() => handleDisclose(post.id)}><BiComment /></Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
             </CardFooter>
+            <Box display={isOpen[post.id] ? "block" : "none"}>
+          <Comments postId={post.id} />
+        </Box>
           </Card>
       ))
     }
