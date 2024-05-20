@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Text } from "@chakra-ui/react";
+import { Box, Text, Input, Button, Spinner } from "@chakra-ui/react";
 import { IoSend } from "react-icons/io5";
 import { MdDeleteForever } from "react-icons/md";
 import { useSelector } from "react-redux";
@@ -14,16 +14,15 @@ const Comments = ({ postId }) => {
     content_id: postId,
     text: "",
     parent_comment_id: null,
-    created_at: new Date().toUTCString(), 
+    created_at: new Date().toUTCString(),
   });
   const [editComment, setEditComment] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // Log user data
-  console.log("Logged in user:", user);
-
-  // GET comments logic
+  // Fetch comments
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await fetch(url);
         if (!response.ok)
@@ -32,6 +31,8 @@ const Comments = ({ postId }) => {
         setComments(data);
       } catch (err) {
         console.error(err.message);
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -60,7 +61,7 @@ const Comments = ({ postId }) => {
         throw new Error(`HTTP error! status ${response.status}`);
       const data = await response.json();
       setComments([data.comment, ...comments]);
-      setPostComment({ ...postComment, text: "" }); // Clear the input field
+      setPostComment({ ...postComment, text: "" });
     } catch (err) {
       console.error(err.message);
     }
@@ -86,7 +87,7 @@ const Comments = ({ postId }) => {
       setComments(
         comments.map((comment) => (comment.id === data.id ? data : comment))
       );
-      setEditComment(null); // Clear the edit form
+      setEditComment(null);
     } catch (err) {
       console.error(err.message);
     }
@@ -112,37 +113,38 @@ const Comments = ({ postId }) => {
         className="border-none flex flex-row items-center justify-center gap-3"
         onSubmit={handleFormSubmit}
       >
-        <input
+        <Input
           className="w-[700px] h-[50px] bg-gray-200 border-none rounded-sm"
           placeholder="Post your reply"
           type="text"
           value={postComment.text}
           onChange={handleInputChange}
         />
-        <button type="submit">
+        <Button type="submit">
           <IoSend className="text-2xl float-end" />
-        </button>
+        </Button>
       </form>
-      {comments.length > 0 ? (
+      {loading ? (
+        <Spinner />
+      ) : comments.length > 0 ? (
         comments.map((comment) => (
           <Box key={comment.id} p={3} borderBottom="1px solid #ccc">
-            {editComment?.id === comment.id ? (
+            {editComment && editComment.id === comment.id ? (
               <form onSubmit={handleEditSubmit}>
-                <input
+                <Input
                   className="w-[700px] h-[50px] bg-gray-200 border-none rounded-sm"
                   type="text"
                   value={editComment.text}
                   onChange={handleEditChange}
                 />
-                <button type="submit">
+                <Button type="submit">
                   <IoSend className="text-2xl float-end" />
-                </button>
+                </Button>
               </form>
             ) : (
               <>
                 <Text fontWeight="bold">{comment.user.username}</Text>
                 <Text>{comment.text}</Text>
-                {console.log("Comment user_id:", comment.user_id)}
                 {user.id === comment.user_id && (
                   <Box className="flex gap-2">
                     <Text
@@ -152,8 +154,8 @@ const Comments = ({ postId }) => {
                     >
                       Edit
                     </Text>
-                    <button onClick={() => handleDelete(comment.id)}>
-                      <MdDeleteForever className="text-2xl" />
+                    <button className="" onClick={() => handleDelete(comment.id)}>
+                      <MdDeleteForever className="text-2xl " />
                     </button>
                   </Box>
                 )}

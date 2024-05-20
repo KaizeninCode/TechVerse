@@ -238,7 +238,8 @@ class CommentResource(Resource):
             user_id=data['user_id'],
             text=data['text'],
             parent_comment_id='parent_comment_id',
-            created_at=datetime.strptime(data['created_at'], '%d/%m/%Y')
+            created_at=datetime.strptime(
+                data['created_at'], '%a, %d %b %Y %H:%M:%S %Z')
         )
         db.session.add(new_comment)
         db.session.commit()
@@ -387,7 +388,7 @@ class ContentResource(Resource):
             "upload_result": upload_result
         }, 201
 
-        
+
         
 
 
