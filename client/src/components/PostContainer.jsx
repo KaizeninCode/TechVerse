@@ -20,6 +20,12 @@ import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
 import colorPallete from './colorPallete';
 import { AiOutlineLike, AiOutlineDislike } from 'react-icons/ai';
+import Comments from "./Comments";
+import  useDisclosure  from "../utils/useDisclosure";
+import SearchBar from './SearchBar'
+import PostMenu from './postMenu' 
+import { Link } from "react-router-dom";
+
 const PostContainer = () => {
   const theme = colorPallete();
   const [content, setContent] = useState([]);
@@ -99,7 +105,7 @@ const PostContainer = () => {
             <CardFooter>
               <HStack className='font-raleway max-lg:mx-auto '>
               <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
-                <Button variant={'ghost'} color={'#33658a'}><BiComment /></Button>
+                <Button variant={'ghost'} color={'#33658a'} onClick={()=>handleDisclose(post.id)}><BiComment /></Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
             </CardFooter>
