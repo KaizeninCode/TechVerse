@@ -1,5 +1,6 @@
 import React from 'react'
 import { FaFlag } from 'react-icons/fa'
+import { useLocation } from 'react-router-dom';
 import {
     Textarea,
     useToast,
@@ -13,8 +14,13 @@ import {
     useDisclosure,
     
   } from "@chakra-ui/react";
-function DeletePost() {
+function DeletePost({post}) {
 
+
+function handleDelete(){
+    console.log(post);
+    onClose()
+}
     const { isOpen, onOpen, onClose } = useDisclosure();
 
   return (
@@ -39,7 +45,7 @@ function DeletePost() {
             <Textarea placeholder="Reason for flag" />
             <div className='flex justify-between'>
                 <button onClick={onClose} className='bg-blue-700 px-6 py-3 rounded-full  text-white m-3'>Cancel</button>
-                <button className='bg-red-700 px-6 py-3 rounded-full  text-white m-3'>Proceed</button>
+                <button onClick={handleDelete} className='bg-red-700 px-6 py-3 rounded-full  text-white m-3'>Proceed</button>
             </div>
         </ModalBody>
 </ModalContent>

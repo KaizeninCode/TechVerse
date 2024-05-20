@@ -14,12 +14,15 @@ import useAuth from '../features/UseAuth';
 import { TiUserAdd } from "react-icons/ti";
 import { FaShare } from "react-icons/fa6";
 import DeletePost from './deletePost';
-function PostMenu({ toggleTheme }) {
+import { useLocation } from 'react-router-dom';
+function PostMenu() {
    const colorMode=useColorMode()
     const isAuthorized = useAuth(['staff', 'admin']);
     const isAdmin = useAuth(['admin','staff']);
     const isStaff = useAuth(['staff']);
     const isStudent = useAuth(['student']);
+    const currentPost=useLocation()
+    const post=currentPost.state?.item
 const navigate=useNavigate()
     return (
         <Menu >
@@ -73,8 +76,9 @@ const navigate=useNavigate()
                     display='flex'
                     alignItems='center'
                     justifyContent='space-between'
+                    
                    >
-                   <DeletePost/>
+                   <DeletePost post={post}/>
                    </MenuItem>}
                   
             </MenuList>

@@ -8,6 +8,7 @@ import { Tooltip } from '@chakra-ui/react';
 import { useGetAllPostsQuery } from '../features/postApi';
 import MenuBar from './MenuBar';
 import PostMenu from './postMenu';
+import { Link } from'react-router-dom';
 const PostContainer = () => {
     const theme = colorPallete();
     const [content, setContent] = useState([]);
@@ -32,31 +33,33 @@ const PostContainer = () => {
   
     return (
       <SimpleGrid className='lg:w-[60%] overflow-y-scroll gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md' id='posts'>
-        {content?.map(item => (
-          <Card key={item.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400'>
+        {content?.map(post => (
+          <Card key={post.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400'>
             <CardHeader className='flex justify-between'>
-           
-              <Flex justify={'space-between'} alignItems={'center'}>
-                <Image src={item.image} w={16} h={16} mr={5} />
+           <Link to={`/posts/${post.id}`} state={{post}}>
+            <Flex justify={'space-between'} alignItems={'center'}>
+                <Image src={post.image} w={16} h={16} mr={5} />
                 <Stack mr={'auto'}>
-                  <Heading fontSize={20} className='text-[#33658a]'>@{item.user_id}
-                   <Text fontSize={12} className='text-gray-700'>{item.created_at.slice(0,16)}</Text>
+                  <Heading fontSize={20} className='text-[#33658a]'>@{post.user_id}
+                   <Text fontSize={12} className='text-gray-700'>{post.created_at.slice(0,16)}</Text>
                   </Heading>
-                  <Text>{item.title}</Text>
+                  <Text>{post.title}</Text>
                  
                 </Stack>
               </Flex>
-            <PostMenu/>
+           </Link>
+              
+            <PostMenu state={{post}}/>
             </CardHeader>
             <CardBody className='font-raleway'>
-              <Text>{item.description}</Text>
-              {item.type ? (
-                item.type.includes('image/') ? (
-                  <Image src={item.type} w={'100%'} h={'400px'} />
-                ) : item.type.includes('video/') ? (
-                  <video controls src={item.type} style={{ width: '100%', height: '400px' }} />
-                ) : item.type.includes('audio/') ? (
-                  <audio controls src={item.type} style={{ width: '100%' }} />
+              <Text>{post.description.slice(0,30)}........</Text>
+              {post.type ? (
+                post.type.includes('image/') ? (
+                  <Image src={post.type} w={'100%'} h={'400px'} />
+                ) : post.type.includes('video/') ? (
+                  <video controls src={post.type} style={{ width: '100%', height: '400px' }} />
+                ) : post.type.includes('audio/') ? (
+                  <audio controls src={post.type} style={{ width: '100%' }} />
                 ) : null
               ) : (
                 <Text>No media available</Text>

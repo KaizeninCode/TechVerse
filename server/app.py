@@ -443,13 +443,9 @@ class CategoryResource(Resource):
         categories = Category.query.all()
         return jsonify([{'id': category.id, 'name': category.name} for category in categories])
     
-    @jwt_required()
+    #@jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()["role"]
-        
-        if current_user_role not in ["admin", "staff"]:
-            return jsonify({"error": "Unauthorized access"})
-        
+       
         data = request.get_json()
         name = data.get('name')
         if not name:

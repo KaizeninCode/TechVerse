@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState,useEffect } from "react";
 
 import {
   Textarea,
@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 
 const Post = () => {
   const user = useSelector(selectUserData);
+  const [category, setCategories]=useState([])
  const toast=useToast()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [file, setFile] = useState(null);
@@ -34,6 +35,14 @@ const Post = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  useEffect(() =>{
+    function GetCategories(){
+  fetch('http://127.0.0.1:5555/categories')
+  .then(response => response.json())
+  .then(data=>setCategories(data));
+}
+GetCategories() 
+  },[])
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -162,24 +171,14 @@ const showToast = () => {
                 value={input.category_id}
                 onChange={handleChange}
               >
-                <option value="">Select the topic</option>
-                <option value="Frontend Programming">
-                  Frontend Programming
-                </option>
-                <option value="Backend Programming">Backend Programming</option>
-                <option value="FullStack Programming">
-                  Fullstack Development
-                </option>
-                <option value="Data Science">Data Science</option>
-                <option value="Machine Learning">Machine Learning</option>
-                <option value="DevOps">Dev-Ops</option>
-                <option value="UI/UX">UI/UX</option>
-                <option value="Data Visualization">Data Visualization</option>
-                <option value="Mobile-App development">Mobile-App Development</option>
-                <option value="Game Development">Game Development</option>
-                <option value="Cyber Security">
-                  Cyber Security
-                </option>
+              {
+                category.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))
+              }
+               
               </select>
               <h3 className="font-bold">Text</h3>
               <input
