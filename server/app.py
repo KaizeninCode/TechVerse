@@ -14,8 +14,8 @@ from models.subscription import Subscription
 from models.user import User
 import cloudinary
 from cloudinary import uploader
-# import logging
-# import os
+import logging
+import os
 
 from datetime import datetime
 from dotenv import load_dotenv
@@ -45,12 +45,12 @@ jwt = JWTManager(app)
 
 db.init_app(app)
 
-# # Configure Cloudinary
-# cloudinary.config(
-#     cloud_name=os.getenv('CLOUD_NAME'),
-#     api_key=os.getenv('API_KEY'),
-#     api_secret=os.getenv('API_SECRET')
-# )
+# Configure Cloudinary
+cloudinary.config(
+    cloud_name=os.getenv('CLOUD_NAME'),
+    api_key=os.getenv('API_KEY'),
+    api_secret=os.getenv('API_SECRET')
+)
 
 #CRUD FOR USER
     
@@ -185,17 +185,6 @@ class UserLoginResource(Resource):
     
 api.add_resource(UserLoginResource, '/login')
 
-# Logout User
-class UserLogoutResource(Resource):
-    @jwt_required()
-    def delete(self):
-        jti = get_raw_jwt()['jti']
-        revoke_token(jti) # revoke current_user token
-
-        return {'message': 'Successfully logged out'}, 200
-    
-api.add_resource(UserLogoutResource, '/logout')
-
         
 #CRUD FOR COMMENTS
 class CommentResource(Resource):
@@ -268,7 +257,7 @@ class CommentResource(Resource):
             return jsonify({'message': 'Comment not found'}), 404
 
 # Add resources to routes
-api.add_resource(UserResource, '/users', '/users/<int:id>')
+
 # api.add_resource(UserResource, '/users', methods=['GET'])
 api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
@@ -293,9 +282,10 @@ class ContentResource(Resource):
         user_id = request.form.get('user_id')
         published_status = request.form.get(
             'published_status', 'false').lower() in ['true', '1']
+        category = Category.query.filter(category_id == Category.name).first()
 
         app.logger.info(
-            f"Received data: title={title}, description={description}, type={content_type}, category_id={category_id}, user_id={user_id}")
+            f"Received data: title={title}, description={description}, type={content_type}, category_id={category.id}, user_id={user_id}")
 
         if not all([title, description, content_type, category_id, file_to_upload]):
             return {"error": "Title, description, type, category_id, and file are required fields"}, 400
@@ -311,13 +301,14 @@ class ContentResource(Resource):
             return {"error": "File upload failed"}, 500
 
         app.logger.info(upload_result)
+        file_url = upload_result['url']
 
         try:
             new_content = Content(
                 title=title,
                 description=description,
-                type=content_type,
-                category_id=category_id,
+                type=file_url,
+                category_id=category.id,
                 user_id=user_id,
                 published_status=published_status,
                 created_at=datetime.utcnow(),
@@ -335,47 +326,6 @@ class ContentResource(Resource):
             "upload_result": upload_result
         }, 201
 
-        
-    @jwt_required()
-    
-    def post(self):
-        current_user = get_jwt_identity()
-        if current_user["role"] not in ["staff", "student"]:
-            return jsonify({"error": "Only staff and students allowed to post"}), 403
-
-        data = request.get_json()
-        title = data.get('title')
-        description = data.get('description')
-        content_type = data.get('type')
-        category_id = data.get('category_id')
-        published_status = data.get("published_status") 
-        user_id = data.get('user_ id')
-
-
-    #     if not all([title, description, content_type, category_id]):
-    #         return jsonify({"error": "Title, description, type, and category_id are required fields"}), 400
-
-        # Get the user_id from the current_user
-        # user_id = current_user.get('id')
-        # user_id = data.get('id')
-
-    #     # Create new content
-    #     new_content = Content(
-    #         title=title,
-    #         user_id=user_id,
-    #         description=description,
-    #         type=content_type,
-    #         category_id=category_id,
-    #         # user_id=user_id,
-    #         published_status=published_status,
-    #         created_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y'),
-    #         updated_at=datetime.strptime(data.get('updated_at'), '%d/%m/%Y')
-    #     )
-    #     db.session.add(new_content)
-    #     db.session.commit()
-
-    #     return jsonify({"message": "Content created successfully", "content_id": new_content.id})
-    
     @jwt_required()
     def post_approve(self, id):
         current_user_role = get_jwt_identity()["role"]
