@@ -222,20 +222,24 @@ class CommentResource(Resource):
 
         return jsonify(result)
 
-    @jwt_required()
+    # @jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()["role"]
+        # current_user_role = get_jwt_identity()["role"]
         
-        if current_user_role != "student":
-            return jsonify({"error": "Unauthorized access"})
+        # if current_user_role != "student":
+        #     return jsonify({"error": "Unauthorized access"})
         
         data = request.json
+        print("Received data:", data)  # Debugging statement
+        if 'user_id' not in data:
+            return jsonify({"error": "user_id is missing"}), 400
         new_comment = Comment(
             content_id=data['content_id'],
             user_id=data['user_id'],
             text=data['text'],
-            parent_comment_id=data['parent_comment_id'],
-            created_at=datetime.strptime(data['created_at'], '%d/%m/%Y')
+            parent_comment_id='parent_comment_id',
+            created_at=datetime.strptime(
+                data['created_at'], '%a, %d %b %Y %H:%M:%S %Z')
         )
         db.session.add(new_comment)
         db.session.commit()
@@ -249,7 +253,7 @@ class CommentResource(Resource):
             comment.user_id = data.get('user_id', comment.user_id)
             comment.text = data.get('text', comment.text)
             comment.parent_comment_id = data.get('parent_comment_id', comment.parent_comment_id)
-            comment.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
+            comment.created_at = datetime.strptime(data['created_at'], '%a, %d %b %Y %H:%M:%S GMT')
 
             db.session.commit()
             return jsonify({'message': 'Comment updated successfully'})
@@ -291,8 +295,10 @@ class ContentResource(Resource):
                 'created_at': content.created_at,
                 'updated_at': content.updated_at,
             })
-        return jsonify(result)  
-    
+        return jsonify(result)
+
+    jwt_required()
+
     def post(self):
         app.logger.info(f"Form data: {request.form}")
         app.logger.info(f"Files: {request.files}")
@@ -301,14 +307,32 @@ class ContentResource(Resource):
         title = request.form.get('title')
         description = request.form.get('description')
         content_type = request.form.get('type')  # Correctly retrieve type
+        content_type = request.form.get('type')  # Correctly retrieve type
         category_id = request.form.get('category_id')
         user_id = request.form.get('user_id')
         published_status = request.form.get(
             'published_status', 'false').lower() in ['true', '1']
-        category=Category.query.filter(category_id==Category.name).first()
+        category = Category.query.filter(category_id == Category.name).first()
+
         app.logger.info(
             f"Received data: title={title}, description={description}, type={content_type}, category_id={category.id}, user_id={user_id}")
 
+        # Check for missing fields and log them
+        missing_fields = []
+        if not title:
+            missing_fields.append("title")
+        if not description:
+            missing_fields.append("description")
+        if not content_type:
+            missing_fields.append("type")
+        if not category_id:
+            missing_fields.append("category_id")
+        if not file_to_upload:
+            missing_fields.append("file")
+
+        if missing_fields:
+            app.logger.error(f"Missing fields: {missing_fields}")
+            return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
         # Check for missing fields and log them
         missing_fields = []
         if not title:
@@ -337,6 +361,7 @@ class ContentResource(Resource):
             return {"error": "File upload failed"}, 500
 
         app.logger.info(upload_result)
+        file_url = upload_result['url']
 
         file_url = upload_result.get('url')
 
@@ -344,7 +369,7 @@ class ContentResource(Resource):
             new_content = Content(
                 title=title,
                 description=description,
-                type=file_url,  # Save the file URL instead of the file object
+                type=file_url,
                 category_id=category.id,
                 user_id=user_id,
                 published_status=published_status,
@@ -362,7 +387,12 @@ class ContentResource(Resource):
             "content_id": new_content.id,
             "upload_result": upload_result
         }, 201
-    #     @jwt_required()
+
+
+        
+
+
+    @jwt_required()
     def post_approve(self, id):
         current_user_role = get_jwt_identity()["role"]
 

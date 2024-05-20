@@ -1,19 +1,34 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, Card, CardBody, CardFooter, CardHeader, Flex, HStack, Heading, Image, SimpleGrid, Stack, Text, useColorMode } from '@chakra-ui/react';
+import React, { useState, useEffect } from "react";
+import {
+  Box,
+  Button,
+  Card,
+  CardBody,
+  CardFooter,
+  CardHeader,
+  Flex,
+  HStack,
+  Heading,
+  Image,
+  SimpleGrid,
+  Stack,
+  Text,
+  useColorMode,
+} from "@chakra-ui/react";
 import { CiHeart } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
-import colorPallete from './colorPallete';
-import { Tooltip } from '@chakra-ui/react';
-import { useGetAllPostsQuery } from '../features/postApi';
-import MenuBar from './MenuBar';
-import PostMenu from './postMenu';
-import { Link } from'react-router-dom';
+import colorPallete from "./colorPallete";
+import { Tooltip } from "@chakra-ui/react";
+import { Link } from "react-router-dom";
+import useDisclosure from "../utils/useDisclosure";
+import Comments from "./Comments";
+import PostMenu from "./postMenu";
 import SearchBar from './SearchBar';
 const PostContainer = () => {
-    const theme = colorPallete();
-    const [content, setContent] = useState([]);
-    const { colorMode } = useColorMode();
+  const theme = colorPallete();
+  const [content, setContent] = useState([]);
+  const { colorMode } = useColorMode();
     const [input, setInput] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
   const filterPosts = content.filter((post) => {
@@ -24,30 +39,37 @@ const PostContainer = () => {
       selectedCategory === null || post.category === selectedCategory;
     return searchPost && SetCategory;
   });
-    
-    useEffect(() => {
-      const fetchContent = async () => {
-        try {
-          const response = await fetch('http://localhost:5555/contents');
-          if (!response.ok) {
-            throw new Error('Network response was not ok');
-          }
-          const data = await response.json();
-          setContent(data);
-        } catch (error) {
-          console.error('There has been a problem with your fetch operation:', error);
+  const { isOpen, handleDisclose } = useDisclosure();
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      try {
+        const response = await fetch("http://localhost:5555/contents");
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
         }
-      };
-  
-      fetchContent();
-    }, []);
-    function HandleChange(e) {
+        const data = await response.json();
+        setContent(data);
+      } catch (error) {
+        console.error(
+          "There has been a problem with your fetch operation:",
+          error
+        );
+      }
+    };
+
+    fetchContent();
+  }, []);
+  function HandleChange(e) {
       setInput(e.target.value);
     }
-    return (
-      <SimpleGrid className='lg:w-[80%] overflow-y-scroll gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md' id='posts'>
+  return (
+    <SimpleGrid
+      className="lg:w-[80%] overflow-y-scroll gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md"
+      id="posts">
       <SearchBar  handleChange={HandleChange} value={input}/>
-        {filterPosts?.map(post => (
+    
+      {filterPosts?.map(post => (
           <Card key={post.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400'>
             <CardHeader className='flex justify-between'>
            <Link to={`/posts/${post.id}`} state={{post}}>
@@ -86,10 +108,14 @@ const PostContainer = () => {
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
             </CardFooter>
+            <Box display={isOpen[post.id] ? "block" : "none"}>
+          <Comments postId={post.id} />
+        </Box>
           </Card>
         ))}
-      </SimpleGrid>
-    );
-}
+    </SimpleGrid>
+  );
+};
 
 export default PostContainer;
+//  
