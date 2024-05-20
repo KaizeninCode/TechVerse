@@ -27,11 +27,11 @@ export const navlinks = [
     link: "/profile",
     icon: <IoMdPerson />,
   },
-  // {
-  //   name: "Sign In",
-  //   link: "/SignIn",
-  //   icon: <LiaSignInAltSolid />,
-  // },
+  {
+    name: "Sign In",
+    link: "/SignIn",
+    icon: <LiaSignInAltSolid />,
+  },
 ];
 
 const linkStyles = {

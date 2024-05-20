@@ -51,7 +51,7 @@ const PostContainer = () => {
               
             <PostMenu state={{post}}/>
             </CardHeader>
-            <CardBody className='font-raleway'>
+            <CardBody className='font-raleway border border-gray-400'>
               <Text>{post.description.slice(0,30)}........</Text>
               {post.type ? (
                 post.type.includes('image/') ? (

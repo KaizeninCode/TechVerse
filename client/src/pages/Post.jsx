@@ -100,7 +100,7 @@ GetCategories()
 
       if (!response.ok) {
         const errorMessage = await response.json();
-        console.log(input);
+        console.log(formData);
         setError(
           errorMessage.error || "An error occurred. Please try again later."
         );
@@ -171,9 +171,13 @@ const showToast = () => {
                 value={input.category_id}
                 onChange={handleChange}
               >
+              <option value="">Select a category</option>
+
               {
-                category.map((category) => (
-                  <option key={category.id} value={category.id}>
+            
+                category.map((category) => (  
+                    
+                  <option key={category.id} value={category.name}>
                     {category.name}
                   </option>
                 ))
