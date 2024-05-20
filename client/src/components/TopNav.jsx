@@ -9,8 +9,8 @@ import { selectUserData } from '../features/AuthSlice';
 function TopNav({toggleTheme, theme}) {
   const user=useSelector(selectUserData)
   console.log(user.id)
-    const username=useSelector(selectCurrentUser)
-    console.log(username)
+  const username=useSelector(selectCurrentUser)
+  console.log(username)
   return (
     <div className=' p-3 flex justify-around shadow-lg mb-1 border-gray-700'>
     

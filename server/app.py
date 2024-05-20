@@ -57,6 +57,7 @@ if not all([cloudinary.config().cloud_name, cloudinary.config().api_key, cloudin
     raise ValueError("No Cloudinary configuration found. Ensure CLOUD_NAME, API_KEY, and API_SECRET are set.")
 
 #CRUD FOR USER
+    
 class UserResource(Resource):
     @jwt_required()
     def get(self):
@@ -68,8 +69,28 @@ class UserResource(Resource):
         users = User.query.all()
         return jsonify([{'id': user.id, 'username': user.username,'email': user.email, 'role': user.role, 'active_status': user.active_status, 'created_at': user.created_at, 'updated_at': user.updated_at} for user in users])
 
-    
-class UserResource(Resource):
+    @jwt_required()
+    def get_user_contents(user_id):
+        current_user = get_jwt_identity()
+        if current_user["role"] != "admin" and current_user["id"] != user_id:
+            return jsonify({"error": "Unauthorized access"}), 403
+
+        contents = Content.query.filter_by(user_id=user_id).all()
+        if not contents:
+            return jsonify({"message": "No contents found for this user"}), 404
+
+        return jsonify([{
+            'id': content.id,
+            'title': content.title,
+            'description': content.description,
+            'type': content.type,
+            'category_id': content.category_id,
+            'user_id': content.user_id,
+            'published_status': content.published_status,
+            'created_at': content.created_at,
+            'updated_at': content.updated_at
+        } for content in contents])
+
     def post(self):
         data = request.get_json()
         username = data.get('username')
@@ -140,6 +161,8 @@ class UserResource(Resource):
         else:
             return jsonify({'message': 'User not found'}), 404
         
+api.add_resource(UserResource, '/users', '/users/<int:id>')
+        
 # login user
 class UserLoginResource(Resource):
     def post(self):
@@ -171,23 +194,33 @@ class UserLoginResource(Resource):
     
 api.add_resource(UserLoginResource, '/login')
 
-# Logout User
-class UserLogoutResource(Resource):
-    @jwt_required()
-    def delete(self):
-        jti = get_raw_jwt()['jti']
-        revoke_token(jti) # revoke current_user token
-
-        return {'message': 'Successfully logged out'}, 200
-    
-api.add_resource(UserLogoutResource, '/logout')
-
         
 #CRUD FOR COMMENTS
 class CommentResource(Resource):
-    def get(self):
-        comments = Comment.query.all()
-        return jsonify([{'id': comment.id, 'content_id': comment.content_id, 'text': comment.text, 'parent_comment_id': comment.parent_comment_id, 'created_at': comment.created_at} for comment in comments])
+    def get(self, id=None):
+        if id:
+            comments = Comment.query.filter_by(user_id=id).all()
+        else:
+            comments = Comment.query.all()
+
+        result = []
+        for comment in comments:
+            user = User.query.filter_by(id=comment.user_id).first()
+
+            result.append({
+                'id': comment.id,
+                'user': {
+                    'id': user.id,
+                    'username': user.username,
+                    'email': user.email,
+                } if user else None,
+                'content_id': comment.content_id,
+                'text': comment.text,
+                'parent_comment_id': comment.parent_comment_id,
+                'created_at': comment.created_at
+            })
+
+        return jsonify(result)
 
     @jwt_required()
     def post(self):
@@ -233,7 +266,8 @@ class CommentResource(Resource):
             return jsonify({'message': 'Comment not found'}), 404
 
 # Add resources to routes
-api.add_resource(UserResource, '/users', '/users/<int:id>')
+
+# api.add_resource(UserResource, '/users', methods=['GET'])
 api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
 @app.route('/')
