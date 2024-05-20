@@ -21,6 +21,7 @@ const Comments = ({ postId }) => {
 
   // Fetch comments
   useEffect(() => {
+    setTimeout(()=>{
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -36,6 +37,8 @@ const Comments = ({ postId }) => {
       }
     };
     fetchData();
+    },3000)
+
   }, [url]);
 
   const handleInputChange = (e) => {
@@ -61,7 +64,7 @@ const Comments = ({ postId }) => {
         throw new Error(`HTTP error! status ${response.status}`);
       const data = await response.json();
       setComments([data.comment, ...comments]);
-      setPostComment({ ...postComment, text: "" });
+      setPostComment({ text: "",...postComment  });
     } catch (err) {
       console.error(err.message);
     }
@@ -128,8 +131,8 @@ const Comments = ({ postId }) => {
         <Spinner />
       ) : comments.length > 0 ? (
         comments.map((comment) => (
-          <Box key={comment.id} p={3} borderBottom="1px solid #ccc">
-            {editComment && editComment.id === comment.id ? (
+          <Box key={comment?.id} p={3} borderBottom="1px solid #ccc">
+            {editComment && editComment.id === comment?.id ? (
               <form onSubmit={handleEditSubmit}>
                 <Input
                   className="w-[700px] h-[50px] bg-gray-200 border-none rounded-sm"
@@ -143,9 +146,9 @@ const Comments = ({ postId }) => {
               </form>
             ) : (
               <>
-                <Text fontWeight="bold">{comment.user.username}</Text>
-                <Text>{comment.text}</Text>
-                {user.id === comment.user_id && (
+                <Text fontWeight="bold">{comment?.user.username}</Text>
+                <Text>{comment?.text}</Text>
+                {user.id === comment?.user_id && (
                   <Box className="flex gap-2">
                     <Text
                       className="underline cursor-pointer"
