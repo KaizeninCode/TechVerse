@@ -10,7 +10,7 @@ import { Routes, Route } from "react-router-dom";
 import colorPallete from "./components/colorPallete";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
-import TopNav from "./components/TopNav";
+
 import { UpdateTheme } from "./components/ThemeContext";
 import Navbar from "./components/Navbar";
 import RightNav from "./components/RightNav";
@@ -23,7 +23,7 @@ const App = () => {
   const theme=colorPallete()
   return (
     <main style={{background:theme.bg,color:theme.color}} className="w-screen " id="main">
-    <TopNav toggleTheme={toggleTheme} theme={theme}/> 
+   
     
       <Routes>
       <Route path="/" element={<Layout />}>

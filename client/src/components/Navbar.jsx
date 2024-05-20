@@ -27,11 +27,7 @@ export const navlinks = [
     link: "/profile",
     icon: <IoMdPerson />,
   },
-  {
-    name: "Sign In",
-    link: "/SignIn",
-    icon: <LiaSignInAltSolid />,
-  },
+  
 ];
 
 const linkStyles = {
@@ -47,6 +43,7 @@ const Navbar = () => {
   const theme = colorPallete();
   const isAuthorized = useAuth(['staff', 'admin', 'student']);
   const isAdmin = useAuth(['staff', 'student'])
+  const notAthenticated=useAuth([])
 const user=useSelector(selectUserData)
   return (
     <Box as='nav' bg={theme.color4} color={theme} className='w-[20%] max-lg:hidden shadow-lg flex flex-col justify-center'>
@@ -62,9 +59,12 @@ const user=useSelector(selectUserData)
           <Box key={link.name} className='flex items-center justify-between w-[150px]'>
             <NavLink to={link.link} textDecoration='none' style={{ color: theme.color2 }} className='text-lg font-montserrat font-bold my-3 flex items-center justify-start'>
               {link.icon}&nbsp;{link.name}
+              
             </NavLink>
+            
           </Box>
         ))}
+        {notAthenticated &&<NavLink to="/signin" className='text-lg font-montserrat font-bold my-3 flex items-center justify-start'><LiaSignInAltSolid />Sign In</NavLink>}
         {isAuthorized && <LogOut />}
       
       </VStack>

@@ -20,15 +20,25 @@ import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
 import colorPallete from "./colorPallete";
 import { Tooltip } from "@chakra-ui/react";
-// import { useGetAllPostsQuery } from "../features/postApi";
-// import MenuBar from "./MenuBar";
-// import PostMenu from "./postMenu";
+import { Link } from "react-router-dom";
 import useDisclosure from "../utils/useDisclosure";
 import Comments from "./Comments";
+import PostMenu from "./postMenu";
+import SearchBar from './SearchBar';
 const PostContainer = () => {
   const theme = colorPallete();
   const [content, setContent] = useState([]);
   const { colorMode } = useColorMode();
+    const [input, setInput] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const filterPosts = content.filter((post) => {
+    const searchPost =
+      input === '' ||
+      post.title.toUpperCase().startsWith(input.toUpperCase());
+    const SetCategory =
+      selectedCategory === null || post.category === selectedCategory;
+    return searchPost && SetCategory;
+  });
   const { isOpen, handleDisclose } = useDisclosure();
 
   useEffect(() => {
@@ -50,73 +60,62 @@ const PostContainer = () => {
 
     fetchContent();
   }, []);
-
+  function HandleChange(e) {
+      setInput(e.target.value);
+    }
   return (
     <SimpleGrid
-      className="lg:w-[60%] overflow-y-scroll gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md"
-      id="posts"
-    >
-      {content?.map((item) => (
-        <Card
-          key={item.id}
-          bg={theme.bg}
-          color={theme.color}
-          className="border-b border-gray-400"
-        >
-          <CardHeader className="flex justify-between">
-            <Flex justify={"space-between"} alignItems={"center"}>
-              <Image src={item.image} w={16} h={16} mr={5} />
-              <Stack mr={"auto"}>
-                <Heading fontSize={20} className="text-[#33658a]">
-                  @{item.user_id}
-                </Heading>
-                <Text>{item.title}</Text>
-              </Stack>
-            </Flex>
-            {/* <PostMenu /> */}
-          </CardHeader>
-          <CardBody className="font-raleway">
-            <Text>{item.description}</Text>
-            {item.type ? (
-              item.type.includes("image/") ? (
-                <Image src={item.type} w={"100%"} h={"400px"} />
-              ) : item.type.includes("video/") ? (
-                <video
-                  controls
-                  src={item.type}
-                  style={{ width: "100%", height: "400px" }}
-                />
-              ) : item.type.includes("audio/") ? (
-                <audio controls src={item.type} style={{ width: "100%" }} />
-              ) : null
-            ) : (
-              <Text>No media available</Text>
-            )}
-          </CardBody>
-          <CardFooter>
-            <HStack className="font-raleway max-lg:mx-auto ">
-              <Button variant={"ghost"} color={"#33658a"}>
-                <CiHeart />
-              </Button>
-              <Button
-                variant={"ghost"}
-                color={"#33658a"}
-                onClick={() => handleDisclose(item.id)}
-              >
-                <BiComment />
-              </Button>
-              <Button variant={"ghost"} color={"#33658a"}>
-                <RiShareForwardLine />
-              </Button>
-            </HStack>
-          </CardFooter>
-          <Box display={isOpen[item.id] ? "block" : "none"}>
-            <Comments postId={item.id} />
-          </Box>
-        </Card>
-      ))}
+      className="lg:w-[80%] overflow-y-scroll gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md"
+      id="posts">
+      <SearchBar  handleChange={HandleChange} value={input}/>
+    
+      {filterPosts?.map(post => (
+          <Card key={post.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400'>
+            <CardHeader className='flex justify-between'>
+           <Link to={`/posts/${post.id}`} state={{post}}>
+            <Flex justify={'space-between'} alignItems={'center'}>
+                <Image src={post.image} w={16} h={16} mr={5} />
+                <Stack mr={'auto'}>
+                  <Heading fontSize={20} className='text-[#33658a]'>@{post.user_id}
+                   <Text fontSize={12} className='text-gray-700'>{post.created_at.slice(0,16)}</Text>
+                  </Heading>
+                  <Text>{post.title}</Text>
+                 
+                </Stack>
+              </Flex>
+           </Link>
+              
+            <PostMenu state={{post}}/>
+            </CardHeader>
+            <CardBody className='w-[80%] font-raleway border border-gray-400'>
+              <Text>{post.description.slice(0,30)}........</Text>
+              {post.type ? (
+                post.type.includes('image/') ? (
+                  <Image src={post.type} w={'70%'} h={'300px'} />
+                ) : post.type.includes('video/') ? (
+                  <video controls src={post.type} style={{ width: '80%', height: '400px' }} />
+                ) : post.type.includes('audio/') ? (
+                  <audio controls src={post.type} style={{ width: '100%' }} />
+                ) : null
+              ) : (
+                <Text>No media available</Text>
+              )}
+            </CardBody>
+            <CardFooter>
+              <HStack className='font-raleway max-lg:mx-auto '>
+              <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
+                <Button variant={'ghost'} color={'#33658a'}><BiComment /></Button>
+                <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
+              </HStack>
+            </CardFooter>
+            <Box display={isOpen[post.id] ? "block" : "none"}>
+          <Comments postId={post.id} />
+        </Box>
+          </Card>
+        ))}
     </SimpleGrid>
   );
 };
 
 export default PostContainer;
+//  
