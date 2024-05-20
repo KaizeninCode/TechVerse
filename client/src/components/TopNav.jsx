@@ -13,7 +13,7 @@ function TopNav({toggleTheme, theme}) {
   console.log(username)
   return (
     <div className=' p-3 flex justify-around shadow-lg mb-1 border-gray-700'>
-    <h1 style={{color:theme}} className='text-xl'>Welcome {user.username}</h1>
+    
     <SearchBar theme={theme}/>
       <nav className='inline-flex'>
      <MenuBar toggleTheme={toggleTheme} theme={theme}/>
