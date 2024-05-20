@@ -28,8 +28,8 @@ function EditProfile({ theme }) {
 
     const handleSubmit = async (event) => {
       event.preventDefault();
-  
-      try {
+      
+         try {
           const response = await fetch(`http://127.0.0.1:5555/users/${user.id}`, {
               method: 'PUT',
               headers: {
@@ -57,6 +57,9 @@ function EditProfile({ theme }) {
       } catch (error) {
           console.error('Error: Profile update failed', error);
       }
+     
+  
+     
   };
   
   const showToast = (message, isSuccess) => {
@@ -132,7 +135,7 @@ function EditProfile({ theme }) {
                             <div className='p-3 shadow-md mt-3'>
                                 <h1 className='font-bold'>Update Role</h1>
                                 <select name="role" onChange={handleChange} value={values.role} className="px-6 py-2">
-                                    <option value="">Select Role</option>
+                                    <option value=''>{user.role}</option>
                                     <option value="admin">Admin</option>
                                     <option value="staff">Staff</option>
                                     <option value="student">Student</option>

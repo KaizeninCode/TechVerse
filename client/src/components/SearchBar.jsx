@@ -1,12 +1,16 @@
 import React from 'react'
 import { FaSearch } from "react-icons/fa";
-function SearchBar({theme}) {
+import colorPallete from './colorPallete';
+function SearchBar({value, handleChange}) {
+  const theme=colorPallete()
   return (
     <div style={{background:theme.bg}} className='w-1/2 justify-center  flex align-middle' >
      <div className='relative w-1/2 mx-auto'>
         <input
           id='search'
           type='text'
+          value={value}
+          onChange={handleChange}
           className='w-full p-3 pr-16 rounded-full shadow-lg'
          placeholder='Search...'
          style={{background:theme.color3, color:theme.color}}

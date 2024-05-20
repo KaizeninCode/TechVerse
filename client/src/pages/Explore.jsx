@@ -8,12 +8,14 @@ import SearchBar from "../components/SearchBar"
 const Explore = ({theme}) => {
   return (
     <section className='section'>
-      <div className="w-full h-screen flex max-lg:flex-col justify-between overflow-y-scroll">
+      <div className="w-full h-screen flex max-lg:flex-col justify-between p-3 overflow-y-scroll">
            <Navbar/> 
           <Header/>
           
           
           <PostContainer theme={theme}/>
+          
+     
           
          
  

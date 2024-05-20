@@ -10,19 +10,20 @@ import { Routes, Route } from "react-router-dom";
 import colorPallete from "./components/colorPallete";
 import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
-import TopNav from "./components/TopNav";
+
 import { UpdateTheme } from "./components/ThemeContext";
 import Navbar from "./components/Navbar";
 import RightNav from "./components/RightNav";
 import Layout from "./Layout";
 import RequireAuth from "./features/RequireAuth";
-
+import Categories from "./pages/Categories";
+import PostDetails from "./components/PostDetails";
 const App = () => {
   const toggleTheme=UpdateTheme()
   const theme=colorPallete()
   return (
     <main style={{background:theme.bg,color:theme.color}} className="w-screen " id="main">
-    <TopNav toggleTheme={toggleTheme} theme={theme}/> 
+   
     
       <Routes>
       <Route path="/" element={<Layout />}>
@@ -34,10 +35,11 @@ const App = () => {
        <Route element={<RequireAuth allowedRoles={['staff','admin','student']} />}>
        <Route path="/explore" element={<Explore theme={theme} />} />
         <Route path="/posts" element={<Post />} />
+        <Route path='/posts/:id' element={<PostDetails/>} />
         <Route path="/profile" element={<Profile />} />
-        
+        <Route path='/categories' element={<Categories/>} />
         <Route path="/edit-profile" element={<EditProfile />} />
-        <Route path="/user-posts" element={<UserPosts theme={theme} />} />
+        <Route path="/user-posts" element={<UserPosts  />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
        </Route>
         

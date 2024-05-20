@@ -17,6 +17,7 @@ import cloudinary
 from cloudinary import uploader
 import logging
 import os
+import cloudinary.api
 from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
@@ -31,6 +32,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = "e27c00e982d1d07709adb9eb"
 
+# app.secret_key = "hgfedcba"
 app.secret_key = "hgfedcba"
 
 migrate = Migrate(app, db)
@@ -47,6 +49,9 @@ cloudinary.config(
     api_key=os.getenv('API_KEY'),
     api_secret=os.getenv('API_SECRET')
 )
+
+if not all([cloudinary.config().cloud_name, cloudinary.config().api_key, cloudinary.config().api_secret]):
+    raise ValueError("No Cloudinary configuration found. Ensure CLOUD_NAME, API_KEY, and API_SECRET are set.")
 
 #CRUD FOR USER
     
@@ -113,10 +118,15 @@ class UserResource(Resource):
 
     # @jwt_required()
     def put(self, id):
-        # current_user_role = get_jwt_identity()["role"]
+        # current_user = get_jwt_identity()
+        
+        # if not current_user:
+        #     return jsonify({"error": "Unauthorized access"}), 401
 
+        # current_user_role = current_user.get("role")
+        
         # if current_user_role != "admin":
-        #     return jsonify({"error": "Unauthorized access"})
+        #     return jsonify({"error": "Unauthorized access"}), 403
 
         user = User.query.get(id)
         if not user:
@@ -204,20 +214,24 @@ class CommentResource(Resource):
 
         return jsonify(result)
 
-    @jwt_required()
+    # @jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()["role"]
+        # current_user_role = get_jwt_identity()["role"]
         
-        if current_user_role != "student":
-            return jsonify({"error": "Unauthorized access"})
+        # if current_user_role != "student":
+        #     return jsonify({"error": "Unauthorized access"})
         
         data = request.json
+        print("Received data:", data)  # Debugging statement
+        if 'user_id' not in data:
+            return jsonify({"error": "user_id is missing"}), 400
         new_comment = Comment(
             content_id=data['content_id'],
             user_id=data['user_id'],
             text=data['text'],
-            parent_comment_id=data['parent_comment_id'],
-            created_at=datetime.strptime(data['created_at'], '%d/%m/%Y')
+            parent_comment_id='parent_comment_id',
+            created_at=datetime.strptime(
+                data['created_at'], '%a, %d %b %Y %H:%M:%S %Z')
         )
         db.session.add(new_comment)
         db.session.commit()
@@ -231,7 +245,7 @@ class CommentResource(Resource):
             comment.user_id = data.get('user_id', comment.user_id)
             comment.text = data.get('text', comment.text)
             comment.parent_comment_id = data.get('parent_comment_id', comment.parent_comment_id)
-            comment.created_at = datetime.strptime(data.get('created_at'), '%d/%m/%Y')
+            comment.created_at = datetime.strptime(data['created_at'], '%a, %d %b %Y %H:%M:%S GMT')
 
             db.session.commit()
             return jsonify({'message': 'Comment updated successfully'})
@@ -256,7 +270,23 @@ def index():
 class ContentResource(Resource):
     def get(self):
         contents = Content.query.all()
-        return jsonify([{'id': content.id, 'title': content.title, 'description': content.description, 'type': content.type, 'category_id': content.category_id,'published_status': content.published_status,'user_id': content.user_id,'created_at': content.created_at,'updated_at': content.updated_at,} for content in contents])
+        result = []
+        for content in contents:
+            user = User.query.filter_by(id=content.user_id).first()
+            result.append({
+                'id': content.id,
+                'title': content.title,
+                'description': content.description,
+                'type': content.type,
+                'category_id': content.category_id,
+                'published_status': content.published_status,
+                'user_id': user.username if user else None,
+                'created_at': content.created_at,
+                'updated_at': content.updated_at,
+            })
+        return jsonify(result)
+
+    jwt_required()
 
     def post(self):
         app.logger.info(f"Form data: {request.form}")
@@ -265,7 +295,8 @@ class ContentResource(Resource):
         file_to_upload = request.files.get('file')
         title = request.form.get('title')
         description = request.form.get('description')
-        content_type = request.form.get('type')
+        content_type = request.form.get('type')  # Correctly retrieve type
+        content_type = request.form.get('type')  # Correctly retrieve type
         category_id = request.form.get('category_id')
         user_id = request.form.get('user_id')
         published_status = request.form.get(
@@ -275,8 +306,38 @@ class ContentResource(Resource):
         app.logger.info(
             f"Received data: title={title}, description={description}, type={content_type}, category_id={category.id}, user_id={user_id}")
 
-        if not all([title, description, content_type, category_id, file_to_upload]):
-            return {"error": "Title, description, type, category_id, and file are required fields"}, 400
+        # Check for missing fields and log them
+        missing_fields = []
+        if not title:
+            missing_fields.append("title")
+        if not description:
+            missing_fields.append("description")
+        if not content_type:
+            missing_fields.append("type")
+        if not category_id:
+            missing_fields.append("category_id")
+        if not file_to_upload:
+            missing_fields.append("file")
+
+        if missing_fields:
+            app.logger.error(f"Missing fields: {missing_fields}")
+            return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
+        # Check for missing fields and log them
+        missing_fields = []
+        if not title:
+            missing_fields.append("title")
+        if not description:
+            missing_fields.append("description")
+        if not content_type:
+            missing_fields.append("type")
+        if not category_id:
+            missing_fields.append("category_id")
+        if not file_to_upload:
+            missing_fields.append("file")
+
+        if missing_fields:
+            app.logger.error(f"Missing fields: {missing_fields}")
+            return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
 
         try:
             if content_type == 'video':
@@ -290,6 +351,8 @@ class ContentResource(Resource):
 
         app.logger.info(upload_result)
         file_url = upload_result['url']
+
+        file_url = upload_result.get('url')
 
         try:
             new_content = Content(
@@ -334,7 +397,7 @@ class ContentResource(Resource):
 
         return jsonify({"message": "Content approved successfully", "content_id": content.id})
     
-    # @jwt_required() 
+    @jwt_required() 
     def delete(self, id):
         current_user_role = get_jwt_identity()["role"]
         if current_user_role != "admin":
@@ -420,13 +483,9 @@ class CategoryResource(Resource):
         categories = Category.query.all()
         return jsonify([{'id': category.id, 'name': category.name} for category in categories])
     
-    @jwt_required()
+    #@jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()["role"]
-        
-        if current_user_role not in ["admin", "staff"]:
-            return jsonify({"error": "Unauthorized access"})
-        
+       
         data = request.get_json()
         name = data.get('name')
         if not name:
