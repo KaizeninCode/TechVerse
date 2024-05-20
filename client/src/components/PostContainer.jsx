@@ -18,13 +18,8 @@ import {
 import { CiHeart } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
-import colorPallete from "./colorPallete";
-import { Tooltip } from "@chakra-ui/react";
-import { Link } from "react-router-dom";
-import useDisclosure from "../utils/useDisclosure";
-import Comments from "./Comments";
-import PostMenu from "./postMenu";
-import SearchBar from './SearchBar';
+import colorPallete from './colorPallete';
+import { AiOutlineLike, AiOutlineDislike } from 'react-icons/ai';
 const PostContainer = () => {
   const theme = colorPallete();
   const [content, setContent] = useState([]);
@@ -118,4 +113,3 @@ const PostContainer = () => {
 };
 
 export default PostContainer;
-//  
