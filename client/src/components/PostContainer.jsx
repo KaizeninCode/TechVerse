@@ -9,10 +9,21 @@ import { useGetAllPostsQuery } from '../features/postApi';
 import MenuBar from './MenuBar';
 import PostMenu from './postMenu';
 import { Link } from'react-router-dom';
+import SearchBar from './SearchBar';
 const PostContainer = () => {
     const theme = colorPallete();
     const [content, setContent] = useState([]);
     const { colorMode } = useColorMode();
+    const [input, setInput] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const filterPosts = content.filter((post) => {
+    const searchPost =
+      input === '' ||
+      post.title.toUpperCase().startsWith(input.toUpperCase());
+    const SetCategory =
+      selectedCategory === null || post.category === selectedCategory;
+    return searchPost && SetCategory;
+  });
     
     useEffect(() => {
       const fetchContent = async () => {
@@ -30,10 +41,13 @@ const PostContainer = () => {
   
       fetchContent();
     }, []);
-  
+    function HandleChange(e) {
+      setInput(e.target.value);
+    }
     return (
-      <SimpleGrid className='lg:w-[60%] overflow-y-scroll gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md' id='posts'>
-        {content?.map(post => (
+      <SimpleGrid className='lg:w-[80%] overflow-y-scroll gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md' id='posts'>
+      <SearchBar  handleChange={HandleChange} value={input}/>
+        {filterPosts?.map(post => (
           <Card key={post.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400'>
             <CardHeader className='flex justify-between'>
            <Link to={`/posts/${post.id}`} state={{post}}>
@@ -51,13 +65,13 @@ const PostContainer = () => {
               
             <PostMenu state={{post}}/>
             </CardHeader>
-            <CardBody className='font-raleway border border-gray-400'>
+            <CardBody className='w-[80%] font-raleway border border-gray-400'>
               <Text>{post.description.slice(0,30)}........</Text>
               {post.type ? (
                 post.type.includes('image/') ? (
-                  <Image src={post.type} w={'100%'} h={'400px'} />
+                  <Image src={post.type} w={'70%'} h={'300px'} />
                 ) : post.type.includes('video/') ? (
-                  <video controls src={post.type} style={{ width: '100%', height: '400px' }} />
+                  <video controls src={post.type} style={{ width: '80%', height: '400px' }} />
                 ) : post.type.includes('audio/') ? (
                   <audio controls src={post.type} style={{ width: '100%' }} />
                 ) : null
