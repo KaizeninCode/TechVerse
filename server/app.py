@@ -93,7 +93,7 @@ class UserResource(Resource):
         username = data.get('username')
         email = data.get('email')
         password_hash = data.get('password')
-        role = data.get('role')
+        # role = data.get('role')
 
         if not all([username, email, password_hash, role]):
             return jsonify({"error": "Username, email, password, and role are required fields"}), 400
@@ -101,6 +101,14 @@ class UserResource(Resource):
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
             return jsonify({'error': 'User already exists'})
+        
+        # Determine the role based on the email address
+        if email.endswith('.admin@techverse.com'):
+            role = 'admin'
+        elif email.endswith('@techverse.com'):
+            role = 'staff'
+        else:
+            role = 'student'
 
         hashed_password = bcrypt.generate_password_hash(password_hash)
 
