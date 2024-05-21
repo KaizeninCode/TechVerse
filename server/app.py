@@ -93,9 +93,10 @@ class UserResource(Resource):
         username = data.get('username')
         email = data.get('email')
         password_hash = data.get('password')
+        
 
         if not all([username, email, password_hash]):
-            return jsonify({"error": "Username, email and password are required fields"})
+            return jsonify({"error": "Username, email, password, and role are required fields"})
 
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
@@ -576,42 +577,47 @@ class SubscriptionResource(Resource):
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
 class LikeResource(Resource):
-    @jwt_required()
+    def get(self):
+        likes = Like.query.all()
+        return jsonify([{'id': like.id, 'user_id': like.user_id, 'content_id': like.content_id, 'like': like.like} for like in likes])
+    # @jwt_required()
     def post(self):
         data = request.get_json()
         content_id = data.get('content_id')
-        like_status = data.get('like')  # True for like, False for dislike
+        like_status = data.get('like_status')  # True for like, False for dislike
+        user_id=data.get('user_id')
 
-        current_user = get_jwt_identity()
-        current_user_id = current_user.get("id")
+        # current_user = get_jwt_identity()
+        # current_user_id = current_user.get("id")
 
-        if current_user_id is None:
-            return jsonify({"error": "User ID not found in token"}), 400
+        # if current_user_id is None:
+        #     return jsonify({"error": "User ID not found in token"}), 400
 
-        content = Content.query.get(content_id)
-        if not content:
-            return jsonify({"error": "Content not found"}), 404
+        # content = Content.query.get(content_id)
+        # if not content:
+        #     return jsonify({"error": "Content not found"}), 404
         
-        like = Like.query.filter_by(user_id=current_user_id, content_id=content_id).first()
-        if not like:
-            like = Like(
-                user_id=current_user_id,
+        # like = Like.query.filter_by(user_id=current_user_id, content_id=content_id).first()
+       
+        like = Like(
+                user_id=user_id,
                 content_id=content_id,
                 like=like_status
             )
-            db.session.add(like)
-        else:
-            like.like = like_status
+        db.session.add(like)
+        # else:
+        #     like.like = like_status
         
         db.session.commit()
 
         return jsonify({"message": "Like updated successfully"})
 
-    @jwt_required()
+    # @jwt_required()
     def delete(self, content_id):
-        current_user_id = get_jwt_identity()["id"]
-
-        like = Like.query.filter_by(user_id=current_user_id, content_id=content_id).first()
+        # current_user_id = get_jwt_identity()["id"]
+        # print(current_user_id)
+        like = Like.query.filter_by( content_id=content_id).first()
+       
         if not like:
             return jsonify({"error": "Like not found"}), 404
         
