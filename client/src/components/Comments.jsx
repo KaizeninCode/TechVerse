@@ -64,6 +64,7 @@ const Comments = ({ postId }) => {
     } catch (err) {
       console.error(err.message);
     }
+    fetchData()
   };
 
   // PATCH a comment
@@ -101,16 +102,17 @@ const Comments = ({ postId }) => {
 
   return (
     <Box className="overflow-y-scroll w-full h-40">
+    
       <form className="border-none flex flex-row items-center justify-center gap-3" onSubmit={handleFormSubmit}>
-        <Input
-          className="w-[700px] h-[50px] bg-gray-200 border border-gray-400 rounded-sm"
-          placeholder="Post your reply"
+        <input
+          className="w-[100%] h-[50px] bg-[#e0e0e0] border-b-2 border-gray-700 rounded-sm"
+          placeholder="Post your comment......"
           type="text"
           value={postComment.text}
           onChange={handleInputChange}
         />
         <Button type="submit">
-          <IoSend className="text-2xl float-end" />
+          <IoSend className="text-2xl  float-end" />
         </Button>
       </form>
       {loading ? (

@@ -15,7 +15,7 @@ import Comments from './Comments'
 function PostDetails() {
     const currentPost=useLocation()
     const post=currentPost.state?.post
-    console.log(post.title)
+    console.log(post?.title)
     const theme = colorPallete();
     const { isOpen, handleDisclose } = useDisclosure();
   return (
@@ -53,18 +53,21 @@ function PostDetails() {
                 ) : null
               ) : (
                 <Text>No media available</Text>
-              )}
-            </CardBody>
-            <CardFooter>
+              )}  
               <HStack className='font-raleway max-lg:mx-auto '>
               <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
                 <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}><BiComment /></Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
-            </CardFooter>
-            <Box display={isOpen[post.id] ? "block" : "none"}>
+            </CardBody>
+            <h1 className='xl font-bold ml-3'>Comments</h1>
+            <CardFooter  className='w-[100%]  font-raleway '>
+            
+             <Box   className='w-[100%] font-raleway '>
           <Comments postId={post.id} />
         </Box>
+            </CardFooter>
+           
           </Card>
         
       </SimpleGrid>

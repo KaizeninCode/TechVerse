@@ -18,6 +18,7 @@ import Layout from "./Layout";
 import RequireAuth from "./features/RequireAuth";
 import Categories from "./pages/Categories";
 import PostDetails from "./components/PostDetails";
+import BookMarks from "./pages/profile/BookMarks";
 const App = () => {
   const toggleTheme=UpdateTheme()
   const theme=colorPallete()
@@ -41,6 +42,7 @@ const App = () => {
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/user-posts" element={<UserPosts  />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
+        <Route path="/bookmarks" element={<BookMarks />} />
        </Route>
         
       </Route>

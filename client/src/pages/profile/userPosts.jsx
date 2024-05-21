@@ -71,8 +71,11 @@ function UserPosts() {
             </CardBody>
             <CardFooter>
               <HStack className='font-raleway max-lg:mx-auto '>
-              <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
-              <Button variant={'ghost'} color={'#33658a'}   onClick={() => handleDisclose(post.id)}><BiComment /></Button>
+              <Button variant={'ghost'} color={'#33658a'}><CiHeart />
+              <div>10</div></Button>
+              <Button variant={'ghost'} color={'#33658a'}   onClick={() => handleDisclose(post.id)}><BiComment />
+              <div>20</div>
+              </Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
             </CardFooter>

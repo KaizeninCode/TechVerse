@@ -20,7 +20,7 @@ function Category({ handleFilter }) {
           
           <button
             onClick={() => window.location.href('/')}
-            className={`w-full py-3 font-bold text-xl  rounded ${
+            className={`w-full py-3 font-bold text-xl text-sky-700  rounded ${
               activeCategory === null ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -82,9 +82,9 @@ function Category({ handleFilter }) {
           </button>
           <hr className='border-gray-400' />
           <button
-            onClick={() => handleClick('Mobile-App Development')}
+            onClick={() => handleClick('Mobile-App development')}
             className={`w-full py-3 font-bold text-lg  rounded ${
-              activeCategory === 'Mobile-App Development' ? 'bg-gray-200' : 'hover:bg-gray-200'
+              activeCategory === 'Mobile-App development' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
             Mobile-App Development
