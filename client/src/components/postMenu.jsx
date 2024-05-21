@@ -15,7 +15,7 @@ import { TiUserAdd } from "react-icons/ti";
 import { FaShare } from "react-icons/fa6";
 import DeletePost from './deletePost';
 import { useLocation } from 'react-router-dom';
-function PostMenu() {
+function PostMenu({postId}) {
    const colorMode=useColorMode()
     const isAuthorized = useAuth(['staff', 'admin']);
     const isAdmin = useAuth(['admin','staff']);
@@ -78,7 +78,7 @@ const navigate=useNavigate()
                     justifyContent='space-between'
                     
                    >
-                   <DeletePost post={post}/>
+                   <DeletePost postId={postId}/>
                    </MenuItem>}
                   
             </MenuList>

@@ -47,13 +47,13 @@ function ProfileNav() {
     </li>
     }
      
-   
+    <li className='px-6 py-3 rounded-md'>
+      <NavLink to='/bookmarks' className='px-6 py-3 rounded-md'>My Wish list</NavLink>
+    </li>
     <li className='px-3'>
 <EditProfile/>  
     </li>
-    <li className='px-3'>
-      
-    </li>
+   
   </ul>
 </nav>
     </div>
