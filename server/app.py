@@ -100,7 +100,7 @@ class UserResource(Resource):
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
             return jsonify({'error': 'User already exists'})
-        
+
         # Determine the role based on the email address
         if email.endswith('.admin@techverse.com'):
             role = 'admin'
@@ -109,7 +109,7 @@ class UserResource(Resource):
         else:
             role = 'student'
 
-        hashed_password = bcrypt.generate_password_hash(password_hash)
+        hashed_password = bcrypt.generate_password_hash(password_hash).decode('utf-8')
 
         new_user = User(
             username=username,
