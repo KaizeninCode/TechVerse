@@ -25,7 +25,7 @@ import useDisclosure from "../utils/useDisclosure";
 import Comments from "./Comments";
 import PostMenu from "./postMenu";
 import SearchBar from './SearchBar';
-import FilterCategory from "./FilterCategory";
+
 import Category from "./RightNav";
 const PostContainer = () => {
   const theme = colorPallete();
@@ -100,7 +100,7 @@ const PostContainer = () => {
               
             <PostMenu state={{post}}/>
             </CardHeader>
-            <CardBody className='w-[80%] font-raleway border border-gray-400'>
+            <CardBody className='w-[80%] font-raleway '>
               <Text>{post.description.slice(0,30)}........</Text>
               {post.type ? (
                 post.type.includes('image/') ? (

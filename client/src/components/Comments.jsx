@@ -117,7 +117,7 @@ const Comments = ({ postId }) => {
         onSubmit={handleFormSubmit}
       >
         <Input
-          className="w-[700px] h-[50px] bg-gray-200 border-none rounded-sm"
+          className="w-[700px] h-[50px] bg-gray-200 border border-gray-400 rounded-sm"
           placeholder="Post your reply"
           type="text"
           value={postComment.text}
