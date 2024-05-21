@@ -95,7 +95,7 @@ class UserResource(Resource):
         password_hash = data.get('password')
 
         if not all([username, email, password_hash]):
-            return jsonify({"error": "Username, email, and password are required fields"}), 400
+            return jsonify({"error": "Username, email and password are required fields"})
 
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
