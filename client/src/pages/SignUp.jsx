@@ -46,7 +46,7 @@ function SignUp({theme}) {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "admin", // Default role
+    // role: "admin", // Default role
   };
 
   const handleSubmit = async (values, actions) => {
