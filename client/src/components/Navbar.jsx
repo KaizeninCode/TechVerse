@@ -42,7 +42,7 @@ const linkStyles = {
 const Navbar = () => {
   const theme = colorPallete();
   const isAuthorized = useAuth(['staff', 'admin', 'student']);
-  const isAdmin = useAuth(['staff', 'student'])
+  const isAdmin = useAuth(['staff', 'student', 'admin']);
   const notAthenticated=useAuth([])
 const user=useSelector(selectUserData)
   return (

@@ -93,14 +93,22 @@ class UserResource(Resource):
         username = data.get('username')
         email = data.get('email')
         password_hash = data.get('password')
-        role = data.get('role')
+        role = None
 
         if not all([username, email, password_hash, role]):
-            return jsonify({"error": "Username, email, password, and role are required fields"}), 400
+            return jsonify({"error": "Username, email, password, and role are required fields"})
 
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
             return jsonify({'error': 'User already exists'})
+        
+        # Determine the role based on the email address
+        if email.endswith('.admin@techverse.com'):
+            role = 'admin'
+        elif email.endswith('@techverse.com'):
+            role = 'staff'
+        else:
+            role = 'student'
 
         hashed_password = bcrypt.generate_password_hash(password_hash)
 
@@ -114,7 +122,8 @@ class UserResource(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({'message': 'User created successfully'})
+        return jsonify({'message': 'User created successfully', 'user': new_user.to_dict()})
+
 
     # @jwt_required()
     def put(self, id):
@@ -324,22 +333,7 @@ class ContentResource(Resource):
         if missing_fields:
             app.logger.error(f"Missing fields: {missing_fields}")
             return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
-        # # Check for missing fields and log them
-        # missing_fields = []
-        # if not title:
-        #     missing_fields.append("title")
-        # if not description:
-        #     missing_fields.append("description")
-        # if not content_type:
-        #     missing_fields.append("type")
-        # if not category_id:
-        #     missing_fields.append("category_id")
-        # if not file_to_upload:
-        #     missing_fields.append("file")
-
-        # if missing_fields:
-        #     app.logger.error(f"Missing fields: {missing_fields}")
-        #     return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
+       
 
         try:
             if content_type == 'video':
@@ -379,11 +373,9 @@ class ContentResource(Resource):
             "upload_result": upload_result
         }, 201
 
-    @jwt_required() 
+     
     def delete(self, id):
-        current_user = get_jwt_identity()["role"]
-        if current_user["role"] not in ["admin", "staff"]:
-            return jsonify({"error": "Only staff and students can delete content"}), 403
+        
 
         content = Content.query.get(id)
         if not content:
@@ -399,11 +391,9 @@ class ContentResource(Resource):
 
         return jsonify({"message": "Content approved successfully", "content_id": content.id})
     
-    @jwt_required() 
+    
     def delete(self, id):
-        current_user_role = get_jwt_identity()["role"]
-        if current_user_role != "admin":
-            return jsonify({"error": "Unauthorized access"})
+       
 
         content = Content.query.get(id)
         if not content:

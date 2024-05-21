@@ -14,40 +14,41 @@ import {
   Stack,
   Text,
   useColorMode,
+  useToast
 } from "@chakra-ui/react";
-import { CiHeart } from "react-icons/ci";
+import { CiHeart, CiBookmark } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
-import { RiShareForwardLine } from "react-icons/ri";
-import colorPallete from './colorPallete';
+import { FaBookmark } from "react-icons/fa";
 import { AiOutlineLike, AiOutlineDislike } from 'react-icons/ai';
-import Comments from "./Comments";
-
-import SearchBar from './SearchBar'
-import PostMenu from './postMenu' 
 import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+
+import colorPallete from './colorPallete';
+import Comments from "./Comments";
+import SearchBar from './SearchBar';
+import PostMenu from "./postMenu";
 import useDisclosure from "../utils/useDisclosure";
-
-
-
-
+import { addWish, removeWish } from "../features/WishSlice";
 import Category from "./RightNav";
+
 const PostContainer = () => {
   const theme = colorPallete();
   const [content, setContent] = useState([]);
-  const { colorMode } = useColorMode();
-    const [input, setInput] = useState('');
+  const [isClicked, setClicked] = useState([]);
+  const dispatch = useDispatch();
+  const toast = useToast();
+  const [input, setInput] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(null);
+
   const filterPosts = content.filter((post) => {
-    const searchPost =
-      input === '' ||
-      post.title.toUpperCase().startsWith(input.toUpperCase());
-    const SetCategory =
-      selectedCategory === null || post.category_name === selectedCategory;
-    return searchPost && SetCategory;
+    const searchPost = input === '' || post.title.toUpperCase().startsWith(input.toUpperCase());
+    const setCategory = selectedCategory === null || post.category_name === selectedCategory;
+    return searchPost && setCategory;
   });
+
   const { isOpen, handleDisclose } = useDisclosure();
+
   function handleClick(className) {
-    //to handle the filters
     setSelectedCategory(className);
   }
 
@@ -61,51 +62,73 @@ const PostContainer = () => {
         const data = await response.json();
         setContent(data);
       } catch (error) {
-        console.error(
-          "There has been a problem with your fetch operation:",
-          error
-        );
+        console.error("There has been a problem with your fetch operation:", error);
       }
     };
-
     fetchContent();
   }, []);
+
   function HandleChange(e) {
-      setInput(e.target.value);
-    }
-    function HandleChangeCategory(e) {
-      setSelectedCategory(e.target.value);
-    }
+    setInput(e.target.value);
+  }
+
+  function handleAddWish(post) {
+    dispatch(addWish(post));
+    setClicked(prevClicked => {
+      const updatedClicked = [...prevClicked];
+      updatedClicked[post.id] = !updatedClicked[post.id];
+      return updatedClicked;
+    });
+    showToast('Post added to watch later');
+  }
+
+  function handleRemoveWish(post) {
+    dispatch(removeWish(post));
+    setClicked(prevClicked => {
+      const updatedClicked = [...prevClicked];
+      updatedClicked[post.id] = !updatedClicked[post.id];
+      return updatedClicked;
+    });
+    showToast('Post removed from watch later');
+  }
+
+  const showToast = (message) => {
+    toast({
+      title: message,
+      status: 'info',
+      duration: 5000,
+      isClosable: true,
+      position: "top",
+    });
+  };
+
   return (
     <div className="flex w-full">
-       <SimpleGrid
-      className="lg:w-[80%] overflow-y-scroll flex gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md"
-      id="posts">
-      <div className="block">
-         <SearchBar  handleChange={HandleChange} value={input}/>
-    {/* <FilterCategory handleChange={HandleChangeCategory} value={selectedCategory}/> */}
-      </div>
-     
-      {filterPosts?.map(post => (
+      <SimpleGrid
+        className="lg:w-[80%] overflow-y-scroll flex gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md"
+        id="posts">
+        <div className="block">
+          <SearchBar handleChange={HandleChange} value={input} />
+        </div>
+
+        {filterPosts.map((post, index) => (
           <Card key={post.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400'>
             <CardHeader className='flex justify-between'>
-           <Link to={`/posts/${post.id}`} state={{post}}>
-            <Flex justify={'space-between'} alignItems={'center'}>
-                <Image src={post.image} w={16} h={16} mr={5} />
-                <Stack mr={'auto'}>
-                  <Heading fontSize={20} className='text-[#33658a]'>@{post.user_id}
-                   <Text fontSize={12} className='text-gray-700'>{post.created_at.slice(0,16)}</Text>
-                  </Heading>
-                  <Text>{post.title}</Text>
-                 
-                </Stack>
-              </Flex>
-           </Link>
-              
-            <PostMenu state={{post}}/>
+              <Link to={`/posts/${post.id}`} state={{ post }}>
+                <Flex justify={'space-between'} alignItems={'center'}>
+                  <Image src={post.image} w={16} h={16} mr={5} />
+                  <Stack mr={'auto'}>
+                    <Heading fontSize={20} className='text-[#33658a]'>@{post.user_id}
+                      <Text fontSize={12} className='text-gray-700'>{post.created_at.slice(0, 16)}</Text>
+                    </Heading>
+                    <Text>{post.title}</Text>
+                  </Stack>
+                </Flex>
+              </Link>
+              <PostMenu postId={post.id} />
             </CardHeader>
             <CardBody className='w-[80%] font-raleway '>
-              <Text>{post.description.slice(0,30)}........</Text>
+              <Text>{post.description.slice(0, 30)}........</Text>
               {post.type ? (
                 post.type.includes('image/') ? (
                   <Image src={post.type} w={'70%'} h={'300px'} />
@@ -117,24 +140,37 @@ const PostContainer = () => {
               ) : (
                 <Text>No media available</Text>
               )}
-            </CardBody>
-            <CardFooter>
               <HStack className='font-raleway max-lg:mx-auto '>
-              <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
-                <Button variant={'ghost'} color={'#33658a'}   onClick={() => handleDisclose(post.id)}><BiComment /></Button>
-                <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
+                <Button variant={'ghost'} color={'#33658a'}>
+                  <AiOutlineLike />
+                  <div>10</div>
+                </Button>
+                <Button variant={'ghost'} color={'#33658a'}>
+                  <AiOutlineDislike />
+                  <div>10</div>
+                </Button>
+                <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
+                  <BiComment />
+                  <div>20</div>
+                </Button>
+                <Button variant={'ghost'} color={'#33658a'} onClick={() => {
+                  isClicked[post.id] ? handleRemoveWish(post) : handleAddWish(post);
+                }}>
+                  {isClicked[post.id] ? <FaBookmark /> : <CiBookmark />}
+                </Button>
               </HStack>
+            </CardBody>
+            <CardFooter className='w-[100%] font-raleway '>
+              <Box display={isOpen[post.id] ? "block" : "none"} className='w-[100%] font-raleway '>
+                <Comments postId={post.id} />
+              </Box>
             </CardFooter>
-            <Box display={isOpen[post.id] ? "block" : "none"}>
-          <Comments postId={post.id} />
-        </Box>
           </Card>
         ))}
-        
-    </SimpleGrid>
-    <Category handleFilter={handleClick} />
+
+      </SimpleGrid>
+      <Category handleFilter={handleClick} />
     </div>
-   
   );
 };
 
