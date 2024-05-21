@@ -132,12 +132,16 @@ const PostContainer = () => {
             <CardBody className='w-[80%] font-raleway '>
               <Text>{post.description.slice(0, 30)}........</Text>
               {post.type ? (
-                post.type.includes('image/') ? (
-                  <Image src={post.type} w={'70%'} h={'300px'} />
-                ) : post.type.includes('video/') ? (
-                  <video controls src={post.type} style={{ width: '80%', height: '400px' }} />
-                ) : post.type.includes('audio/') ? (
-                  <audio controls src={post.type} style={{ width: '100%' }} />
+                post.type.includes("image/") ? (
+                  <Image src={post.type} w={"70%"} h={"300px"} />
+                ) : post.type.includes("video/") ? (
+                  <video
+                    controls
+                    src={post.type}
+                    style={{ width: "80%", height: "400px" }}
+                  />
+                ) : post.type.includes("audio/") ? (
+                  <audio controls src={post.type} style={{ width: "100%" }} />
                 ) : null
               ) : (
                 <Text>No media available</Text>
