@@ -142,7 +142,11 @@ const PostContainer = () => {
               )}
               <HStack className='font-raleway max-lg:mx-auto '>
                 <Button variant={'ghost'} color={'#33658a'}>
-                  <CiHeart />
+                  <AiOutlineLike />
+                  <div>10</div>
+                </Button>
+                <Button variant={'ghost'} color={'#33658a'}>
+                  <AiOutlineDislike />
                   <div>10</div>
                 </Button>
                 <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
