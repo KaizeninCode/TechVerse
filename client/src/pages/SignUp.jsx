@@ -278,7 +278,7 @@ function SignUp({theme}) {
                   </Field>
 
                   {/* Role Field */}
-                  <Field
+                  {/* <Field
                     as="select"
                     id="role"
                     name="role"
@@ -287,7 +287,7 @@ function SignUp({theme}) {
                     <option value="admin">Admin</option>
                     <option value="staff">Staff</option>
                     <option value="student">Student</option>
-                  </Field>
+                  </Field> */}
                 </>
 
                 {/* Sign In Link */}

@@ -324,22 +324,7 @@ class ContentResource(Resource):
         if missing_fields:
             app.logger.error(f"Missing fields: {missing_fields}")
             return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
-        # # Check for missing fields and log them
-        # missing_fields = []
-        # if not title:
-        #     missing_fields.append("title")
-        # if not description:
-        #     missing_fields.append("description")
-        # if not content_type:
-        #     missing_fields.append("type")
-        # if not category_id:
-        #     missing_fields.append("category_id")
-        # if not file_to_upload:
-        #     missing_fields.append("file")
-
-        # if missing_fields:
-        #     app.logger.error(f"Missing fields: {missing_fields}")
-        #     return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
+       
 
         try:
             if content_type == 'video':
@@ -379,11 +364,9 @@ class ContentResource(Resource):
             "upload_result": upload_result
         }, 201
 
-    @jwt_required() 
+     
     def delete(self, id):
-        current_user = get_jwt_identity()["role"]
-        if current_user["role"] not in ["admin", "staff"]:
-            return jsonify({"error": "Only staff and students can delete content"}), 403
+        
 
         content = Content.query.get(id)
         if not content:
@@ -399,11 +382,9 @@ class ContentResource(Resource):
 
         return jsonify({"message": "Content approved successfully", "content_id": content.id})
     
-    @jwt_required() 
+    
     def delete(self, id):
-        current_user_role = get_jwt_identity()["role"]
-        if current_user_role != "admin":
-            return jsonify({"error": "Unauthorized access"})
+       
 
         content = Content.query.get(id)
         if not content:
