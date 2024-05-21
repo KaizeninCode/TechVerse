@@ -18,13 +18,17 @@ import {
 import { CiHeart } from "react-icons/ci";
 import { BiComment } from "react-icons/bi";
 import { RiShareForwardLine } from "react-icons/ri";
-import colorPallete from "./colorPallete";
-import { Tooltip } from "@chakra-ui/react";
+import colorPallete from './colorPallete';
+import { AiOutlineLike, AiOutlineDislike } from 'react-icons/ai';
+import Comments from "./Comments";
+
+import SearchBar from './SearchBar'
+import PostMenu from './postMenu' 
 import { Link } from "react-router-dom";
 import useDisclosure from "../utils/useDisclosure";
-import Comments from "./Comments";
-import PostMenu from "./postMenu";
-import SearchBar from './SearchBar';
+
+
+
 
 import Category from "./RightNav";
 const PostContainer = () => {
@@ -135,4 +139,3 @@ const PostContainer = () => {
 };
 
 export default PostContainer;
-//  

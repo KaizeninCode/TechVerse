@@ -10,6 +10,7 @@ from models.dbconfig import db
 from models.category import Category
 from models.comment import Comment
 from models.content import Content
+from models.like import Like
 from models.subscription import Subscription
 from models.user import User
 import cloudinary
@@ -21,13 +22,9 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
-
 app = Flask(__name__)
 CORS(app,supports_credentials=True)
 api = Api(app)
-
-
-
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 
@@ -95,17 +92,17 @@ class UserResource(Resource):
         data = request.get_json()
         username = data.get('username')
         email = data.get('email')
-        password_hash = data.get('password')  # Change variable name to 'password'
+        password_hash = data.get('password')
         role = data.get('role')
 
-        if not all([username, email, password_hash, role]):  # Ensure all required fields are provided
+        if not all([username, email, password_hash, role]):
             return jsonify({"error": "Username, email, password, and role are required fields"}), 400
 
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
             return jsonify({'error': 'User already exists'})
 
-        hashed_password = bcrypt.generate_password_hash(password_hash)  # Generate password hash
+        hashed_password = bcrypt.generate_password_hash(password_hash)
 
         new_user = User(
             username=username,
@@ -142,9 +139,7 @@ class UserResource(Resource):
         user.role = data.get('role', user.role)
         user.active_status = data.get('active_status', user.active_status)
 
-        db.session.commit()
-
-       
+        db.session.commit()       
 
     @jwt_required()
     def delete(self, id):
@@ -173,8 +168,8 @@ class UserLoginResource(Resource):
         user = User.query.filter_by(email = email).first()
 
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
-            access_token = create_access_token(identity={"email": user.email, "role": user.role})
-            refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role})
+            access_token = create_access_token(identity={"email": user.email, "role": user.role, "id": user.id})
+            refresh_token = create_refresh_token(identity={"email": user.email, "role": user.role, "id": user.id})
             
             response = make_response(jsonify({
             'access_token': access_token,
@@ -183,17 +178,14 @@ class UserLoginResource(Resource):
             'username': user.username,
             'role': user.role,
             'refresh_token':refresh_token
-            # Include user data in the response
         }), 200)
         
        
         if response:
-         print(access_token)
          return response
         return jsonify({"message": "Invalid username or password"}), 401
     
 api.add_resource(UserLoginResource, '/login')
-
         
 #CRUD FOR COMMENTS
 class CommentResource(Resource):
@@ -269,9 +261,6 @@ class CommentResource(Resource):
         else:
             return jsonify({'message': 'Comment not found'}), 404
 
-# Add resources to routes
-
-# api.add_resource(UserResource, '/users', methods=['GET'])
 api.add_resource(CommentResource, '/comments', '/comments/<int:id>')
 
 @app.route('/')
@@ -389,19 +378,6 @@ class ContentResource(Resource):
             "content_id": new_content.id,
             "upload_result": upload_result
         }, 201
-
-
-        
-
-
-    @jwt_required()
-    def post_approve(self, id):
-        current_user_role = get_jwt_identity()["role"]
-
-        if current_user_role not in ["admin", "staff"]:
-            return jsonify({"error": "Unauthorized access"})
-        
-        content = Content.query.get(id)
 
     @jwt_required() 
     def delete(self, id):
@@ -607,13 +583,55 @@ class SubscriptionResource(Resource):
             return jsonify({'message': 'Subscription deleted successfully'})
         else:
             return make_response(jsonify({'message': 'Subscription not found'}), 404)
-            # return jsonify({'message': 'Subscription not found'}), 404
         
-# Add resources to routes
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
+class LikeResource(Resource):
+    @jwt_required()
+    def post(self):
+        data = request.get_json()
+        content_id = data.get('content_id')
+        like_status = data.get('like')  # True for like, False for dislike
 
+        current_user = get_jwt_identity()
+        current_user_id = current_user.get("id")
 
+        if current_user_id is None:
+            return jsonify({"error": "User ID not found in token"}), 400
+
+        content = Content.query.get(content_id)
+        if not content:
+            return jsonify({"error": "Content not found"}), 404
+        
+        like = Like.query.filter_by(user_id=current_user_id, content_id=content_id).first()
+        if not like:
+            like = Like(
+                user_id=current_user_id,
+                content_id=content_id,
+                like=like_status
+            )
+            db.session.add(like)
+        else:
+            like.like = like_status
+        
+        db.session.commit()
+
+        return jsonify({"message": "Like updated successfully"})
+
+    @jwt_required()
+    def delete(self, content_id):
+        current_user_id = get_jwt_identity()["id"]
+
+        like = Like.query.filter_by(user_id=current_user_id, content_id=content_id).first()
+        if not like:
+            return jsonify({"error": "Like not found"}), 404
+        
+        db.session.delete(like)
+        db.session.commit()
+
+        return jsonify({"message": "Like deleted successfully"})
+    
+api.add_resource(LikeResource, '/like', '/like/<int:content_id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
