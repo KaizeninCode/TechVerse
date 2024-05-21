@@ -9,6 +9,7 @@ const Comments = ({ postId }) => {
   const user = useSelector(selectUserData);
   const url = `http://127.0.0.1:5555/comments?contentId=${postId}`;
   const [comments, setComments] = useState([]);
+  const filteredComments = comments.filter(comment => comment.content_id === postId);
   const [postComment, setPostComment] = useState({
     user_id: user.id,
     content_id: postId,
@@ -21,13 +22,11 @@ const Comments = ({ postId }) => {
 
   // Fetch comments
   useEffect(() => {
-    setTimeout(()=>{
     const fetchData = async () => {
       setLoading(true);
       try {
         const response = await fetch(url);
-        if (!response.ok)
-          throw new Error(`HTTP error! status ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP error! status ${response.status}`);
         const data = await response.json();
         setComments(data);
       } catch (err) {
@@ -37,8 +36,6 @@ const Comments = ({ postId }) => {
       }
     };
     fetchData();
-    },3000)
-
   }, [url]);
 
   const handleInputChange = (e) => {
@@ -60,11 +57,10 @@ const Comments = ({ postId }) => {
         },
         body: JSON.stringify(postComment),
       });
-      if (!response.ok)
-        throw new Error(`HTTP error! status ${response.status}`);
+      if (!response.ok) throw new Error(`HTTP error! status ${response.status}`);
       const data = await response.json();
-      setComments([data.comment, ...comments]);
-      setPostComment({ text: "",...postComment  });
+      setComments([data, ...comments]);
+      setPostComment({ ...postComment, text: "" });
     } catch (err) {
       console.error(err.message);
     }
@@ -74,22 +70,16 @@ const Comments = ({ postId }) => {
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(
-        `http://127.0.0.1:5555/comments/${editComment.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(editComment),
-        }
-      );
-      if (!response.ok)
-        throw new Error(`HTTP error! status ${response.status}`);
+      const response = await fetch(`http://127.0.0.1:5555/comments/${editComment.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editComment),
+      });
+      if (!response.ok) throw new Error(`HTTP error! status ${response.status}`);
       const data = await response.json();
-      setComments(
-        comments.map((comment) => (comment.id === data.id ? data : comment))
-      );
+      setComments(comments.map((comment) => (comment.id === data.id ? data : comment)));
       setEditComment(null);
     } catch (err) {
       console.error(err.message);
@@ -102,8 +92,7 @@ const Comments = ({ postId }) => {
       const response = await fetch(`http://127.0.0.1:5555/comments/${id}`, {
         method: "DELETE",
       });
-      if (!response.ok)
-        throw new Error(`HTTP error! status ${response.status}`);
+      if (!response.ok) throw new Error(`HTTP error! status ${response.status}`);
       setComments(comments.filter((comment) => comment.id !== id));
     } catch (err) {
       console.error(err.message);
@@ -112,12 +101,9 @@ const Comments = ({ postId }) => {
 
   return (
     <Box className="overflow-y-scroll w-full h-40">
-      <form
-        className="border-none flex flex-row items-center justify-center gap-3"
-        onSubmit={handleFormSubmit}
-      >
+      <form className="border-none flex flex-row items-center justify-center gap-3" onSubmit={handleFormSubmit}>
         <Input
-          className="w-[700px] h-[50px] bg-gray-200 border-none rounded-sm"
+          className="w-[700px] h-[50px] bg-gray-200 border border-gray-400 rounded-sm"
           placeholder="Post your reply"
           type="text"
           value={postComment.text}
@@ -129,10 +115,10 @@ const Comments = ({ postId }) => {
       </form>
       {loading ? (
         <Spinner />
-      ) : comments.length > 0 ? (
-        comments.map((comment) => (
-          <Box key={comment?.id} p={3} borderBottom="1px solid #ccc">
-            {editComment && editComment.id === comment?.id ? (
+      ) : filteredComments.length > 0 ? (
+        filteredComments.map((comment) => (
+          <Box key={comment.id} p={3} borderBottom="1px solid #ccc">
+            {editComment && editComment.id === comment.id ? (
               <form onSubmit={handleEditSubmit}>
                 <Input
                   className="w-[700px] h-[50px] bg-gray-200 border-none rounded-sm"
@@ -145,8 +131,8 @@ const Comments = ({ postId }) => {
                 </Button>
               </form>
             ) : (
-              <>
-                <Text fontWeight="bold">{comment?.user.username}</Text>
+              <div>
+                <Text fontWeight="bold">{comment?.user?.username}</Text>
                 <Text>{comment?.text}</Text>
                 {user.id === comment?.user_id && (
                   <Box className="flex gap-2">
@@ -157,12 +143,12 @@ const Comments = ({ postId }) => {
                     >
                       Edit
                     </Text>
-                    <button className="" onClick={() => handleDelete(comment.id)}>
+                    <button onClick={() => handleDelete(comment.id)}>
                       <MdDeleteForever className="text-2xl " />
                     </button>
                   </Box>
                 )}
-              </>
+              </div>
             )}
           </Box>
         ))

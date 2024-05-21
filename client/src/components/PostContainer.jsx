@@ -21,11 +21,16 @@ import { RiShareForwardLine } from "react-icons/ri";
 import colorPallete from './colorPallete';
 import { AiOutlineLike, AiOutlineDislike } from 'react-icons/ai';
 import Comments from "./Comments";
-import  useDisclosure  from "../utils/useDisclosure";
+
 import SearchBar from './SearchBar'
 import PostMenu from './postMenu' 
 import { Link } from "react-router-dom";
+import useDisclosure from "../utils/useDisclosure";
 
+
+
+
+import Category from "./RightNav";
 const PostContainer = () => {
   const theme = colorPallete();
   const [content, setContent] = useState([]);
@@ -37,10 +42,14 @@ const PostContainer = () => {
       input === '' ||
       post.title.toUpperCase().startsWith(input.toUpperCase());
     const SetCategory =
-      selectedCategory === null || post.category === selectedCategory;
+      selectedCategory === null || post.category_name === selectedCategory;
     return searchPost && SetCategory;
   });
   const { isOpen, handleDisclose } = useDisclosure();
+  function handleClick(className) {
+    //to handle the filters
+    setSelectedCategory(className);
+  }
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -64,12 +73,19 @@ const PostContainer = () => {
   function HandleChange(e) {
       setInput(e.target.value);
     }
+    function HandleChangeCategory(e) {
+      setSelectedCategory(e.target.value);
+    }
   return (
-    <SimpleGrid
-      className="lg:w-[80%] overflow-y-scroll gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md"
+    <div className="flex w-full">
+       <SimpleGrid
+      className="lg:w-[80%] overflow-y-scroll flex gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md"
       id="posts">
-      <SearchBar  handleChange={HandleChange} value={input}/>
-    
+      <div className="block">
+         <SearchBar  handleChange={HandleChange} value={input}/>
+    {/* <FilterCategory handleChange={HandleChangeCategory} value={selectedCategory}/> */}
+      </div>
+     
       {filterPosts?.map(post => (
           <Card key={post.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400'>
             <CardHeader className='flex justify-between'>
@@ -88,7 +104,7 @@ const PostContainer = () => {
               
             <PostMenu state={{post}}/>
             </CardHeader>
-            <CardBody className='w-[80%] font-raleway border border-gray-400'>
+            <CardBody className='w-[80%] font-raleway '>
               <Text>{post.description.slice(0,30)}........</Text>
               {post.type ? (
                 post.type.includes('image/') ? (
@@ -105,7 +121,7 @@ const PostContainer = () => {
             <CardFooter>
               <HStack className='font-raleway max-lg:mx-auto '>
               <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
-                <Button variant={'ghost'} color={'#33658a'} onClick={()=>handleDisclose(post.id)}><BiComment /></Button>
+                <Button variant={'ghost'} color={'#33658a'}   onClick={() => handleDisclose(post.id)}><BiComment /></Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
             </CardFooter>
@@ -114,7 +130,11 @@ const PostContainer = () => {
         </Box>
           </Card>
         ))}
+        
     </SimpleGrid>
+    <Category handleFilter={handleClick} />
+    </div>
+   
   );
 };
 

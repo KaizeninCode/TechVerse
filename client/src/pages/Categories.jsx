@@ -73,7 +73,7 @@ function Categories() {
   return (
     <>
       <button onClick={onOpen} className='flex'>
-        <BiSolidCategory fontSize={'1.5rem'} />
+        <BiSolidCategory fontSize={'1rem'} />
         Add Category
       </button>
       <Modal isOpen={isOpen} onClose={onClose} isCentered>

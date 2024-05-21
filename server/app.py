@@ -270,6 +270,7 @@ def index():
 class ContentResource(Resource):
     def get(self):
         contents = Content.query.all()
+        category=Category.query.filter(Content.category_id==Category.id).first()
         result = []
         for content in contents:
             user = User.query.filter_by(id=content.user_id).first()
@@ -279,6 +280,7 @@ class ContentResource(Resource):
                 'description': content.description,
                 'type': content.type,
                 'category_id': content.category_id,
+                'category_name': content.category.name,
                 'published_status': content.published_status,
                 'user_id': user.username if user else None,
                 'created_at': content.created_at,
@@ -322,22 +324,22 @@ class ContentResource(Resource):
         if missing_fields:
             app.logger.error(f"Missing fields: {missing_fields}")
             return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
-        # Check for missing fields and log them
-        missing_fields = []
-        if not title:
-            missing_fields.append("title")
-        if not description:
-            missing_fields.append("description")
-        if not content_type:
-            missing_fields.append("type")
-        if not category_id:
-            missing_fields.append("category_id")
-        if not file_to_upload:
-            missing_fields.append("file")
+        # # Check for missing fields and log them
+        # missing_fields = []
+        # if not title:
+        #     missing_fields.append("title")
+        # if not description:
+        #     missing_fields.append("description")
+        # if not content_type:
+        #     missing_fields.append("type")
+        # if not category_id:
+        #     missing_fields.append("category_id")
+        # if not file_to_upload:
+        #     missing_fields.append("file")
 
-        if missing_fields:
-            app.logger.error(f"Missing fields: {missing_fields}")
-            return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
+        # if missing_fields:
+        #     app.logger.error(f"Missing fields: {missing_fields}")
+        #     return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
 
         try:
             if content_type == 'video':
