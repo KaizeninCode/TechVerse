@@ -122,7 +122,8 @@ class UserResource(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        return jsonify({'message': 'User created successfully'})
+        return jsonify({'message': 'User created successfully', 'user': new_user.to_dict()})
+
 
     # @jwt_required()
     def put(self, id):
