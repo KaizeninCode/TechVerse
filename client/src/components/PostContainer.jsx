@@ -30,6 +30,7 @@ import PostMenu from "./postMenu";
 import useDisclosure from "../utils/useDisclosure";
 import { addWish, removeWish } from "../features/WishSlice";
 import Category from "./RightNav";
+import HandleLikes from "./HandleLikes";
 
 const PostContainer = () => {
   const theme = colorPallete();
@@ -71,6 +72,7 @@ const PostContainer = () => {
   function HandleChange(e) {
     setInput(e.target.value);
   }
+  
 
   function handleAddWish(post) {
     dispatch(addWish(post));
@@ -141,13 +143,10 @@ const PostContainer = () => {
                 <Text>No media available</Text>
               )}
               <HStack className='font-raleway max-lg:mx-auto '>
-                <Button variant={'ghost'} color={'#33658a'}>
-                  <CiHeart />
-                  <div>10</div>
-                </Button>
+                <HandleLikes postId={post.id}/>
                 <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
                   <BiComment />
-                  <div>20</div>
+                  
                 </Button>
                 <Button variant={'ghost'} color={'#33658a'} onClick={() => {
                   isClicked[post.id] ? handleRemoveWish(post) : handleAddWish(post);
