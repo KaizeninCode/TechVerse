@@ -333,7 +333,7 @@ class ContentResource(Resource):
         if missing_fields:
             app.logger.error(f"Missing fields: {missing_fields}")
             return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
-       
+
 
         try:
             if content_type == 'video':
@@ -533,25 +533,29 @@ class SubscriptionResource(Resource):
         subscriptions = Subscription.query.all()
         return jsonify([{'id': sub.id, 'user_id': sub.user_id, 'category_id': sub.category_id} for sub in subscriptions])
 
-    @jwt_required()
+    # @jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()["role"]
+    #     # current_user_role = get_jwt_identity()["role"]
         
-        if current_user_role != "student":
-            return jsonify({"error": "Unauthorized access"})
+    #     # if current_user_role != "student":
+    #     #     return jsonify({"error": "Unauthorized access"})
 
         data = request.get_json()
-        user_id=data.get('user_id')
-        category_id=data.get('category_id')
-        category=Category.query.filter(category_id==Category.name).first()
+        user_id = data.get('user_id')
+        category_id = data.get('category_id')
+
+        category = Category.query.filter_by(id=category_id).first()
+        if category is None:
+            return jsonify({"error": "Category not found"}), 404
+
         new_subscription = Subscription(
             user_id=user_id,
-            category_id=category.id, 
+            category_id=category.id,
         )
 
         db.session.add(new_subscription)
         db.session.commit()
-        return jsonify({'message': 'Subscription created successfully'})
+        return jsonify({'message': 'Subscription created successfully'}),201
 
     def put(self, id):
         subscription = Subscription.query.get(id)
