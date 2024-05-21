@@ -1,6 +1,7 @@
 import Header from "../components/Header"
 import Navbar from "../components/Navbar"
 import PostContainer from "../components/PostContainer"
+import Category from "../components/RightNav"
 import RightNav from "../components/RightNav"
 
 
@@ -12,7 +13,7 @@ const Home = ({theme}) => {
          <Navbar/> 
         <Header/>
         <PostContainer theme={theme}/>
-      <RightNav/>  
+     
         
       </div>
     </section>

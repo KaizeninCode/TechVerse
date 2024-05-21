@@ -19,7 +19,7 @@ const Explore = ({theme}) => {
           
          
  
-         <RightNav/>
+         {/* <RightNav/> */}
         </div>
     </section>
   )
