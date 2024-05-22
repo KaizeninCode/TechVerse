@@ -27,6 +27,7 @@ import Comments from '../../components/Comments';
 import Navbar from '../../components/Navbar';
 import RightNav from '../../components/RightNav';
 import ProfileNav from './ProfileNav';
+import HandleLikes from '../../components/HandleLikes';
 
 function BookMarks() {
   const wishes = useSelector((state) => state.wish);
@@ -76,13 +77,10 @@ function BookMarks() {
               </CardBody>
               <CardFooter>
                 <HStack className='font-raleway max-lg:mx-auto '>
-                  <Button variant={'ghost'} color={'#33658a'}>
-                    <CiHeart />
-                    <div>10</div>
-                  </Button>
+                 <HandleLikes postId={post.id}/>
                   <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
                     <BiComment />
-                    <div>20</div>
+                    
                   </Button>
                   <Button variant={'ghost'} color={'#33658a'}>
                     <RiShareForwardLine />

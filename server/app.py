@@ -13,6 +13,8 @@ from models.content import Content
 from models.like import Like
 from models.subscription import Subscription
 from models.user import User
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 import cloudinary
 from cloudinary import uploader
 import logging
@@ -31,6 +33,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = "e27c00e982d1d07709adb9eb"
+app.config['SENDGRID_API_KEY'] = os.getenv('SENDGRID_API_KEY')
 
 # app.secret_key = "hgfedcba"
 app.secret_key = "hgfedcba"
@@ -53,8 +56,21 @@ cloudinary.config(
 if not all([cloudinary.config().cloud_name, cloudinary.config().api_key, cloudinary.config().api_secret]):
     raise ValueError("No Cloudinary configuration found. Ensure CLOUD_NAME, API_KEY, and API_SECRET are set.")
 
-#CRUD FOR USER
-    
+#send grid messgae
+def send_welcome_email(email):
+    message = Mail(
+        from_email=('simonmwangikangi@gmail.com', 'TechVerse'),
+        to_emails=email,
+        subject='Welcome to Techverse!',
+        html_content='<strong>Thank you for signing up!</strong>')
+    try:
+        sg = SendGridAPIClient(app.config['SENDGRID_API_KEY'])
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(e)    
 class UserResource(Resource):
     @jwt_required()
     def get(self):
@@ -118,10 +134,11 @@ class UserResource(Resource):
             password_hash=hashed_password,
             role=role
         )
-
+        
         db.session.add(new_user)
         db.session.commit()
-
+        #send the message to registered email
+        send_welcome_email(new_user.email)
         return jsonify({'message': 'User created successfully', 'user': new_user.to_dict()})
 
 
