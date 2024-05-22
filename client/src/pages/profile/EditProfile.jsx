@@ -4,10 +4,13 @@ import { useColorMode } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { selectUserData } from '../../features/AuthSlice';
 import { useToast } from '@chakra-ui/react';
+
+import useAuth from '../../features/UseAuth';
 function EditProfile({ theme }) {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const user = useSelector(selectUserData);
     const colorMode = useColorMode();
+    const isAdmin = useAuth('admin');
   const toast=useToast()
     const [values, setValues] = useState({
         username: user.username,
@@ -132,15 +135,18 @@ function EditProfile({ theme }) {
                 <label className='p-1 font-montserrat font-medium' onChange={handleChange}  name="category" value="devops">DevOps</label>
               </div>
               </div>
+                            {isAdmin &&
                             <div className='p-3 shadow-md mt-3'>
-                                <h1 className='font-bold'>Update Role</h1>
+                             <h1 className='font-bold'>Update Role</h1>
                                 <select name="role" onChange={handleChange} value={values.role} className="px-6 py-2">
                                     <option value=''>{user.role}</option>
                                     <option value="admin">Admin</option>
                                     <option value="staff">Staff</option>
                                     <option value="student">Student</option>
                                 </select>
-                            </div>
+                              
+                               
+                            </div>  }
                             
                         </form>
                     </DrawerBody>

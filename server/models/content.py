@@ -9,7 +9,7 @@ class Content(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(255), nullable=False)
     description = db.Column(db.String(255), nullable=False)
-    type = db.Column(db.String(255), nullable=False)
+    type = db.Column(db.String(255), nullable=True)
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     published_status = db.Column(db.Boolean, default=False)
@@ -21,7 +21,7 @@ class Content(db.Model):
     comments = relationship(
         "Comment", back_populates="content", cascade="all, delete-orphan")
     category = relationship("Category", back_populates="contents")
-    likes = relationship("Like", back_populates="content")
+    likes = relationship("Like", back_populates="content", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Content {self.id}, {self.title}>"

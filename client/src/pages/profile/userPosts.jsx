@@ -11,6 +11,7 @@ import { Link } from'react-router-dom';
 import PostMenu from '../../components/postMenu';
 import useDisclosure from '../../utils/useDisclosure';
 import Comments from '../../components/Comments';
+import HandleLikes from '../../components/HandleLikes';
 function UserPosts() {
   const [userPosts, setUserPosts]= useState([])
   const user=useSelector(selectUserData)
@@ -71,10 +72,10 @@ function UserPosts() {
             </CardBody>
             <CardFooter>
               <HStack className='font-raleway max-lg:mx-auto '>
-              <Button variant={'ghost'} color={'#33658a'}><CiHeart />
-              <div>10</div></Button>
-              <Button variant={'ghost'} color={'#33658a'}   onClick={() => handleDisclose(post.id)}><BiComment />
-              <div>20</div>
+              <HandleLikes postId={post.id}/>
+              <Button variant={'ghost'} color={'#33658a'}   onClick={() => handleDisclose(post.id)}>
+              <BiComment />
+              
               </Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>

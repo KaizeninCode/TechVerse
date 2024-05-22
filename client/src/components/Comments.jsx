@@ -102,7 +102,7 @@ const Comments = ({ postId }) => {
 
   return (
     <Box className="overflow-y-scroll w-full h-40">
-    
+    <div className="font-bold flex p-3">{filteredComments.length} <h1 className="px-2">Comments</h1></div>
       <form className="border-none flex flex-row items-center justify-center gap-3" onSubmit={handleFormSubmit}>
         <input
           className="w-[100%] h-[50px] bg-[#e0e0e0] border-b-2 border-gray-700 rounded-sm"

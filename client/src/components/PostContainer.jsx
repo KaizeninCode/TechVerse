@@ -13,6 +13,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Tooltip,
   useColorMode,
   useToast
 } from "@chakra-ui/react";
@@ -30,6 +31,7 @@ import PostMenu from "./postMenu";
 import useDisclosure from "../utils/useDisclosure";
 import { addWish, removeWish } from "../features/WishSlice";
 import Category from "./RightNav";
+import HandleLikes from "./HandleLikes";
 
 const PostContainer = () => {
   const theme = colorPallete();
@@ -71,6 +73,7 @@ const PostContainer = () => {
   function HandleChange(e) {
     setInput(e.target.value);
   }
+  
 
   function handleAddWish(post) {
     dispatch(addWish(post));
@@ -125,39 +128,39 @@ const PostContainer = () => {
                   </Stack>
                 </Flex>
               </Link>
-              <PostMenu postId={post.id} />
+              <PostMenu postId={post.id} categoryId={post.category_id} />
             </CardHeader>
             <CardBody className='w-full font-raleway'>
               <Text>{post.description}</Text>
               {post.type ? (
-                post.type.includes('image/') ? (
-                  <Image src={post.type} w={'100%'} h={'300px'} display={'flex'} justifyContent={'center'}/>
-                ) : post.type.includes('video/') ? (
-                  <video controls src={post.type} style={{ width: '100%', height: '400px', marginTop: '1rem' }} />
-                ) : post.type.includes('audio/') ? (
-                  <audio controls src={post.type} style={{ width: '100%' }} />
+                post.type.includes("image/") ? (
+                  <Image src={post.type} w={"70%"} h={"300px"} />
+                ) : post.type.includes("video/") ? (
+                  <video
+                    controls
+                    src={post.type}
+                    style={{ width: "80%", height: "400px" }}
+                  />
+                ) : post.type.includes("audio/") ? (
+                  <audio controls src={post.type} style={{ width: "100%" }} />
                 ) : null
               ) : (
                 <Text>No media available</Text>
               )}
               <HStack className='font-raleway max-lg:mx-auto '>
-                <Button variant={'ghost'} color={'#33658a'}>
-                  <AiOutlineLike />
-                  <div className="ml-2">10</div>
-                </Button>
-                <Button variant={'ghost'} color={'#33658a'}>
-                  <AiOutlineDislike />
-                  <div className="ml-2">10</div>
-                </Button>
-                <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
+                <HandleLikes postId={post.id}/>
+                <Tooltip hasArrow label="comments" placement="bottom"><Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
                   <BiComment />
-                  <div className="ml-2">20</div>
-                </Button>
-                <Button variant={'ghost'} color={'#33658a'} onClick={() => {
+                  
+                </Button></Tooltip>
+                <Tooltip label="bookmark">
+<Button variant={'ghost'} color={'#33658a'} onClick={() => {
                   isClicked[post.id] ? handleRemoveWish(post) : handleAddWish(post);
                 }}>
                   {isClicked[post.id] ? <FaBookmark /> : <CiBookmark />}
                 </Button>
+                </Tooltip>
+                
               </HStack>
             </CardBody>
             <CardFooter className='w-[100%] font-raleway '>

@@ -13,6 +13,8 @@ from models.content import Content
 from models.like import Like
 from models.subscription import Subscription
 from models.user import User
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail
 import cloudinary
 from cloudinary import uploader
 import logging
@@ -31,6 +33,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 app.config['JWT_SECRET_KEY'] = "e27c00e982d1d07709adb9eb"
+app.config['SENDGRID_API_KEY'] = os.getenv('SENDGRID_API_KEY')
 
 # app.secret_key = "hgfedcba"
 app.secret_key = "hgfedcba"
@@ -53,8 +56,21 @@ cloudinary.config(
 if not all([cloudinary.config().cloud_name, cloudinary.config().api_key, cloudinary.config().api_secret]):
     raise ValueError("No Cloudinary configuration found. Ensure CLOUD_NAME, API_KEY, and API_SECRET are set.")
 
-#CRUD FOR USER
-    
+#send grid messgae
+def send_welcome_email(email):
+    message = Mail(
+        from_email=('simonmwangikangi@gmail.com', 'TechVerse'),
+        to_emails=email,
+        subject='Welcome to Techverse!',
+        html_content='<strong>Thank you for signing up!</strong>')
+    try:
+        sg = SendGridAPIClient(app.config['SENDGRID_API_KEY'])
+        response = sg.send(message)
+        print(response.status_code)
+        print(response.body)
+        print(response.headers)
+    except Exception as e:
+        print(e)    
 class UserResource(Resource):
     @jwt_required()
     def get(self):
@@ -93,15 +109,15 @@ class UserResource(Resource):
         username = data.get('username')
         email = data.get('email')
         password_hash = data.get('password')
-        role = None
+        
 
-        if not all([username, email, password_hash, role]):
+        if not all([username, email, password_hash]):
             return jsonify({"error": "Username, email, password, and role are required fields"})
 
         user_exists = User.query.filter_by(email=email).first()
         if user_exists:
             return jsonify({'error': 'User already exists'})
-        
+
         # Determine the role based on the email address
         if email.endswith('.admin@techverse.com'):
             role = 'admin'
@@ -110,7 +126,7 @@ class UserResource(Resource):
         else:
             role = 'student'
 
-        hashed_password = bcrypt.generate_password_hash(password_hash)
+        hashed_password = bcrypt.generate_password_hash(password_hash).decode('utf-8')
 
         new_user = User(
             username=username,
@@ -118,10 +134,11 @@ class UserResource(Resource):
             password_hash=hashed_password,
             role=role
         )
-
+        
         db.session.add(new_user)
         db.session.commit()
-
+        #send the message to registered email
+        send_welcome_email(new_user.email)
         return jsonify({'message': 'User created successfully', 'user': new_user.to_dict()})
 
 
@@ -333,7 +350,7 @@ class ContentResource(Resource):
         if missing_fields:
             app.logger.error(f"Missing fields: {missing_fields}")
             return {"error": f"Missing fields: {', '.join(missing_fields)}"}, 400
-       
+
 
         try:
             if content_type == 'video':
@@ -533,25 +550,29 @@ class SubscriptionResource(Resource):
         subscriptions = Subscription.query.all()
         return jsonify([{'id': sub.id, 'user_id': sub.user_id, 'category_id': sub.category_id} for sub in subscriptions])
 
-    @jwt_required()
+    # @jwt_required()
     def post(self):
-        current_user_role = get_jwt_identity()["role"]
+    #     # current_user_role = get_jwt_identity()["role"]
         
-        if current_user_role != "student":
-            return jsonify({"error": "Unauthorized access"})
+    #     # if current_user_role != "student":
+    #     #     return jsonify({"error": "Unauthorized access"})
 
         data = request.get_json()
-        user_id=data.get('user_id')
-        category_id=data.get('category_id')
-        category=Category.query.filter(category_id==Category.name).first()
+        user_id = data.get('user_id')
+        category_id = data.get('category_id')
+        user=User.query.filter(User.id==user_id).first()
+        category = Category.query.filter(Category.id==category_id).first()
+        if category is None:
+            return jsonify({"error": "Category not found"}), 404
+        print(category.name)
         new_subscription = Subscription(
-            user_id=user_id,
-            category_id=category.id, 
+            user_id=user.id,
+            category_id=category.name,
         )
 
         db.session.add(new_subscription)
         db.session.commit()
-        return jsonify({'message': 'Subscription created successfully'})
+        return jsonify({'message': 'Subscription created successfully'}),201
 
     def put(self, id):
         subscription = Subscription.query.get(id)
@@ -577,42 +598,47 @@ class SubscriptionResource(Resource):
 api.add_resource(SubscriptionResource, '/subscriptions', '/subscriptions/<int:id>')
 
 class LikeResource(Resource):
-    @jwt_required()
+    def get(self):
+        likes = Like.query.all()
+        return jsonify([{'id': like.id, 'user_id': like.user_id, 'content_id': like.content_id, 'like': like.like} for like in likes])
+    # @jwt_required()
     def post(self):
         data = request.get_json()
         content_id = data.get('content_id')
-        like_status = data.get('like')  # True for like, False for dislike
+        like_status = data.get('like_status')  # True for like, False for dislike
+        user_id=data.get('user_id')
 
-        current_user = get_jwt_identity()
-        current_user_id = current_user.get("id")
+        # current_user = get_jwt_identity()
+        # current_user_id = current_user.get("id")
 
-        if current_user_id is None:
-            return jsonify({"error": "User ID not found in token"}), 400
+        # if current_user_id is None:
+        #     return jsonify({"error": "User ID not found in token"}), 400
 
-        content = Content.query.get(content_id)
-        if not content:
-            return jsonify({"error": "Content not found"}), 404
+        # content = Content.query.get(content_id)
+        # if not content:
+        #     return jsonify({"error": "Content not found"}), 404
         
-        like = Like.query.filter_by(user_id=current_user_id, content_id=content_id).first()
-        if not like:
-            like = Like(
-                user_id=current_user_id,
+        # like = Like.query.filter_by(user_id=current_user_id, content_id=content_id).first()
+       
+        like = Like(
+                user_id=user_id,
                 content_id=content_id,
                 like=like_status
             )
-            db.session.add(like)
-        else:
-            like.like = like_status
+        db.session.add(like)
+        # else:
+        #     like.like = like_status
         
         db.session.commit()
 
         return jsonify({"message": "Like updated successfully"})
 
-    @jwt_required()
+    # @jwt_required()
     def delete(self, content_id):
-        current_user_id = get_jwt_identity()["id"]
-
-        like = Like.query.filter_by(user_id=current_user_id, content_id=content_id).first()
+        # current_user_id = get_jwt_identity()["id"]
+        # print(current_user_id)
+        like = Like.query.filter_by( content_id=content_id).first()
+       
         if not like:
             return jsonify({"error": "Like not found"}), 404
         

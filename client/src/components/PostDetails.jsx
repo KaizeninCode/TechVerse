@@ -12,6 +12,7 @@ import { BiComment } from "react-icons/bi"
 import { RiShareForwardLine } from "react-icons/ri";
 import useDisclosure from "../utils/useDisclosure";
 import Comments from './Comments'
+import HandleLikes from './HandleLikes'
 function PostDetails() {
     const currentPost=useLocation()
     const post=currentPost.state?.post
@@ -55,12 +56,12 @@ function PostDetails() {
                 <Text>No media available</Text>
               )}  
               <HStack className='font-raleway max-lg:mx-auto '>
-              <Button variant={'ghost'} color={'#33658a'}><CiHeart /></Button>
+             <HandleLikes postId={post.id}/>
                 <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}><BiComment /></Button>
                 <Button variant={'ghost'} color={'#33658a'}><RiShareForwardLine /></Button>
               </HStack>
             </CardBody>
-            <h1 className='xl font-bold ml-3'>Comments</h1>
+           
             <CardFooter  className='w-[100%]  font-raleway '>
             
              <Box   className='w-[100%] font-raleway '>
