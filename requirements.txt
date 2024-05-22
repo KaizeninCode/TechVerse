@@ -1,0 +1,15 @@
+flask
+flask-sqlalchemy
+Werkzeug
+sqlalchemy-serializer
+flask-migrate
+flask-restful
+importlib-metadata
+importlib-resources
+pytest
+sqlalchemy
+flask-bcrypt
+gunicorn
+psycopg2-binary
+python-dotenv
+flask-jwt-extended
