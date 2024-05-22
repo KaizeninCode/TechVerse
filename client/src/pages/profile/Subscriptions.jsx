@@ -5,6 +5,7 @@ import {useEffect,useState} from 'react'
 import UserPosts from './userPosts'
 import Navbar from '../../components/Navbar'
 import RightNav from '../../components/RightNav'
+import ProfileNav from './ProfileNav'
 
 
 function Subscriptions() {
@@ -33,8 +34,12 @@ const[loading,setLoading]=useState(false)
     <section className="section">
       <div className="w-full h-screen flex max-lg:flex-col justify-between overflow-y-scroll">
         <Navbar />
+        <div className='lg:w-[60%] overflow-y-scroll gap-4 mx-5 my-3'>
+        <ProfileNav/>
+           <h1 className='text-center text-2xl font-bold'>No subscriptions available</h1>
+        </div>
         {/* {fetchedData.length ===0?(<h1>No subscriptions</h1>):(fetchedData.map(data=>data))} */}
-     <h1>No subscriptions available</h1>
+    
         <RightNav />
       </div>
     </section>
