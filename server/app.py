@@ -13,6 +13,7 @@ from models.content import Content
 from models.like import Like
 from models.subscription import Subscription
 from models.user import User
+from models.notification import Notification
 from sendgrid import SendGridAPIClient
 from sendgrid.helpers.mail import Mail
 import cloudinary
@@ -192,6 +193,7 @@ class UserLoginResource(Resource):
         password = data.get('password')
 
         user = User.query.filter_by(email = email).first()
+        print(response)
 
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
             access_token = create_access_token(identity={"email": user.email, "role": user.role, "id": user.id})
@@ -381,6 +383,19 @@ class ContentResource(Resource):
             )
             db.session.add(new_content)
             db.session.commit()
+            
+            category = new_content.category
+            subscriptions = Subscription.query.filter_by(category_id=category.id).all()
+            for subscription in subscriptions:
+                notification = Notification(
+                    user_id=subscription.user_id,
+                    content_id=new_content.id,
+                    category_id=category.id,
+                    type='new_content'
+                )
+                db.session.add(notification)
+                db.session.commit()
+            
         except Exception as e:
             app.logger.error(f"Error saving content to database: {e}")
             return {"error": "Content creation failed"}, 500
@@ -581,6 +596,16 @@ class SubscriptionResource(Resource):
 
         db.session.add(new_subscription)
         db.session.commit()
+        
+        # notify user subscribed to category
+        notification = Notification(
+            user_id=user_id,
+            category_id=category_id,
+            type='new_subscription'
+        )
+        db.session.add(notification)
+        db.session.commit()
+        
         return jsonify({'message': 'Subscription created successfully'}),201
 
     def put(self, id):
@@ -639,6 +664,17 @@ class LikeResource(Resource):
         #     like.like = like_status
         
         db.session.commit()
+        
+        # notify the owner of the content
+        content = like.content
+        if content.user_id != user_id:
+            notification = Notification(
+                user_id=content.user_id,
+                content_id=content.id,
+                type='liked_content' if like_status else 'disliked_content'
+            )
+            db.session.add(notification)
+            db.session.commit()
 
         return jsonify({"message": "Like updated successfully"})
 

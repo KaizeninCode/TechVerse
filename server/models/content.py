@@ -22,6 +22,7 @@ class Content(db.Model):
         "Comment", back_populates="content", cascade="all, delete-orphan")
     category = relationship("Category", back_populates="contents")
     likes = relationship("Like", back_populates="content", cascade="all, delete-orphan")
+    notifications = relationship("Notification", back_populates="content")
 
     def __repr__(self):
         return f"<Content {self.id}, {self.title}>"
