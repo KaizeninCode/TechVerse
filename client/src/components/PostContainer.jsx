@@ -105,17 +105,17 @@ const PostContainer = () => {
   return (
     <div className="flex w-full">
       <SimpleGrid
-        className="lg:w-[80%] overflow-y-scroll flex gap-4 p-4 mx-5 my-3 border border-gray-400 rounded-md"
+        className="lg:w-[80%] overflow-y-scroll flex gap-4 p-4 mx-5 my-3 rounded-md"
         id="posts">
-        <div className="block">
+        {/* <div className="">
           <SearchBar handleChange={HandleChange} value={input} />
-        </div>
+        </div> */}
 
         {filterPosts.map((post, index) => (
-          <Card key={post.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400'>
-            <CardHeader className='flex justify-between'>
+          <Card key={post.id} bg={theme.bg} color={theme.color} className='border-b border-gray-400 flex flex-col items-center lg:px-10'>
+            <CardHeader className='flex justify-between w-full'>
               <Link to={`/posts/${post.id}`} state={{ post }}>
-                <Flex justify={'space-between'} alignItems={'center'}>
+                <Flex justify={'space-between'} alignItems={'center'} >
                   <Image src={post.image} w={16} h={16} mr={5} />
                   <Stack mr={'auto'}>
                     <Heading fontSize={20} className='text-[#33658a]'>@{post.user_id}
@@ -127,13 +127,13 @@ const PostContainer = () => {
               </Link>
               <PostMenu postId={post.id} />
             </CardHeader>
-            <CardBody className='w-[80%] font-raleway '>
-              <Text>{post.description.slice(0, 30)}........</Text>
+            <CardBody className='w-full font-raleway'>
+              <Text>{post.description}</Text>
               {post.type ? (
                 post.type.includes('image/') ? (
-                  <Image src={post.type} w={'70%'} h={'300px'} />
+                  <Image src={post.type} w={'100%'} h={'300px'} display={'flex'} justifyContent={'center'}/>
                 ) : post.type.includes('video/') ? (
-                  <video controls src={post.type} style={{ width: '80%', height: '400px' }} />
+                  <video controls src={post.type} style={{ width: '100%', height: '400px', marginTop: '1rem' }} />
                 ) : post.type.includes('audio/') ? (
                   <audio controls src={post.type} style={{ width: '100%' }} />
                 ) : null
@@ -143,15 +143,15 @@ const PostContainer = () => {
               <HStack className='font-raleway max-lg:mx-auto '>
                 <Button variant={'ghost'} color={'#33658a'}>
                   <AiOutlineLike />
-                  <div>10</div>
+                  <div className="ml-2">10</div>
                 </Button>
                 <Button variant={'ghost'} color={'#33658a'}>
                   <AiOutlineDislike />
-                  <div>10</div>
+                  <div className="ml-2">10</div>
                 </Button>
                 <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
                   <BiComment />
-                  <div>20</div>
+                  <div className="ml-2">20</div>
                 </Button>
                 <Button variant={'ghost'} color={'#33658a'} onClick={() => {
                   isClicked[post.id] ? handleRemoveWish(post) : handleAddWish(post);

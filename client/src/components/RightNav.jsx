@@ -13,23 +13,21 @@ function Category({ handleFilter }) {
     return (
       <div
         id='category'
-        className='sticky top-0 left-0 w-64 shadow-md h-full  p-4 my-5'
+        className='sticky top-0 left-0 w-64 shadow-md h-screen px-4 max-lg:hidden overflow-y-scroll'
         style={{background:theme.bg, color:theme.color}}
       >
         <div className='flex flex-col space-y-2'>
           
           <button
             onClick={() => window.location.href('/')}
-            className={`w-full py-3 font-bold text-xl text-sky-700  rounded ${
-              activeCategory === null ? 'bg-gray-200' : 'hover:bg-gray-200'
-            }`}
+            className=  'w-full py-3 font-bold font-montserrat text-xl text-sky-700 rounded'
           >
-            Suggested
+            SUGGESTED
           </button>
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('Frontend Programming')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full text-[#33658a] py-3 font-bold text-lg  rounded ${
               activeCategory === 'Frontend Programming' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -38,7 +36,7 @@ function Category({ handleFilter }) {
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('Backend Programming')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full text-[#33658a] py-3 font-bold text-lg  rounded ${
               activeCategory === 'Backend Programming' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -47,7 +45,7 @@ function Category({ handleFilter }) {
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('FullStack Programming')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full py-3 text-[#33658a] font-bold text-lg  rounded ${
               activeCategory === 'FullStack Programming' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -56,7 +54,7 @@ function Category({ handleFilter }) {
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('DevOps')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full py-3 text-[#33658a] font-bold text-lg  rounded ${
               activeCategory === 'DevOps' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -65,7 +63,7 @@ function Category({ handleFilter }) {
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('UI/UX')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full py-3 font-bold text-[#33658a] text-lg  rounded ${
               activeCategory === 'UI/UX' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -74,7 +72,7 @@ function Category({ handleFilter }) {
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('Machine Learning')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full py-3 font-bold text-[#33658a] text-lg  rounded ${
               activeCategory === 'Machine Learning' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -83,7 +81,7 @@ function Category({ handleFilter }) {
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('Mobile-App development')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full py-3 font-bold text-[#33658a] text-lg  rounded ${
               activeCategory === 'Mobile-App development' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -92,7 +90,7 @@ function Category({ handleFilter }) {
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('Data Visualization')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full py-3 font-bold text-[#33658a] text-lg  rounded ${
               activeCategory === 'Data Visualization' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >
@@ -101,7 +99,7 @@ function Category({ handleFilter }) {
           <hr className='border-gray-400' />
           <button
             onClick={() => handleClick('Cyber Security')}
-            className={`w-full py-3 font-bold text-lg  rounded ${
+            className={`w-full py-3 font-bold  text-[#33658a] text-lg  rounded ${
               activeCategory === 'Cyber Security' ? 'bg-gray-200' : 'hover:bg-gray-200'
             }`}
           >

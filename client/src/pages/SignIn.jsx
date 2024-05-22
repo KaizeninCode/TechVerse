@@ -102,31 +102,31 @@ const showToast = (message, username) => {
         w={{ base: "100%", md: "50%" }}
         bg={theme.color5}
       >
-        <Box className="flex gap-3 py-4 px-4">
+        <Box className="flex gap-3 py-4 px-4 items-center">
           <Image
             display={{ base: "none", md: "block" }}
             src="/logo-transparent.png"
-            w={"30px"}
-            h={"30px"}
+            w={20}
+            h={20}
             alt="logo "
             ml={3}
           />
-          <Text className="font-bold font-raleway text-2xl text-white ">
+          <Text className="font-bold font-raleway text-7xl text-white ">
             TechVerse
           </Text>
         </Box>
-        <Box
-          className="flex flex-col text-white flex-wrap-reverse font-medium"
-          m={"auto"}
+        {/* <Box
+          className="flex flex-col text-white flex-wrap-reverse justify-evenly"
+          // m={"auto"}
         >
-          <Text>
+          <Text className="font-raleway text-xl w-4/5">
             Explore our guides, references and examples to tech related content
-            on our platform
+            on our platform.
           </Text>
-          <Text>Guided product walkthroughs</Text>
+          <Text className="font-raleway text-xl w-4/5">Guided product walkthroughs.</Text>
 
-          <Text> Easily accessible code samples</Text>
-        </Box>
+          <Text className="font-raleway text-xl w-4/5"> Easily accessible code samples.</Text>
+        </Box> */}
         <Image
           display={{ base: "none", md: "block" }}
           src="/authImage.png"
@@ -140,7 +140,7 @@ const showToast = (message, username) => {
         w={{ base: "100%", md: "50%" }}
         className="h-screen w-full py-[60px] flex flex-col justify-center items-center"
       >
-        <Text className="pb-3 font-semibold font-lg">Sign in to TechVerse</Text>
+        <Text className="mb-10 font-semibold font-montserrat text-[#33658a] text-4xl">Sign in</Text>
 
         <Formik
           initialValues={signInInitialValues}
@@ -162,7 +162,7 @@ const showToast = (message, username) => {
                           </InputLeftElement>
                           <Input
                             errorBorderColor="crimson"
-                            focusBorderColor={"#393D3F"}
+                            focusBorderColor={"#33658a"}
                             placeholder="Email"
                             {...field}
                           />
@@ -188,7 +188,7 @@ const showToast = (message, username) => {
                           </InputLeftElement>
                           <Input
                             errorBorderColor="crimson"
-                            focusBorderColor={"#393D3F"}
+                            focusBorderColor={"#33658a"}
                             placeholder="Password"
                             {...field}
                             type={showPassword ? "text" : "password"}
@@ -213,36 +213,36 @@ const showToast = (message, username) => {
                   </Field>
                 </>
 
-                <Box fontSize="sm">
-                  <Text>
-                    Dont have an account?{" "}
+                <Button
+                  alignSelf={"center"}
+                  w={"150px"}
+                  bg={"#33658a"}
+                  color={"#fff"}
+                  type="submit"
+                  variant={"ghost"}
+                  _hover={{ boxShadow:'dark-lg'}}
+                  isLoading={isSubmitting}
+                  fontFamily={'montserrat'}
+                >
+                  Sign In
+                </Button>
+                <Box fontSize="sm" className="mx-auto">
+                  <Text fontFamily={'montserrat'}>
+                    Don't have an account? &nbsp;
                     <Link to="/SignUp">
-                      <span cursor={"pointer"} textDecoration={"underline"}>
+                      <span className="font-montserrat hover:text-[#33658a]">
                         Sign Up
                       </span>
                     </Link>
                   </Text>
                 </Box>
-                <Button
-                  alignSelf={"center"}
-                  w={"150px"}
-                  bg={"#33658a"}
-                  color={"#ffff"}
-                  type="submit"
-                  variant={"ghost"}
-                  _hover={{ background: "#33658a" }}
-                  isLoading={isSubmitting}
-                  boxShadow={"dark-lg"}
-                >
-                  Sign In
-                </Button>
               </Stack>
             </Form>
           )}
         </Formik>
-        <button  className="px-6 py-3 flex text-red-700 font-bold" onClick={()=> navigate('/')}>
+        {/* <button  className="px-6 py-3 flex text-red-700 font-bold" onClick={()=> navigate('/')}>
           <IoChevronBack fontSize={'1.3rem'}/>Back
-          </button>
+        </button> */}
       </Box>
     </Flex>
   );

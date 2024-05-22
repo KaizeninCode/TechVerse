@@ -100,20 +100,20 @@ function SignUp({theme}) {
         w={{ base: "100%", md: "50%" }}
         bg={theme.color5}
       >
-        <Box className="flex gap-3 py-4 px-4">
+        <Box className="flex gap-3 py-4 px-4 items-center">
           <Image
             display={{ base: "none", md: "block" }}
             src="/logo-transparent.png"
-            w={"30px"}
-            h={"30px"}
+            w={20}
+            h={20}
             alt="logo "
             ml={3}
           />
-          <Text className="font-bold font-raleway text-2xl text-white ">
+          <Text className="font-bold font-raleway text-7xl text-white ">
             TechVerse
           </Text>
         </Box>
-        <Box
+        {/* <Box
           className="flex flex-col text-white flex-wrap-reverse font-medium"
           m={"auto"}
         >
@@ -123,7 +123,7 @@ function SignUp({theme}) {
           </Text>
           <Text>Guided product walkthroughs</Text>
           <Text> Easily accessible code samples</Text>
-        </Box>
+        </Box> */}
         <Image
           display={{ base: "none", md: "block" }}
           src="/authImage.png"
@@ -137,7 +137,7 @@ function SignUp({theme}) {
         w={{ base: "100%", md: "50%" }}
         className="h-screen  py-[60px] flex flex-col justify-center items-center "
       >
-        <Text className="pb-3 font-semibold font-lg">Join TechVerse today</Text>
+        <Text className="mb-10 font-semibold font-montserrat text-4xl text-[#33658a]">Join TechVerse today</Text>
         <Formik
           initialValues={signUpInitialValues}
           validationSchema={signupValidationSchema}
@@ -160,7 +160,7 @@ function SignUp({theme}) {
                           </InputLeftElement>
                           <Input
                             errorBorderColor="crimson"
-                            focusBorderColor={"#393D3F"}
+                            focusBorderColor={"#33658a"}
                             placeholder="Username"
                             {...field}
                           />
@@ -186,7 +186,7 @@ function SignUp({theme}) {
                           </InputLeftElement>
                           <Input
                             errorBorderColor="crimson"
-                            focusBorderColor={"#393D3F"}
+                            focusBorderColor={"#33658a"}
                             placeholder="Email"
                             {...field}
                           />
@@ -214,7 +214,7 @@ function SignUp({theme}) {
                           </InputLeftElement>
                           <Input
                             errorBorderColor="crimson"
-                            focusBorderColor={"#393D3F"}
+                            focusBorderColor={"#33658a"}
                             placeholder="Password"
                             {...field}
                             type={showPassword ? "text" : "password"}
@@ -253,7 +253,7 @@ function SignUp({theme}) {
                           </InputLeftElement>
                           <Input
                             errorBorderColor="crimson"
-                            focusBorderColor={"#393D3F"}
+                            focusBorderColor={"#33658a"}
                             placeholder="Confirm Password"
                             {...field}
                             type={showPassword ? "text" : "password"}
@@ -291,16 +291,6 @@ function SignUp({theme}) {
                 </>
 
                 {/* Sign In Link */}
-                <Box fontSize="sm">
-                  <Text>
-                    Already have an account?{" "}
-                    <Link to="/SignIn">
-                      <span cursor={"pointer"} textDecoration={"underline"}>
-                        Sign In
-                      </span>
-                    </Link>
-                  </Text>
-                </Box>
 
                 {/* Submit Button */}
                 <Button
@@ -313,16 +303,27 @@ function SignUp({theme}) {
                   _hover={{ background: "#33658a" }}
                   isLoading={isSubmitting}
                   boxShadow={"dark-lg"}
+                  fontFamily={'raleway'}
                 >
                   Sign up
                 </Button>
+                <Box className="mx-auto font-raleway">
+                  <Text>
+                    Already have an account?{" "}
+                    <Link to="/SignIn">
+                      <span className="hover:text-[#33658a]">
+                        Sign In
+                      </span>
+                    </Link>
+                  </Text>
+                </Box>
               </Stack>
             </Form>
           )}
         </Formik>
-        <button  className="px-6 py-3 flex text-red-700 font-bold" onClick={()=> navigate('/')}>
+        {/* <button  className="px-6 py-3 flex text-red-700 font-bold" onClick={()=> navigate('/')}>
           <IoChevronBack fontSize={'1.3rem'}/>Back
-          </button>
+          </button> */}
       </Box>
     </Flex>
   );

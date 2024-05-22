@@ -16,7 +16,9 @@
 } */
 
 #posts::-webkit-scrollbar,
-#main::-webkit-scrollbar{
+#main::-webkit-scrollbar,
+#category::-webkit-scrollbar,
+#home::-webkit-scrollbar{
     display: none;
 }
 

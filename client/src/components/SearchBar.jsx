@@ -4,7 +4,7 @@ import colorPallete from './colorPallete';
 function SearchBar({value, handleChange}) {
   const theme=colorPallete()
   return (
-    <div style={{background:theme.bg}} className='w-1/2 justify-center  flex align-middle' >
+    <div style={{background:theme.bg}} className='w-full items-center justify-center flex' >
      <div className='relative w-1/2 mx-auto'>
         <input
           id='search'
