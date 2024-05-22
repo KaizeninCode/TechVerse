@@ -1,6 +1,7 @@
 flask
 flask_cors
 sendgrid
+cloudinary
 flask-sqlalchemy
 Werkzeug
 sqlalchemy-serializer
