@@ -40,7 +40,7 @@ function PostDetails() {
               </Flex>
            
               
-            <PostMenu />
+            <PostMenu postId={post.id} categoryId={post.category_id} />
             </CardHeader>
             <CardBody className='font-raleway'>
               <Text>{post?.description}</Text>

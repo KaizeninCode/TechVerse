@@ -54,7 +54,7 @@ function UserPosts() {
               </Flex>
            </Link>
               
-            <PostMenu state={{post}}/>
+            <PostMenu postId={post.id} categoryId={post.category_id} />
             </CardHeader>
             <CardBody className='font-raleway'>
               <Text>{post.description.slice(0,30)}........</Text>

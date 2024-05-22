@@ -90,7 +90,7 @@ GetCategories()
   if (file && file.type) {
     formData.append("type", file.type.startsWith("video/") ? "video" : file.type.startsWith("image/") ? "image" : null);
   } else {
-    formData.append("type", ""); // Set type to an empty string if file type is not defined
+    formData.append("type", "No media"); // Set type to an empty string if file type is not defined
   }
 
   formData.append("link", input.link);

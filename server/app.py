@@ -324,7 +324,7 @@ class ContentResource(Resource):
         title = request.form.get('title')
         description = request.form.get('description')
         content_type = request.form.get('type')  # Correctly retrieve type
-        content_type = request.form.get('type')  # Correctly retrieve type
+      
         category_id = request.form.get('category_id')
         user_id = request.form.get('user_id')
         published_status = request.form.get(
@@ -366,6 +366,7 @@ class ContentResource(Resource):
         file_url = upload_result['url']
 
         file_url = upload_result.get('url')
+       
 
         try:
             new_content = Content(
@@ -436,6 +437,14 @@ class ContentById(Resource):
         else:
             return jsonify({"message": "Content not found"}), 404
         
+    def delete(self, id):
+        content=Content.query.get(id)
+        if not content:
+            return jsonify({"message": "Content not found"}), 404
+        
+        db.session.delete(content)
+        db.session.commit()
+            
 api.add_resource(ContentById, "/contents/<int:id>")
 
 class ContentByTitle(Resource):

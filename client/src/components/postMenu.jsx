@@ -47,8 +47,8 @@ function PostMenu({ postId, categoryId }) {
     category_id: categoryId,
   });
 
-  const handleSubscription = async (e) => {
-    e.preventDefault();
+  const handleSubscription = async () => {
+   
 
     try {
       const response = await fetch("http://localhost:5555/subscriptions", {
@@ -56,7 +56,10 @@ function PostMenu({ postId, categoryId }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(subscriptionData),
+        body: JSON.stringify({
+          user_id: user.id,
+          category_id: categoryId,
+        }),
       });
       if (!response.ok)
         throw new Error(`HTTP error! status ${response.status}`);
@@ -148,7 +151,7 @@ function PostMenu({ postId, categoryId }) {
             alignItems="center"
             justifyContent="space-between"
           >
-            <DeletePost post={post} />
+            <DeletePost postId={postId} />
           </MenuItem>
         )}
       </MenuList>
