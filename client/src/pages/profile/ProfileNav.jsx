@@ -35,12 +35,12 @@ function ProfileNav() {
       
        <nav className='m-4'>
   <ul className='flex'>
-  {isAuthenticated&&
+  
   <li className='px-6 py-3 rounded-md'>
       <NavLink to='/profile' className='active-link'>My Posts</NavLink>
     </li>
     
-    }
+   
     {isAuthenticated &&
     <li className='px-6 py-3 rounded-md'>
       <NavLink to='/subscriptions' className='px-6 py-3 rounded-md'>Subscriptions</NavLink>
