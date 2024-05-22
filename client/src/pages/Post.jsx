@@ -70,8 +70,8 @@ GetCategories()
     if (
       !input.title.trim() ||
       !input.description.trim() ||
-      !input.category_id ||
-      !file
+      !input.category_id 
+      
     ) {
       setError(
         "Please fill in all required fields (Title, Description, Category, and File)"
@@ -87,7 +87,12 @@ GetCategories()
   formData.append("category_id", input.category_id);
   formData.append("title", input.title);
   formData.append("description", input.description);
-  formData.append("type", file.type.startsWith("video/") ? "video" : "image");
+  if (file && file.type) {
+    formData.append("type", file.type.startsWith("video/") ? "video" : file.type.startsWith("image/") ? "image" : null);
+  } else {
+    formData.append("type", ""); // Set type to an empty string if file type is not defined
+  }
+
   formData.append("link", input.link);
   formData.append("user_id", user.id);
   formData.append("file", file); // Note: changed from input.type to file
