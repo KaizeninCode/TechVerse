@@ -560,14 +560,14 @@ class SubscriptionResource(Resource):
         data = request.get_json()
         user_id = data.get('user_id')
         category_id = data.get('category_id')
-
-        category = Category.query.filter_by(id=category_id).first()
+        user=User.query.filter(User.id==user_id).first()
+        category = Category.query.filter(Category.id==category_id).first()
         if category is None:
             return jsonify({"error": "Category not found"}), 404
-
+        print(category.name)
         new_subscription = Subscription(
-            user_id=user_id,
-            category_id=category.id,
+            user_id=user.id,
+            category_id=category.name,
         )
 
         db.session.add(new_subscription)

@@ -13,6 +13,7 @@ import {
   SimpleGrid,
   Stack,
   Text,
+  Tooltip,
   useColorMode,
   useToast
 } from "@chakra-ui/react";
@@ -127,7 +128,7 @@ const PostContainer = () => {
                   </Stack>
                 </Flex>
               </Link>
-              <PostMenu postId={post.id} />
+              <PostMenu postId={post.id} categoryId={post.category_id} />
             </CardHeader>
             <CardBody className='w-[80%] font-raleway '>
               <Text>{post.description.slice(0, 30)}........</Text>
@@ -148,15 +149,18 @@ const PostContainer = () => {
               )}
               <HStack className='font-raleway max-lg:mx-auto '>
                 <HandleLikes postId={post.id}/>
-                <Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
+                <Tooltip hasArrow label="comments" placement="bottom"><Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
                   <BiComment />
                   
-                </Button>
-                <Button variant={'ghost'} color={'#33658a'} onClick={() => {
+                </Button></Tooltip>
+                <Tooltip label="bookmark">
+<Button variant={'ghost'} color={'#33658a'} onClick={() => {
                   isClicked[post.id] ? handleRemoveWish(post) : handleAddWish(post);
                 }}>
                   {isClicked[post.id] ? <FaBookmark /> : <CiBookmark />}
                 </Button>
+                </Tooltip>
+                
               </HStack>
             </CardBody>
             <CardFooter className='w-[100%] font-raleway '>

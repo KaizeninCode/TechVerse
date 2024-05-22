@@ -60,7 +60,7 @@ function PostMenu({ postId, categoryId }) {
       });
       if (!response.ok)
         throw new Error(`HTTP error! status ${response.status}`);
-      console.log(subscriptionData);
+      console.log(categoryId);
       const data = await response.json();
       setSubscriptionData(data);
     //   console.log("Subscription created successfully:", data);
