@@ -193,7 +193,6 @@ class UserLoginResource(Resource):
         password = data.get('password')
 
         user = User.query.filter_by(email = email).first()
-        print(response)
 
         if user and (bcrypt.check_password_hash(user.password_hash, password)):
             access_token = create_access_token(identity={"email": user.email, "role": user.role, "id": user.id})
@@ -210,7 +209,7 @@ class UserLoginResource(Resource):
         
        
         if response:
-         return response
+            return response
         return jsonify({"message": "Invalid username or password"}), 401
     
 api.add_resource(UserLoginResource, '/login')
