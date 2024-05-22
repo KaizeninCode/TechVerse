@@ -1,5 +1,5 @@
 import React from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink,Link } from 'react-router-dom'
 import Post from '../Post'
 import EditProfile from './EditProfile'
 import { useSelector } from 'react-redux'
@@ -9,7 +9,7 @@ import MenuBar from '../../components/MenuBar'
 import { MdNotificationsActive } from "react-icons/md";
 import { UpdateTheme } from '../../components/ThemeContext'
 import colorPallete from '../../components/colorPallete'
-
+import Notifications from './Notifications'
 function ProfileNav() {
   const user=useSelector(selectCurrentUser)
   const isAuthenticated = useAuth(['student','staff'])
@@ -26,7 +26,8 @@ function ProfileNav() {
       <div className='flex'>
       <MenuBar toggleTheme={toggleTheme} theme={theme}/>
      <div className='flex p-1 ml-2'>
-      <MdNotificationsActive fontSize={'2rem'} top={'1rem'} position={'relative'} /> 
+     <Notifications/>
+
       
      
     </div>
@@ -69,6 +70,7 @@ function ProfileNav() {
           My Wish list
         </NavLink>
       </li>
+      <EditProfile/>
     </ul>
 </nav>
     </div>
