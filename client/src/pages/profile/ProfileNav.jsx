@@ -16,7 +16,7 @@ function ProfileNav() {
   const toggleTheme=UpdateTheme()
   const theme=colorPallete()
   return (
-    <div >
+    <div className='border-b border-gray-400 mb-3'>
     <div className='flex justify-between'>
     <div>
        <img src="https://wallpapers.com/images/featured/cool-profile-picture-87h46gcobjl5e4xu.jpg" className='rounded-full h-20 w-20 m-4'  alt='name' />
@@ -34,27 +34,42 @@ function ProfileNav() {
     </div>
       
        <nav className='m-4'>
-  <ul className='flex'>
-  
-  <li className='px-6 py-3 rounded-md'>
-      <NavLink to='/profile' className='active-link'>My Posts</NavLink>
-    </li>
-    
-   
-    {isAuthenticated &&
-    <li className='px-6 py-3 rounded-md'>
-      <NavLink to='/subscriptions' className='px-6 py-3 rounded-md'>Subscriptions</NavLink>
-    </li>
-    }
-     
-    <li className='px-6 py-3 rounded-md'>
-      <NavLink to='/bookmarks' className='px-6 py-3 rounded-md'>My Wish list</NavLink>
-    </li>
-    <li className='px-3'>
-<EditProfile/>  
-    </li>
-   
-  </ul>
+       <ul className='flex'>
+      <li className='px-6 py-3 rounded-md'>
+        <NavLink
+          to='/profile'
+          className={({ isActive }) =>
+            isActive ? 'underline px-6 py-3 font-bold rounded-md' : 'px-6 py-3 rounded-md'
+          }
+        >
+          My Posts
+        </NavLink>
+      </li>
+
+      {isAuthenticated && (
+        <li className='px-6 py-3 rounded-md'>
+          <NavLink
+            to='/subscriptions'
+            className={({ isActive }) =>
+              isActive ? 'underline font-bold px-6 py-3 rounded-md' : 'px-6 py-3 rounded-md'
+            }
+          >
+            Subscriptions
+          </NavLink>
+        </li>
+      )}
+
+      <li className='px-6 py-3 rounded-md'>
+        <NavLink
+          to='/bookmarks'
+          className={({ isActive }) =>
+            isActive ? 'underline px-6 py-3 font-bold rounded-md' : 'px-6 py-3 rounded-md'
+          }
+        >
+          My Wish list
+        </NavLink>
+      </li>
+    </ul>
 </nav>
     </div>
   );

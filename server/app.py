@@ -223,7 +223,7 @@ class CommentResource(Resource):
 
         result = []
         for comment in comments:
-            user = User.query.filter_by(id=comment.user_id).first()
+            user = User.query.filter(User.id==comment.user_id).first()
 
             result.append({
                 'id': comment.id,
@@ -232,6 +232,7 @@ class CommentResource(Resource):
                     'username': user.username,
                     'email': user.email,
                 } if user else None,
+               
                 'content_id': comment.content_id,
                 'text': comment.text,
                 'parent_comment_id': comment.parent_comment_id,
