@@ -18,7 +18,8 @@
 #posts::-webkit-scrollbar,
 #main::-webkit-scrollbar,
 #category::-webkit-scrollbar,
-#home::-webkit-scrollbar{
+#home::-webkit-scrollbar,
+#explore::-webkit-scrollbar{
     display: none;
 }
 
