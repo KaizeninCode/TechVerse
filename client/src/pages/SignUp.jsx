@@ -51,7 +51,7 @@ function SignUp({theme}) {
 
   const handleSubmit = async (values, actions) => {
     try {
-      const response = await fetch("http://127.0.0.1:5555/users", {
+      const response = await fetch("https://techverse-bzdz.onrender.com/users", {
         headers: {
           "Content-Type": "application/json",
         },
