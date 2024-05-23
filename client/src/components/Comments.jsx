@@ -7,7 +7,7 @@ import { selectUserData } from "../features/AuthSlice";
 
 const Comments = ({ postId }) => {
   const user = useSelector(selectUserData);
-  const url = `http://127.0.0.1:5555/comments?contentId=${postId}`;
+  const url = `https://techverse-bzdz.onrender.com/comments?contentId=${postId}`;
   const [comments, setComments] = useState([]);
   const filteredComments = comments.filter(comment => comment.content_id === postId);
   const [postComment, setPostComment] = useState({

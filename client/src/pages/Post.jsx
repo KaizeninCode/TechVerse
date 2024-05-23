@@ -37,7 +37,7 @@ const Post = () => {
   const [success, setSuccess] = useState(null);
   useEffect(() =>{
     function GetCategories(){
-  fetch('http://127.0.0.1:5555/categories')
+  fetch('https://techverse-bzdz.onrender.com/categories')
   .then(response => response.json())
   .then(data=>setCategories(data));
 }

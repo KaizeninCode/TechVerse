@@ -2,7 +2,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { setCredentials,logout } from '../features/AuthSlice';
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: 'http://127.0.0.1:5555', //url for the api
+    baseUrl: 'https://techverse-bzdz.onrender.com', //url for the api
     credentials: 'include', // Corrected typo
     prepareHeaders: (headers, { getState }) => {
         const accessToken = getState().auth.accessToken; //access token when the login is successful

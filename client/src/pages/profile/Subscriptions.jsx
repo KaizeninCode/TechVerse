@@ -16,7 +16,7 @@ const[loading,setLoading]=useState(false)
     const fetchSubscription = async () => {
       setLoading(true);
       try {
-        const response = await fetch("http://127.0.0.1:5555/subscriptions");
+        const response = await fetch("https://techverse-bzdz.onrender.com/subscriptions");
         if (!response.ok)
           throw new Error(`HTTP error! status ${response.status}`);
         const data = await response.json();

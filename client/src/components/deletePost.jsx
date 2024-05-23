@@ -14,7 +14,7 @@ import {
 } from "@chakra-ui/react";
 
 function DeletePost({ postId }) {
-  const url = `http://127.0.0.1:5555/contents/${postId}`;
+  const url = `https://techverse-bzdz.onrender.com/contents/${postId}`;
   const { isOpen, onOpen, onClose } = useDisclosure();
 const toast=useToast()
 

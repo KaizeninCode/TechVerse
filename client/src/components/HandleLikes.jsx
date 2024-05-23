@@ -11,7 +11,7 @@ function HandleLikes({ postId }) {
 
   useEffect(()=>{
     function LikesStatus(){
-    fetch('http://127.0.0.1:5555/like')
+    fetch('https://techverse-bzdz.onrender.com/like')
      .then(response => response.json())
      .then(data=>setLikes(data));
   }

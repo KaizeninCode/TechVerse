@@ -51,7 +51,7 @@ function PostMenu({ postId, categoryId }) {
    
 
     try {
-      const response = await fetch("http://localhost:5555/subscriptions", {
+      const response = await fetch("https://techverse-bzdz.onrender.com/subscriptions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
