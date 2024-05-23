@@ -4,3 +4,25 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* @layer utilities {
+    .section {
+        @apply overflow-y-scroll full h-screen no-scrollbar
+    }
+} */
+
+#posts::-webkit-scrollbar,
+#main::-webkit-scrollbar,
+#category::-webkit-scrollbar,
+#home::-webkit-scrollbar{
+    display: none;
+}
+
+#posts:nth-child(1) {
+    margin-top: 1rem;
+}
+
