@@ -17,7 +17,7 @@ class User(db.Model, SerializerMixin):
     
     contents = relationship("Content", back_populates="user")
     comments = relationship("Comment", back_populates="user")
-    subscriptions = relationship("Category", secondary="subscriptions", back_populates="subscribers")
+    subscriptions = relationship("Subscription", back_populates="user")
     likes = relationship("Like", back_populates="user")
     notifications = relationship("Notification", back_populates="user")
     

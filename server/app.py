@@ -573,12 +573,12 @@ class SubscriptionResource(Resource):
         subscriptions = Subscription.query.all()
         return jsonify([{'id': sub.id, 'user_id': sub.user_id, 'category_id': sub.category_id} for sub in subscriptions])
 
-    # @jwt_required()
+    @jwt_required()
     def post(self):
-    #     # current_user_role = get_jwt_identity()["role"]
+        current_user_role = get_jwt_identity()["role"]
         
-    #     # if current_user_role != "student":
-    #     #     return jsonify({"error": "Unauthorized access"})
+        if current_user_role != "student":
+            return jsonify({"error": "Unauthorized access"})
 
         data = request.get_json()
         user_id = data.get('user_id')
@@ -586,13 +586,18 @@ class SubscriptionResource(Resource):
         user=User.query.filter(User.id==user_id).first()
         category = Category.query.filter(Category.id==category_id).first()
         if category is None:
-            return jsonify({"error": "Category not found"}), 404
-        print(category.name)
+            return jsonify({"error": "Category not found"})
+        
+        existing_subscription = Subscription.query.filter_by(user_id=user.id, category_id=category.id).first()
+        if existing_subscription:
+            return jsonify({"error": "Already subscribed to this category."})
+
+        
+        # print(category.name)
         new_subscription = Subscription(
             user_id=user.id,
-            category_id=category.name,
+            category_id=category.name
         )
-
         db.session.add(new_subscription)
         db.session.commit()
         
@@ -604,8 +609,9 @@ class SubscriptionResource(Resource):
         )
         db.session.add(notification)
         db.session.commit()
-        
-        return jsonify({'message': 'Subscription created successfully'}),201
+            
+        return jsonify({'message': 'Subscribed successfully!'})
+    
 
     def put(self, id):
         subscription = Subscription.query.get(id)
@@ -634,6 +640,7 @@ class LikeResource(Resource):
     def get(self):
         likes = Like.query.all()
         return jsonify([{'id': like.id, 'user_id': like.user_id, 'content_id': like.content_id, 'like': like.like} for like in likes])
+    
     # @jwt_required()
     def post(self):
         data = request.get_json()
@@ -675,7 +682,7 @@ class LikeResource(Resource):
             db.session.add(notification)
             db.session.commit()
 
-        return jsonify({"message": "Like updated successfully"})
+        return jsonify({"message": "Liked post"})
 
     # @jwt_required()
     def delete(self, content_id):
@@ -689,7 +696,7 @@ class LikeResource(Resource):
         db.session.delete(like)
         db.session.commit()
 
-        return jsonify({"message": "Like deleted successfully"})
+        return jsonify({"message": "Disliked post"})
     
 api.add_resource(LikeResource, '/like', '/like/<int:content_id>')
 

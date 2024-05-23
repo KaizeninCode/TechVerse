@@ -8,7 +8,7 @@ class Category(db.Model):
     name = db.Column(db.String(255), nullable=False)
     
     contents = relationship("Content", back_populates="category")
-    subscribers = relationship("User", secondary="subscriptions", back_populates="subscriptions")
+    subscriptions = relationship("Subscription", back_populates="category")
     notifications = relationship("Notification", back_populates="category")
     
     def __repr__(self):
