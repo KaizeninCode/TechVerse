@@ -98,7 +98,7 @@ GetCategories()
   formData.append("file", file); // Note: changed from input.type to file
     
     try {
-      const response = await fetch("http://127.0.0.1:5555/contents", {
+      const response = await fetch("https://techverse-bzdz.onrender.com/contents", {
         method: "POST",
         body: formData,
       });
