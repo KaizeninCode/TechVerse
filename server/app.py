@@ -25,11 +25,16 @@ from datetime import datetime
 from dotenv import load_dotenv
 load_dotenv()
 
-app = Flask(__name__)
+app = Flask(
+    __name__,
+    static_url_path='',
+    static_folder='../client/build',
+    template_folder='../client/build'
+)
 CORS(app,supports_credentials=True)
 api = Api(app)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URI')
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -224,7 +229,7 @@ class CommentResource(Resource):
 
         result = []
         for comment in comments:
-            user = User.query.filter_by(id=comment.user_id).first()
+            user = User.query.filter(User.id==comment.user_id).first()
 
             result.append({
                 'id': comment.id,
@@ -233,6 +238,7 @@ class CommentResource(Resource):
                     'username': user.username,
                     'email': user.email,
                 } if user else None,
+               
                 'content_id': comment.content_id,
                 'text': comment.text,
                 'parent_comment_id': comment.parent_comment_id,

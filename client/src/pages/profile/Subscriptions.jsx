@@ -36,6 +36,7 @@ const[loading,setLoading]=useState(false)
         <Navbar />
         <div className='lg:w-[60%] overflow-y-scroll gap-4 mx-5 my-3'>
         <ProfileNav/>
+        
            <h1 className='text-center text-2xl font-bold'>No subscriptions available</h1>
         </div>
         {/* {fetchedData.length ===0?(<h1>No subscriptions</h1>):(fetchedData.map(data=>data))} */}

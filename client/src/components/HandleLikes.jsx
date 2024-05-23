@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button } from '@chakra-ui/react';
+import { Button, Tooltip } from '@chakra-ui/react';
 import { AiOutlineDislike,AiOutlineLike } from "react-icons/ai";
 import { selectUserData } from '../features/AuthSlice';
 import { useSelector } from 'react-redux';
@@ -100,14 +100,16 @@ function HandleLikes({ postId }) {
   };
   return (
     <div>
-      <Button variant={'ghost'} color={'#33658a'} onClick={toggleLike}>
-                  <AiOutlineLike />
+      <Tooltip label="like">
+      <Button variant={'ghost'} color={'#33658a'} className='text-xl rounded-full mt-2' onClick={toggleLike}>
+                  <AiOutlineLike fontSize={'1.3rem'} />
                   <div>{filteredLikes.length}</div>
-                </Button>
-                <Button onClick={toggledisLike} variant={'ghost'} color={'#33658a'}>
-                  <AiOutlineDislike />
+                </Button></Tooltip>
+                <Tooltip label="dislike"><Button className='text-xl rounded-full mt-2' onClick={toggledisLike} variant={'ghost'} color={'#33658a'}>
+                  <AiOutlineDislike fontSize={'1.3rem'}/>
                   
-                </Button>
+                </Button></Tooltip>
+               
     </div>
   );
 }

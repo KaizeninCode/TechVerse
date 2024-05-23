@@ -12,8 +12,7 @@ import SignUp from "./pages/SignUp";
 import SignIn from "./pages/SignIn";
 
 import { UpdateTheme } from "./components/ThemeContext";
-import Navbar from "./components/Navbar";
-import RightNav from "./components/RightNav";
+import Notifications from "./pages/profile/Notifications";
 import Layout from "./Layout";
 import RequireAuth from "./features/RequireAuth";
 import Categories from "./pages/Categories";
@@ -41,6 +40,7 @@ const App = () => {
         <Route path='/categories' element={<Categories/>} />
         <Route path="/edit-profile" element={<EditProfile />} />
         <Route path="/user-posts" element={<UserPosts  />} />
+        <Route path='/notifications' element={<Notifications />} />
         <Route path="/subscriptions" element={<Subscriptions />} />
         <Route path="/bookmarks" element={<BookMarks />} />
        </Route>

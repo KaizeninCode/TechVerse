@@ -149,15 +149,15 @@ const PostContainer = () => {
               )}
               <HStack className='font-raleway max-lg:mx-auto '>
                 <HandleLikes postId={post.id}/>
-                <Tooltip hasArrow label="comments" placement="bottom"><Button variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
-                  <BiComment />
+                <Tooltip hasArrow label="comments" placement="bottom"><Button className='text-xl mt-2' variant={'ghost'} color={'#33658a'} onClick={() => handleDisclose(post.id)}>
+                  <BiComment fontSize={'1.3rem'} />
                   
                 </Button></Tooltip>
-                <Tooltip label="bookmark">
-<Button variant={'ghost'} color={'#33658a'} onClick={() => {
+                <Tooltip label="save">
+<Button className='text-xl rounded-full mt-2' variant={'ghost'} color={'#33658a'} onClick={() => {
                   isClicked[post.id] ? handleRemoveWish(post) : handleAddWish(post);
                 }}>
-                  {isClicked[post.id] ? <FaBookmark /> : <CiBookmark />}
+                  {isClicked[post.id] ? <FaBookmark fontSize={'1.3rem'} /> : <CiBookmark fontSize={'1.3rem'} />}
                 </Button>
                 </Tooltip>
                 
