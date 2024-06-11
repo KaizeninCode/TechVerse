@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Drawer, DrawerBody, DrawerContent, DrawerHeader, DrawerOverlay, useDisclosure } from '@chakra-ui/react';
+import { Drawer, DrawerBody, DrawerCloseButton, DrawerContent, DrawerHeader, DrawerOverlay, useDisclosure } from '@chakra-ui/react';
 import { useColorMode } from '@chakra-ui/react';
 import { useSelector } from 'react-redux';
 import { selectUserData } from '../../features/AuthSlice';
@@ -83,13 +83,13 @@ function Notifications({ theme }) {
             <Drawer isOpen={isOpen} onClose={onClose} size={'lg'}>
                 <DrawerOverlay />
                 <DrawerContent>
-
+               <DrawerCloseButton/>
                     <DrawerHeader>
-                        
+                         
                     </DrawerHeader>
 
                     <DrawerBody>
-                     <h1>Notification is empty</h1>
+                     <h1 className='text-center font-bold text-2xl'>Notification is empty</h1>
                     </DrawerBody>
 
                 </DrawerContent>
